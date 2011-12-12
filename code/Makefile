@@ -14,14 +14,14 @@ BASE_LIBDIR = ../..
 
 LIBRARIES = \
 	$(BASE_LIBDIR)/monday/lib/program-representation/source-location \
-	$(BASE_LIBDIR)/data-structures/skip-list \
-	$(BASE_LIBDIR)/utilities/command-line-parser \
-	$(BASE_LIBDIR)/utilities/dynamic-binding \
-	$(BASE_LIBDIR)/utilities/slot-visitor \
-	$(BASE_LIBDIR)/files-and-io/sequence-stream \
-	$(BASE_LIBDIR)/files-and-io/wrapper-streams \
-	$(BASE_LIBDIR)/utilities/peg-parser \
-	$(BASE_LIBDIR)/utilities/template-engine
+	$(BASE_LIBDIR)/skip-list \
+	$(BASE_LIBDIR)/command-line-parser \
+	$(BASE_LIBDIR)/dynamic-binding \
+	$(BASE_LIBDIR)/slot-visitor \
+	$(BASE_LIBDIR)/sequence-stream \
+	$(BASE_LIBDIR)/wrapper-streams \
+	$(BASE_LIBDIR)/peg-parser \
+	$(BASE_LIBDIR)/template-engine
 
 libraries = $(abspath $(LIBRARIES))
 sources = $(abspath $(SOURCES))
@@ -71,21 +71,21 @@ doctower : main-lib/doctower-library.lib.du
 required-libs:
 	cd $(BASE_LIBDIR)/monday/lib/program-representation/source-location ; \
 	  rm *.a *.lib.du ; d2c source-location.lid
-	cd $(BASE_LIBDIR)/data-structures/skip-list ; \
+	cd $(BASE_LIBDIR)/skip-list ; \
 	  make clean ; make
-	cd $(BASE_LIBDIR)/utilities/command-line-parser ; \
+	cd $(BASE_LIBDIR)/command-line-parser ; \
 	  rm *.a *.lib.du ; d2c command-line-parser.lid
-	cd $(BASE_LIBDIR)/utilities/dynamic-binding ; \
+	cd $(BASE_LIBDIR)/dynamic-binding ; \
 	  make clean ; make
-	cd $(BASE_LIBDIR)/utilities/slot-visitor ; \
+	cd $(BASE_LIBDIR)/slot-visitor ; \
 	  make clean ; make
-	cd $(BASE_LIBDIR)/files-and-io/sequence-stream ; \
+	cd $(BASE_LIBDIR)/sequence-stream ; \
 	  make clean ; make
-	cd $(BASE_LIBDIR)/files-and-io/wrapper-streams ; \
+	cd $(BASE_LIBDIR)/wrapper-streams ; \
 	  make clean ; make
-	cd $(BASE_LIBDIR)/utilities/peg-parser ; \
+	cd $(BASE_LIBDIR)/peg-parser ; \
 	  make clean ; make
-	cd $(BASE_LIBDIR)/utilities/template-engine ; \
+	cd $(BASE_LIBDIR)/template-engine ; \
 	  make clean ; make
 
 clean:

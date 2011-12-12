@@ -1,0 +1,8 @@
+*.hdp
+*.mak
+*.dep
+*.el
+*.c
+*.o
+*.a
+*.du

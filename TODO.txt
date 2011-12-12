@@ -68,7 +68,7 @@ Bonus Points
 ============ 
 
 Create some sort of standalone installation that does not need to live in the
-SVN libraries directory. Some arrangement has to be made for the contents of the
+source code directory. Some arrangement has to be made for the contents of the
 Doctower's defaults directory, though. Typical locations would be:
 
 - "${PREFIX}/share/doctower" on Unix
