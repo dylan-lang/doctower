@@ -207,8 +207,8 @@ end method;
 
 
 define method quote-specs (quote :: <quote-token>) => (specs :: <sequence>)
-   let default-specs = dynamic-binding(*default-quote-specs*,
-                                       default: $default-markup-quote-specs);
+   let default-specs = dynamic-binding(*quote-specs*,
+                                       default: *markup-quote-specs*);
    let (specs, spec-loc) =
          if (~quote.quote-spec)
             values(default-specs[quote.open-quote], $unknown-source-location)

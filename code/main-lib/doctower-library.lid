@@ -22,5 +22,6 @@ files:      doctower-library
             topic-resolver/placeholders
             tasks/module
             tasks/create-docs
+            tasks/create-config-file
             tool/module
             tool/main

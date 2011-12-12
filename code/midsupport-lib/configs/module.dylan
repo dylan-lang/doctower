@@ -12,8 +12,11 @@ define module configs
       debugging?;
       
    export
-      $ascii-line-chars, $bullet-chars, $open-quote-chars, $close-quote-chars,
-      $default-markup-quote-specs, $default-list-quote-specs,
-      $default-title-quote-specs, $tab-size, $debug-features;
+      *ascii-line-chars*, *bullet-chars*, *quote-chars*, *markup-quote-specs*,
+      *list-quote-specs*, *title-quote-specs*, *section-style*, $tab-size,
+      $debug-features;
+
+   export
+      <topic-level-style>, line-character, underline?, midline?, overline?;
 
 end module;

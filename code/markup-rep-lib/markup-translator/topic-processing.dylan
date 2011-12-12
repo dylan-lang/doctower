@@ -109,7 +109,7 @@ define method process-tokens
    // Process topic content.
 
    topic.title-source-loc := token.token-src-loc;
-   with-dynamic-bindings (*default-quote-specs* = $default-title-quote-specs,
+   with-dynamic-bindings (*quote-specs* = *title-quote-specs*,
                           *title-markup* = #t)
       process-tokens(topic.title, token.title-content);
    end with-dynamic-bindings;

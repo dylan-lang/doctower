@@ -28,42 +28,44 @@ define method debugging? (#rest features) => (debugging? :: <boolean>)
 end method;
 
 
+/// Synopsis: The size of the tab character, in spaces. The parsers do not want
+/// tab characters.
+define constant $tab-size = 8;
+
+
 /// Synopsis: The set of characters allowed for underline/overline.
-/// TODO: Should be configurable.
-define constant $ascii-line-chars = "=-:.~^_*+#";
+define variable *ascii-line-chars* = "=-:.~^_*+#";
 
 
 /// Synopsis: The set of characters allowed for bullets.
-/// TODO: Should be configurable.
-define constant $bullet-chars = "-*+oO";
+define variable *bullet-chars* = "-*+";
 
 
 /// Synopsis: The set of quote characters.
-/// TODO: Should be configurable.
-define constant $open-quote-chars  = "'\"`";
-define constant $close-quote-chars = "'\"`";
+define variable *quote-chars* = #[ "''", "\"\"", "``" ];
 
 
-/// Synopsis: The default specifiers for each quote type in normal markup.
-define constant $default-markup-quote-specs =
+/// Synopsis: The specifiers for each quote type in normal markup.
+/// Key is open-quote character.
+define constant *markup-quote-specs* =
       table(<string-table>,
             "'" => #[#"qv"],
             "\"" => #[#"qq"],
             "`" => #[#"code"]
       );
 
-/// Synopsis: The default specifiers for each quote type in hyphenated and
-/// phrase lists.
-define constant $default-list-quote-specs =
+/// Synopsis: The specifiers for each quote type in hyphenated and phrase lists.
+/// Key is open-quote character.
+define constant *list-quote-specs* =
       table(<string-table>,
             "'" => #[#"q"],
             "\"" => #[#"qq"],
             "`" => #[#"code"]
       );
 
-/// Synopsis: The default specifiers for each quote type in titles.
-/// TODO: Should maybe be the same as $default-markup-quote-specs without qv or vi.
-define constant $default-title-quote-specs =
+/// Synopsis: The specifiers for each quote type in titles.
+/// Key is open-quote character.
+define constant *title-quote-specs* =
       table(<string-table>,
             "'" => #[#"q"],
             "\"" => #[#"qq"],
@@ -71,6 +73,31 @@ define constant $default-title-quote-specs =
       );
 
 
-/// Synopsis: The size of the tab character, in spaces. The parsers do not want
-/// tab characters.
-define constant $tab-size = 8;
+/// Synopsis: The underline/overline style of a section (as opposed to topic).
+/// TODO: Should be configurable.
+define variable *section-style* =
+      make(<topic-level-style>, char: '-', under: #f, mid: #t, over: #f);
+
+
+/// Synopsis: Records the characteristics of a topic level style.
+define class <topic-level-style> (<object>)
+   slot line-character :: <character>, init-keyword: #"char";
+   slot underline? :: <boolean>, init-keyword: #"under";
+   slot midline? :: <boolean>, init-keyword: #"mid";
+   slot overline? :: <boolean>, init-keyword: #"over";
+end class;
+
+define method \= (style1 :: <topic-level-style>, style2 :: <topic-level-style>)
+=> (equal? :: <boolean>)
+   style1.line-character = style2.line-character &
+   style1.underline? = style2.underline? &
+   style1.midline? = style2.midline? &
+   style1.overline? = style2.overline?
+end method;
+
+define method print-object (o :: <topic-level-style>, s :: <stream>) => ()
+   format(s, "{topic-style '%c'%s%s%s}", o.line-character,
+          (o.overline? & " over") | "", (o.midline? & " mid") | "",
+          (o.underline? & " under") | "");
+end method;
+

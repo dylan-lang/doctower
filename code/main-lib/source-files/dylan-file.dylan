@@ -44,20 +44,11 @@ define method dylan-files-from-lid-file (lid-locator :: <file-locator>)
                                    concatenate(filename, ".dyl"));
             block (found-file)
                for (filename in filenames)
-                  let locator = merge-locators(as(<file-locator>, filename),
-                                               lid-locator);
-                  let stream =
-                        block ()
-                           // if-does-not-exist: #f would be preferred, but that
-                           // is not implemented in Gwydion Dylan.
-                           make(<file-stream>, locator: locator,
-                                if-does-not-exist: #"signal");
-                        exception (err :: <file-does-not-exist-error>)
-                        end block;
-                  if (stream)
-                     close(stream);
-                     found-file(locator);
-                  end if;
+                  let locator = merge-locators
+                        (as(<file-locator>, filename), lid-locator);
+                  if (file-exists?(locator))
+                     found-file(locator)
+                  end if
                end for;
                file-not-found(location: lid-locator, filename: filename);
             end block;
@@ -78,16 +69,16 @@ define method filenames-from-headers (token :: <interchange-file-token>)
 
    let file-headers = choose(file-header?, token.headers);
    when (file-headers.empty?)
-      no-header-in-interchange-file(location: token.token-src-loc.source-file,
-                                    header: "Files:");
+      no-header-in-interchange-file
+            (location: token.token-src-loc.source-file, header: "Files:");
    end when;
    
    let names-per-header = map(rcurry(split, '\n'), map(hdr-value, file-headers));
    let names = apply(concatenate, #[], names-per-header);
    let names = choose(complement(empty?), names); // "Files:" first line may be blank.
    when (names.empty?)
-      empty-header-in-interchange-file(location: token.token-src-loc.source-file,
-                                       header: "Files:");
+      empty-header-in-interchange-file
+            (location: token.token-src-loc.source-file, header: "Files:");
    end when;
    names
 end method;

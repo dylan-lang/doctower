@@ -58,7 +58,7 @@ define method process-tokens
     token :: type-union(<topic-or-section-title-token>, <section-directive-title-token>))
 => ()
    section.title-source-loc := token.token-src-loc;
-   with-dynamic-bindings (*default-quote-specs* = $default-title-quote-specs,
+   with-dynamic-bindings (*quote-specs* = *title-quote-specs*,
                           *title-markup* = #t)
       process-tokens(section.title, token.title-content);
    end with-dynamic-bindings;

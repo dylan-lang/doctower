@@ -215,8 +215,8 @@ define function source-text-as-string (src-text :: <sequence>)
 end function;
 
 
-/// Synopsis: Make the most important source name (i.e. the first one) the one
-/// that is most like the provided canonical name.
+/// Synopsis: Take the source name that is most like the provided canonical name
+/// and make it the most important source name (i.e. the first one).
 define function promote-canonical-local-name
    (source-names :: <sequence>, canonical-name :: <source-name>)
 => (source-names :: <sequence>)

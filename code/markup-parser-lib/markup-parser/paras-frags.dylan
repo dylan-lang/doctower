@@ -236,11 +236,11 @@ end;
 
 define parser-method quote-start (stream, context)
 => (open-quote :: false-or(<string>))
-   label format-to-string("opening quote character (%s)", $open-quote-chars);
+   label format-to-string("opening quote character (%s)", map(first, *quote-chars*));
    let char = read-element(stream, on-end-of-stream: #f);
-   let key = find-key($open-quote-chars, curry(\=, char));
+   let key = find-key(map(first, *quote-chars*), curry(\=, char));
    if (key)
-      attr(close-quote-char) := $close-quote-chars[key];
+      attr(close-quote-char) := *quote-chars*[key].second;
       as(<string>, char);
    else
       #f;
@@ -250,7 +250,7 @@ end;
 define parser-method quote-end (stream, context)
 => (close-quote :: false-or(<string>), success? :: <boolean>,
     err :: false-or(<parse-failure>))
-   label format-to-string("closing quote character (%s)", $close-quote-chars);
+   label format-to-string("closing quote character (%s)", map(second, *quote-chars*));
    let char = read-element(stream, on-end-of-stream: #f);
    let close-quote-char = attr(close-quote-char);
    if (char = close-quote-char)

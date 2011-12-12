@@ -48,8 +48,5 @@ define module markup-parser
       quote-spec, quoted-text, scale-factor, scale-type, section-nickname,
       section-title, text, title-content, title-style, topic-nickname,
       topic-title, topic-type, topics, word;
-   
-   export
-      <topic-level-style>;
       
 end module;

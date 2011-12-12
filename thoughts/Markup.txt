@@ -113,8 +113,8 @@ The quoted text can be surrounded with other characters:
 Blocks and Lists
 ================
 
-Blocks are made with special characters at the flush-left position of a file
-or comment.
+Blocks are made with special characters as the first character in a line of a
+file or comment.
 
 : ...
   This style of block has the same effect as a [CODE] directive.
@@ -125,32 +125,31 @@ or comment.
   directive.
 
 Lists are made of items that follow patterns. The extent of a list item is
-determined with indentation (initial indentation is shown with '_' for
+determined with indentation (initial indentation is shown with '___' for
 clarity). Blank lines between list items are optional. For all lists but the
 labeled multi-column list, the list continues until it reaches a paragraph
 that does not follow the list format (not including paragraphs nested inside
 an item).
 
 - text
-_text continued
-  Bullet list. Other bullet characters are '*', '+', 'o'.
+___text continued
+  Bullet list. Other bullet characters are '*' and '+'.
 
 n. text
 #. text
-_text continued
+___text continued
   Numbered list. If a number is given, numbering starts there. Letters can be
   used by typing 'a' instead of '1', for example. Other characters that can be
   used in place of a period are ':', ')'. Each list must begin with a number;
   the hash sign continues numbering within a list.
  
 phrase -
-_definition
-_definition continued
+___definition
+___definition continued
 phrase - definition
-_def'n continued
+___def'n continued
   A definition list. The definition continues until indentation ends. A hyphen
   can be included in the term by quoting the term or hyphen.
-  
 
 term   column
 -----  -----------
@@ -378,7 +377,7 @@ INIT-|MAKE? KEYWORDS:
   A keyword list. Similar to ARGUMENTS. Only in reference topics.
 
 NOTE|WARNING: content
-_content
+___content
   Shows the text in a note or warning box. The text can have the normal markup
   elements.
 
@@ -409,9 +408,8 @@ lower-case words are parameters.
   block or file.
   
 ... [:n]
-  Create a reference target for the preceding line. Only recognized at the end
-  of verbatim or code block lines. The scope of "n" is the current comment
-  block or file.
+  Create a reference target for a verbatim or code block line. Only recognized
+  at the end of the line. The scope of "n" is the current comment block or file.
   
 ... [:n] ...
   Refer to the corresponding reference target. Recognized outside of verbatim

@@ -78,7 +78,7 @@ end;
 define caching parser directive-spec
    rule choice(paragraph-directive-spec, link-directive-spec,
                links-directive-spec, word-directive-spec, division-directive-spec, 
-               indented-content-directive-spec, null-directive-spec)
+               /*indented-content-directive-spec,*/ null-directive-spec)
 end;
          
 

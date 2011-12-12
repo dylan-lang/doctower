@@ -162,8 +162,8 @@ Synopsis: Determines whether a given name is exported by this package.
 A name is exported by this package if:
 
 * It is a library defined in this package.
-* If it is an exported or reexported module of an exported library.
-* If it an exported or reexported binding of an exported or reexported module.
+* It is an exported or reexported module of an exported library.
+* It an exported or reexported binding of an exported or reexported module.
 **/
 define generic exported-name? (defn :: type-union(<definition>, <source-name>))
 => (exported? :: <boolean>);

@@ -140,7 +140,7 @@ define errors (<user-visible-warning>)
       location;
       
    07 doc-comment-on-binding-alias
-      "Alias of binding \"%s\" cannot be individually documented",
+      "Alias of binding \"%s\" can only be documented via the original binding",
       location, alias-name;
    
    08 ambiguous-module-in-topics

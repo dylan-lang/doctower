@@ -2,29 +2,6 @@ module: markup-parser
 synopsis: Parser simplification and print-out functions.
 
 
-/// Synopsis: Records the characteristics of a topic level style.
-define class <topic-level-style> (<object>)
-   slot line-character :: <character>, init-keyword: #"char";
-   slot underline? :: <boolean>, init-keyword: #"under";
-   slot midline? :: <boolean>, init-keyword: #"mid";
-   slot overline? :: <boolean>, init-keyword: #"over";
-end class;
-
-define method \= (style1 :: <topic-level-style>, style2 :: <topic-level-style>)
-=> (equal? :: <boolean>)
-   style1.line-character = style2.line-character &
-   style1.underline? = style2.underline? &
-   style1.midline? = style2.midline? &
-   style1.overline? = style2.overline?
-end method;
-
-
-/// Synopsis: The underline/overline style of a section (as opposed to topic).
-/// TODO: Get this from configs.
-define constant $section-style =
-      make(<topic-level-style>, char: '-', under: #f, mid: #t, over: #f);
-
-
 /**
 Synopsis: Simplifies products of the form (item, #f | ((..., item), ...))
 such as bullet lists.
@@ -246,12 +223,6 @@ end method;
 // print-object
 //
 
-
-define method print-object (o :: <topic-level-style>, s :: <stream>) => ()
-   format(s, "{topic-style '%c'%s%s%s}", o.line-character,
-          (o.overline? & " over") | "", (o.midline? & " mid") | "",
-          (o.underline? & " under") | "");
-end method;
 
 define method print-object (o :: <markup-content-token>, s :: <stream>) => ()
    format(s, "{markup %= %=}", o.default-topic-content, o.topics)

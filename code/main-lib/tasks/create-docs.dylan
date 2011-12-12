@@ -50,7 +50,7 @@ define method create-doc-tree
    add-catalog-information(doc-tree);
    
    // Finalize table of contents.
-   // TODO: I think this means creating the general index and other structural pages.
+   // TODO: I think this means adding the general index and other structural pages.
    
    doc-tree
 end method;

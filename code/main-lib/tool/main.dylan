@@ -2,7 +2,7 @@ module: main
 
 //// Arguments
 
-// TODO: Make --name-list a separate task from doc gen.
+// TODO: Make --names a separate task from doc gen.
 
 define argument-parser <my-arg-parser> ()
    regular-arguments files;
@@ -33,10 +33,6 @@ define argument-parser <my-arg-parser> ()
    option ignore-comments?,
       "Ignore source code documentation comments",
       long: "no-comment", short: "N";
-   // option tab-size = "8",
-   //    "=<n>",
-   //    "Tab size [8]",
-   //    long: "tabsize", kind: <parameter-option-parser>;
    option disabled-warnings, " <nn>",
       "Hide warning message",
       long: "no-warn", short: "w", kind: <repeated-parameter-option-parser>;
@@ -49,6 +45,9 @@ define argument-parser <my-arg-parser> ()
    option quiet?,
       "Hide progress messages",
       long: "quiet", short: "q";
+   option new-config-file, " <filename>",
+      "Create blank config file and exit",
+      long: "new-config", kind: <parameter-option-parser>;
    option help?,
       "Show this help message and exit",
       long: "help";
@@ -75,14 +74,36 @@ define function main (name, arguments)
    // Retrieve arguments
 
    let args = make(<my-arg-parser>);
-   let good-options? = parse-arguments(args, arguments);
-   
+   if (~parse-arguments(args, arguments))
+      error-in-command-arguments();
+   end if;
+
+   // Set basic configs
+
+   *verbose?* := ~args.quiet?;
+
+   block()
+      map-into($disabled-warnings, string-to-integer, args.disabled-warnings)
+   exception (e :: <error>)
+      error-in-command-option(option: "--no-warn");
+   end block;
+
+   *stop-on-errors?* := args.stop-on-errors?;
+   *debug-features* := map(curry(as, <symbol>), args.debug-features);
+   unless (every?(rcurry(member?, $debug-features), *debug-features*))
+      error-in-command-option(option: "--debug");
+   end unless;
+
+   // Process act-and-exit command-line options
+
    case
-      ~good-options? =>
-         error-in-command-arguments();
+       args.new-config-file =>
+         verbose-log("Writing %s\n", args.new-config-file);
+         create-config-file(args.new-config-file);
+         exit-application(0);
       args.help? =>
          print-help(args, *standard-output*);
-         format-out("\nDeveloper debugging features are %s.\n",
+         format-out("\nDeveloper debugging features that can be enabled are:\n%s\n",
                $debug-features.item-string-list);
          exit-application(0);
       args.version? =>
@@ -91,19 +112,6 @@ define function main (name, arguments)
       args.files.empty? =>
          no-files-in-command-arguments();
    end case;
-   
-   block()
-      map-into($disabled-warnings, string-to-integer, args.disabled-warnings)
-   exception (e :: <error>)
-      error-in-command-option(option: "--no-warn");
-   end block;
-
-   *stop-on-errors?* := args.stop-on-errors?;
-   *verbose?* := ~args.quiet?;
-   *debug-features* := map(curry(as, <symbol>), args.debug-features);
-   unless (every?(rcurry(member?, $debug-features), *debug-features*))
-      error-in-command-option(option: "--debug");
-   end unless;
    
    // Retrieve and process config files
    

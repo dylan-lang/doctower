@@ -20,7 +20,7 @@ define module source-files
    // from regular-expressions
    use regular-expressions, import: { regexp-position };
    // from system
-   use file-system, import: { <file-does-not-exist-error> };
+   use file-system, import: { <file-does-not-exist-error>, file-exists? };
    use locators, import: { locator-extension, merge-locators };
    
    export topics-from-markup-files, topics-from-dylan-files, toc-from-file;

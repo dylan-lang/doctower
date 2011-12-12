@@ -308,16 +308,16 @@ end;
 
 define parser-method ascii-line-char (stream, context)
 => (char :: false-or(<character>))
-   label format-to-string("line character (%s)", $ascii-line-chars);
+   label format-to-string("line character (%s)", *ascii-line-chars*);
    let char = read-element(stream, on-end-of-stream: #f);
-   member?(char, $ascii-line-chars) & char
+   member?(char, *ascii-line-chars*) & char
 end;
 
 define parser-method bullet-char (stream, context)
 => (char :: false-or(<character>))
-   label format-to-string("bullet character (%s)", $bullet-chars);
+   label format-to-string("bullet character (%s)", *bullet-chars*);
    let char = read-element(stream, on-end-of-stream: #f);
-   member?(char, $bullet-chars) & char
+   member?(char, *bullet-chars*) & char
 end;
 
 //

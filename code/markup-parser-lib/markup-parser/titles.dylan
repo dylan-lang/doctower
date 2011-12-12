@@ -18,7 +18,7 @@ define caching parser topic-title :: <topic-or-section-title-token>
    rule topic-or-section-title => token;
    yield token;
 afterwards (context, token, value, start-pos, end-pos, fail: fail)
-   unless (token.title-style ~= $section-style)
+   unless (token.title-style ~= *section-style*)
       fail(make(<parse-failure>))
    end unless;
 end;
@@ -27,7 +27,7 @@ define caching parser section-title :: <topic-or-section-title-token>
    rule topic-or-section-title => token;
    yield token;
 afterwards (context, token, value, start-pos, end-pos, fail: fail)
-   unless (token.title-style = $section-style)
+   unless (token.title-style = *section-style*)
       fail(make(<parse-failure>))
    end unless;
 end;
