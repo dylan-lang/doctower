@@ -23,5 +23,5 @@ files:      doctower-library
             tasks/module
             tasks/create-docs
             tasks/create-config-file
-            tool/module
-            tool/main
+            main/module
+            main/main
