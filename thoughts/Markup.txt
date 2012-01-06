@@ -167,7 +167,8 @@ item3  defn
   continues until the second hyphen line. The first hyphen line determines
   columns; the last column can extend past the end of the hyphen line. The
   second hyphen line does not need to be broken into columns. The hyphen lines
-  can use any of the ASCII line characters listed below, but they have to match.
+  can use any of the ASCII line characters listed below, but the characters have
+  to match.
 
 
 Headings and Links
@@ -255,6 +256,9 @@ the section's containing topic followed by a "/" and the section's tag. This
 means that if you want to link to a section, you must ensure its containing
 topic has a tag.
 
+[TODO: Allow linking to a unique section tag? Allow the topic to be omitted to
+use the current topic?]
+
  - 'About the Wonderland Library' and 'about' link to the same topic.
 
  - 'about' is rendered as a hyperlink to "About the Wonderland Library."
@@ -328,13 +332,13 @@ LIBRARY|MODULE|GENERIC FUNCTION|CLASS...: title
 
 TOPIC: title
   Start a new conceptual topic. It may be used as an alternative to the
-  ASCII-art method of denoting a topic. The new topic is set at the same level
+  ASCII-art method of denoting a topic (though like all directives, you can add
+  ASCII-art around it that is ignored). The new topic is set at the same level
   as the previous topic.
   
 SECTION: title
   This directive starts a new section within a topic. It may be used as an
-  alternative to the ASCII-art method of denoting a section (though like all
-  directives, you can add ASCII-art around it that is ignored).
+  alternative to the ASCII-art method of denoting a section.
 
 IN LIBRARY|MODULE: name
   Define which library or module contains this module or binding topic. Only
@@ -370,7 +374,8 @@ ARGS|ARGUMENTS|VALUES:
 GETTERS|GETTERS AND|& SETTERS|SLOTS|SLOT ACCESSORS:
   A list of getters, setters, or slots available for a class. The only allowed
   content is a term or phrase definition list; each item results in separate
-  method topic. Only in class topics. [TODO: Getter/setter slot directives.]
+  method topic. Only in class topics.
+  [TODO: This; getter/setter slot directives.]
 
 CONDITIONS|SIGNALS|ERRORS|EXCEPTIONS:
   A list of signals raised by a function. May include paragraphs and other
@@ -399,24 +404,36 @@ lower-case words are parameters.
   
 [FIG "imagename" scale%|linesX?] caption?
   Include a centered image. The quotation here is strictly for the purposes of
-  escaping spaces and special characters; the quote options cannot be used.
+  escaping spaces and special characters; the quote options cannot be used. The
+  scope of "n" is the current comment block or file and does not overlap with
+  [:n] references. "n" may a letter or number.
+  
+[EXHIBIT n]: caption?
+content
+  Create an exhibit. The content extends until the next topic, section, exhibit,
+  or footnote. The scope of "n" is the current comment block or file and does
+  not overlap with footnotes or line markers. "n" may be a letter or number.
+  
+... [EXHIBIT n] ...
+  Link to an exhibit. The link text is replaced by the caption if available.
   
 [n]: ...
-  Create a footnote. The content may begin on the next line and extends until
-  the next topic, section, or footnote. The scope of "n" is the current comment
-  block or file.
-  
+  Create a footnote. The content extends until the next topic, section, exhibit,
+  or footnote. The scope of "n" is the current comment block or file and does
+  not overlap with exhibits or line markers. "n" may be a letter or number, but
+  is only for your reference. The footnote could be renumbered and relocated
+  upon output.
+
 ... [n] ...
-  Refer to the corresponding footnote. The scope of "n" is the current comment
-  block or file.
+  Link to a footnote. Appears as a superscript.
   
 ... [:n]
-  Create a reference target for a verbatim or code block line. Only recognized
-  at the end of the line. The scope of "n" is the current comment block or file.
+  Create a line marker. Only recognized at the end of a verbatim or code block
+  line. The scope of "n" is the current comment block or file and does not
+  overlap with footnotes or exhibits. "n" may be a letter or number.
   
 ... [:n] ...
-  Refer to the corresponding reference target. Recognized outside of verbatim
-  or code block lines. The scope of "n" is the current comment block or file.
+  Link to a line marker. Recognized outside of verbatim or code block lines.
   
 [CODE]
 text
@@ -427,8 +444,8 @@ text
 [VERBATIM|EXAMPLE|DIAGRAM]
 text
 [END VERBATIM|EXAMPLE|DIAGRAM?]
-  Render "text" as plain ASCII in a monospace font. No links are made. "[:n]"
-  directives are recognized.
+  Render "text" as plain text in a monospace font. Does not make any links.
+  "[:n]" directives are recognized.
   
 ... [SYNOPSIS OF topic|"title"] ...
   Shows the synopsis of a topic or documented item. The quotation here is
@@ -440,11 +457,13 @@ text
   strictly for the purposes of escaping spaces; the quote options cannot be
   used.
   
-...[HTML] html markup [END HTML?]...
+... [HTML] html markup [END HTML?] ...
   HTML is rendered exactly. Only applies to HTML output.
+  [TODO: Ensure surrounding spaces aren't included.]
   
-...[DITA] dita markup [END DITA?]...
+... [DITA] dita markup [END DITA?] ...
   DITA markup is rendered exactly. Only applies to DITA output.
+  [TODO: Ensure surrounding spaces aren't included.]
 
 
 Table of Contents Files

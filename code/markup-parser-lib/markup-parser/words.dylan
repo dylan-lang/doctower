@@ -8,6 +8,7 @@ define constant <markup-word-types> =
       type-union(<quote-token>,
                  <line-marker-ref-token>,
                  <footnote-ref-token>,
+                 <exhibit-ref-token>,
                  <image-ref-token>,
                  <synopsis-ref-token>,
                  <bracketed-render-span-token>,
@@ -40,7 +41,7 @@ define caching parser markup-words-til-hyphen-spc :: <markup-word-sequence>
 end;
 
 define caching parser markup-word :: <markup-word-types>
-   rule choice(quote, line-marker-ref, footnote-ref, image-ref,
+   rule choice(quote, line-marker-ref, footnote-ref, exhibit-ref, image-ref,
                synopsis-ref, bracketed-render-span, text-word)
       => token;
    yield token;

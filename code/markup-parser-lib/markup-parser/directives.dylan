@@ -134,7 +134,7 @@ define caching parser null-directive-spec :: <symbol>
 end;
 
 define caching parser directive-spec-intro
-   rule seq(opt(ascii-overline), opt-seq(sol, ascii-midline, spaces), opt-spaces)
+   rule seq(opt(ascii-overline), sol, opt-seq(ascii-midline, spaces), opt-spaces)
 end;
 
 define caching parser directive-spec-outro

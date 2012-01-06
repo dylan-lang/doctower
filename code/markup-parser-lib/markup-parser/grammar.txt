@@ -57,7 +57,7 @@ directive-topic:
 titled-topic:
    topic-title topic-content?
 topic-content:
-   ( section / footnote / division-content )+
+   ( section / footnote / exhibit / division-content )+
 
 section:
    directive-section / titled-section
@@ -70,13 +70,17 @@ section-directive:
    section-directive-title division-content?
 
 footnote:
-   [-SPC ( NUMBER / ORDINAL ) SPC-] ':' SPC+ division-content?
+   SOL [-SPC ( NUMBER / ORDINAL ) SPC-] ':' SPC+ markup-words LS
+   division-content?
+exhibit:
+   SOL [-SPC "EXHIBIT" SPC-LS+ ( NUMBER / ORDINAL ) SPC-] ':'
+   ( SPC+ text-til-ls )? LS division-content
 
 division-content:
    ( indented-content / !division-break content-block )+
 division-break:
    topic-or-section-title / topic-directive-title / section-directive-title /
-   directive-spec / footnote
+   directive-spec / footnote / exhibit
 
 indented-content:
    INDENT content-block+ DEDENT
@@ -180,7 +184,7 @@ null-directive-spec:
    directive-spec-intro null-directive-spec-text ':' directive-spec-extro
 
 directive-spec-intro:
-   ascii-overline? ( SOL ascii-midline SPC+ )? SPC*
+   ascii-overline? SOL ( ascii-midline SPC+ )? SPC*
 directive-spec-extro:
    SPC+ ( ascii-midline LS ascii-underline? )? / LS ascii-underline?
 
@@ -207,7 +211,8 @@ marginal-verbatim-block-line:
    SOL ( '>' / '|' ) SPC raw-line
 
 figure-ref-line:
-   SOL [-SPC "FIG" SPC-LS+ filename ( SPC-LS+ scale-factor )? SPC-] text-til-ls? LS
+   SOL [-SPC "FIG" SPC-LS+ filename ( SPC-LS+ scale-factor )? SPC-]
+   ( SPC+ text-til-ls )? LS
 scale-factor:
    NUMBER ( '%' / 'X' )
 
@@ -318,6 +323,8 @@ line-marker-ref:
    [-SPC ':' ( NUMBER / ORDINAL ) SPC-]
 footnote-ref:
    [-SPC ( NUMBER / ORDINAL ) SPC-]
+exhibit-ref:
+   [-SPC "EXHIBIT" SPC-LS+ ( NUMBER / ORDINAL ) SPC-]
 synopsis-ref:
    [-SPC "SYNOPSIS" SPC-LS+ "OF" SPC-LS+ link-til-cls-brack SPC-]
 
@@ -346,8 +353,8 @@ markup-words:
 markup-words-til-hyphen-spc:
    ( !hyphen-spc markup-word SPC* )+
 markup-word:
-   quote / line-marker-ref / footnote-ref / image-ref / synopsis-ref /
-   bracketed-render-span / text-word
+   quote / line-marker-ref / footnote-ref / exhibit-ref / image-ref /
+   synopsis-ref / bracketed-render-span / text-word
 title-word:
    quote / image-ref / bracketed-render-span / text-word
 text-word:

@@ -133,6 +133,7 @@ define literal-parsers
    errors-lit     = "errors";
    example-lit    = "example";
    exceptions-lit = "exceptions";
+   exhibit-lit    = "exhibit";
    fig-lit        = "fig";
    function-lit   = "function";
    generic-lit    = "generic";

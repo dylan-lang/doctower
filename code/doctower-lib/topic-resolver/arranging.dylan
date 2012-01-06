@@ -449,7 +449,7 @@ define method vi-arrangement (topics :: <sequence>)
          end method;
          
    for (parent-topic in topics)
-      visit-target-placeholders(parent-topic, visit, topic: parent-topic)
+      visit-target-references(parent-topic, visit, topic: parent-topic)
    end for;
    trees
 end method;

@@ -261,6 +261,10 @@ define method print-object (o :: <footnote-token>, s :: <stream>) => ()
    format(s, "{footnote id %s: %=}", o.index, o.content)
 end method;
 
+define method print-object (o :: <exhibit-token>, s :: <stream>) => ()
+   format(s, "{exhibit id %s %s: %=}", o.index, o.caption, o.content)
+end method;
+
 define method print-object (o :: <topic-or-section-title-token>, s :: <stream>) => ()
    format(s, "{title %=}", o.title-content)
 end method;
@@ -364,6 +368,9 @@ define method print-object (o :: <line-marker-ref-token>, s :: <stream>) => ()
 end method;
 
 define method print-object (o :: <footnote-ref-token>, s :: <stream>) => ()
+end method;
+
+define method print-object (o :: <exhibit-ref-token>, s :: <stream>) => ()
 end method;
 
 define method print-object (o :: <synopsis-ref-token>, s :: <stream>) => ()

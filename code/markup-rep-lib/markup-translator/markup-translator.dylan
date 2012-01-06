@@ -30,7 +30,7 @@ define method topics-from-markup
 
       topics := concatenate(topics, map(make-topic-from-token, token.token-topics));
    
-      // TODO: Resolve markers and footnotes.
+      // TODO: Resolve markers, exhibits, and footnotes.
       
    end with-dynamic-bindings;
    
@@ -49,7 +49,7 @@ define method content-from-markup (token :: <markup-content-token>)
             topic-locations: topic-loc);
    end unless;
 
-   // Disallow sections and footnotes in this markup.
+   // Disallow sections, exhibits, and footnotes in this markup.
    let content = token.default-topic-content;
    let invalid-content =
          choose(complement(rcurry(instance?, <division-content-types>)), content);

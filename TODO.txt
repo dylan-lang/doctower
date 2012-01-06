@@ -33,6 +33,12 @@ the API style and turn it into normal text.
 Once that is done, we can probably do something smarter with imported and
 renamed external APIs.
 
+-------
+
+In DITA, footnotes cannot contain the full selection of division content, so
+restrict it. Exhibits cannot contain nested images, at least not if they are
+wrapped in a <fig> of their own. Think about how to solve this.
+
 
 ==========
 Want to Do

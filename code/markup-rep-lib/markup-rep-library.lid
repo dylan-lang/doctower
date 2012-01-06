@@ -15,4 +15,5 @@ files:   markup-rep-library
          markup-translator/section-processing
          markup-translator/content-processing
          markup-translator/markup-processing
+         markup-translator/placeholder-res
          

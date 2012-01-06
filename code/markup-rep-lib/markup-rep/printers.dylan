@@ -223,17 +223,21 @@ define method print-object (o :: <footnote>, s :: <stream>) => ()
    format(s, "{footnote #%s %=}", o.index, o.content)
 end method;
 
+define method print-object (o :: <exhibit>, s :: <stream>) => ()
+   format(s, "{exhibit #%s %s %=}", o.index, o.title, o.content)
+end method;
+
 define method print-object (o :: <code-phrase>, s :: <stream>) => ()
-   format(s, "{code-phrase %=}", o.text)
+   format(s, "{code-phrase %=}", o.markup-text)
 end method;
 
 define method print-object (o :: <api/parm-name>, s :: <stream>) => ()
-   format(s, "{api/parm-name %=}", o.text)
+   format(s, "{api/parm-name %=}", o.markup-text)
 end method;
 
 define method print-object (o :: <xref>, s :: <stream>) => ()
    printing-logical-block (s, prefix: "{", suffix: "}")
-      format(s, "xref %= ", o.text);
+      format(s, "xref %= ", o.markup-text);
       pprint-newline(#"fill", s);
       if (instance?(o.target, <topic>))
          format(s, "{topic %= %s}",
@@ -249,7 +253,7 @@ end method;
 
 define method print-object (o :: <vi-xref>, s :: <stream>) => ()
    printing-logical-block (s, prefix: "{", suffix: "}")
-      format(s, "vi-xref %= ", o.text);
+      format(s, "vi-xref %= ", o.markup-text);
       pprint-newline(#"fill", s);
       if (instance?(o.target, <topic>))
          format(s, "{topic %= %s}",

@@ -10,10 +10,15 @@
   </ph></shortdesc>
   <conbody>
 {{topic.main-body !}}
+    <conbodydiv>
+      {{repeat with footnote in topic.footnotes}}
+      {{footnote.rendered-footnote !}}
+      {{end}}
+    </conbodydiv>
   </conbody>
   <related-links>
     {{repeat with link in topic.related-links}}
-    {{link !}}
+    {{link.rendered-link !}}
     {{end}}
   </related-links>
 </concept>

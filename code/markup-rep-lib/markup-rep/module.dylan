@@ -10,10 +10,11 @@ define module markup-rep
    use locators, import: { <url> }, export: all;
 
    export
-      <api-doc>, <api/parm-name>, <binding-doc>, <bold>, <catalog-topic>, <cite>,
-      <unbound-doc>, <class-doc>, <code-block>, <code-phrase>, <con-topic>,
-      <conref>, <content-seq>, <defn-list>, <dita-content>, <ditto-placeholder>,
-      <emphasis>, <entity>, <fig>, <footnote>, <footnote-placeholder>,
+      <api-doc>, <api/parm-name>, <binding-doc>, <bold>, <catalog-topic>,
+      <cite>, <unbound-doc>, <class-doc>, <code-block>, <code-phrase>,
+      <con-topic>, <conref>, <content-seq>, <defn-list>, <dita-content>,
+      <ditto-placeholder>, <emphasis>, <entity>, <exhibit>,
+      <exhibit-placeholder>, <fig>, <footnote>, <footnote-placeholder>,
       <function-doc>, <html-content>, <inline-image>, <markup-element>,
       <italic>, <library-doc>, <macro-doc>, <many-line-defn-list>,
       <many-line-parm-list>, <line-marker-placeholder>, <markup-seq>,
@@ -42,19 +43,19 @@ define module markup-rep
       headings-setter, id, id-setter, id-source-loc, id-source-loc-setter,
       image-name, image-name-setter, index, index-setter, inheritables-section,
       inheritables-section-setter, items, items-setter, keywords-section,
-      keywords-section-setter, modules-section, modules-section-setter,
-      names-in-namespace, parent, parent-setter, qualified-scope-name,
-      qualified-scope-name-setter, rel-size, rel-size-setter, relevant-to,
-      relevant-to-setter, related-links, related-links-setter, shortdesc,
-      shortdesc-setter, style, subs-section, subs-section-setter,
-      supers-section, supers-section-setter, syntax-section,
-      syntax-section-setter, target, target-setter, target-from-text?, text,
-      text-setter, title, title-setter, title-source-loc,
+      keywords-section-setter, markup-text, markup-text-setter, modules-section,
+      modules-section-setter, names-in-namespace, parent, parent-setter,
+      qualified-scope-name, qualified-scope-name-setter, rel-size,
+      rel-size-setter, relevant-to, relevant-to-setter, related-links,
+      related-links-setter, shortdesc, shortdesc-setter, style, subs-section,
+      subs-section-setter, supers-section, supers-section-setter,
+      syntax-section, syntax-section-setter, target, target-setter,
+      target-from-text?, title, title-setter, title-source-loc,
       title-source-loc-setter, topic-type, vals-section, vals-section-setter,
       value-section, value-section-setter;
 
    export
       stringify-title, stringify-markup, printed-topic-type,
-      visit-target-placeholders, visit-content-placeholders, visit-targets;
+      visit-target-references, visit-content-references, visit-targets;
       
 end module;

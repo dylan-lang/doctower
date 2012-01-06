@@ -13,6 +13,7 @@ define constant <topic-content-types> =
                  <titled-section-token>,
                  <section-directive-token>,
                  <footnote-token>,
+                 <exhibit-token>,
                  <division-content-types>);
                  
 define constant <division-content-types> =
@@ -161,16 +162,30 @@ afterwards (context, tokens, value, start-pos, end-pos)
 end;
 
 //
-// Footnotes
+// Footnotes and exhibits
 //
 
 // exported
 define caching parser footnote (<source-location-token>)
-   rule seq(opn-brack-spc, choice(number, ordinal), spc-cls-brack, colon,
-            spaces, opt(division-content))
+   rule seq(sol, opn-brack-spc, choice(number, ordinal), spc-cls-brack, colon,
+            spaces, markup-words, ls, opt(division-content))
       => tokens;
-   slot index :: type-union(<integer>, <character>) = tokens[1];
-   slot content :: <division-content-sequence> = tokens[5] | #[];
+   slot index :: type-union(<integer>, <character>) = tokens[2];
+   slot content :: <division-content-sequence> =
+      prepend-words(tokens[6], tokens[8]);
+afterwards (context, tokens, value, start-pos, end-pos)
+   note-source-location(context, value)
+end;
+
+// exported
+define caching parser exhibit (<source-location-token>)
+   rule seq(sol, opt-brack-spc, exhibit-lit, many-spc-ls, choice(number, ordinal),
+            spc-cls-brack, colon, opt-seq(spaces, text-til-ls), ls,
+            division-content)
+   slot index :: type-union(<integer>, <character>) = tokens[3];
+   slot caption :: false-or(<string>) =
+      tokens[7] & remove-multiple-spaces(tokens[7][1].text);
+   slot content :: <division-content-sequence> = tokens[9];
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -190,7 +205,7 @@ end;
 
 define caching parser division-break
    rule choice(topic-or-section-title, topic-directive-title,
-               section-directive-title, directive-spec, footnote);
+               section-directive-title, directive-spec, footnote, exhibit);
 end;
 
 // The choose removes #f (i.e. blank-lines) from the content blocks.

@@ -23,11 +23,6 @@ Synopsis: HREF targets generated from target IDs or index numbers.
 The 'target-href' keyword will be the 'href' attribute of links to the target,
 and the 'target-id' keyword will be the 'id' attribute of the target itself.
 
-For DITA output, 'target-href' will be 'topicid' or 'topicid/contentid' and the
-corresponding 'target-id' will be 'topicid' or 'contentid'. For HTML output,
-'target-href' will be as in the DITA output and the corresponding 'target-id'
-will be the same as 'target-href'.
-
 The '<topic-target>' and '<section-target>' classes have additional keywords:
 'title-href', 'title-id', and -- for '<topic-target>' -- 'shortdesc-href' and
 'shortdesc-id'. These work like the 'target-href' and 'target-id' keywords
@@ -75,6 +70,9 @@ define class <footnote-target> (<target>)
 end class;
 
 define class <ph-marker-target> (<target>)
+end class;
+
+define class <exhibit-target> (<target>)
 end class;
 
 
@@ -159,6 +157,7 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
 
          let section-list = make(<stretchy-vector>);
          let footnote-list = make(<stretchy-vector>);
+         let exhibit-list = make(<stretchy-vector>);
          let line-list = make(<stretchy-vector>);
 
          local method add-to-list
@@ -170,6 +169,8 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
                         section-list := add!(section-list, obj);
                      <footnote> =>
                         footnote-list := add!(footnote-list, obj);
+                     <exhibit> =>
+                        exhibit-list := add!(exhibit-list, obj);
                      <ph-marker> =>
                         line-list := add!(line-list, obj);
                   end select;
@@ -189,6 +190,7 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
          visit-targets(topic, add-to-list);
          process-list(section-list, "Sect");
          process-list(footnote-list, "Foot");
+         process-list(exhibit-list, "Exbt");
          process-list(line-list, "Line");
       end unless
    end for;

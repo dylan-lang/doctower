@@ -178,6 +178,16 @@ afterwards (context, tokens, value, start-pos, end-pos)
 end;
 
 // exported
+define caching parser exhibit-ref (<source-location-token>)
+   rule seq(opn-brack-spc, exhibit-lit, many-spc-ls, choice(number, ordinal),
+            spc-cls-brack)
+      => tokens;
+   slot index :: type-union(<integer>, <character>) = tokens[3];
+afterwards (context, tokens, value, start-pos, end-pos)
+   note-source-location(context, value)
+end;
+
+// exported
 define caching parser synopsis-ref (<source-location-token>)
    rule seq(opn-brack-spc, synopsis-lit, many-spc-ls, of-lit, many-spc-ls,
             link-til-cls-brack, spc-cls-brack)

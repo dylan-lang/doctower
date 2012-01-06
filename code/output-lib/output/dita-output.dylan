@@ -72,9 +72,10 @@ define method target-link-info
    let target-info = make(<table>);
    for (topic in doc-tree)
       unless (~topic) // Root of doc-tree is #f
+         // Get link info for every target.
          visit-targets(topic, add-dita-link-info, target-info: target-info,
                current-topic: topic, fallback-ids: fallback-ids,
-               output-file: file-info[topic])
+               output-file: file-info[topic]);
       end unless
    end for;
    target-info
@@ -133,7 +134,7 @@ end method;
 
 
 define method add-dita-link-info
-   (content :: type-union(<footnote>, <ph-marker>),
+   (content :: type-union(<footnote>, <exhibit>, <ph-marker>),
     #key setter, visited, target-info, current-topic, fallback-ids, output-file)
 => (visit-slots? :: <boolean>)
    let topic-id = (current-topic.id | fallback-ids[current-topic]).sanitized-id;
@@ -143,6 +144,7 @@ define method add-dita-link-info
    let info-class =
          select (content by instance?)
             <footnote> => <footnote-target>;
+            <exhibit> => <exhibit-target>;
             <ph-marker> => <ph-marker-target>;
          end select;
    target-info[content] := make(info-class, id: content-id, href: content-href);
@@ -271,11 +273,12 @@ define method write-output-file
                rcurry(dita-section, modules-section, target-info),
          "bindings-section" =>
                rcurry(dita-section, bindings-section, target-info),
-         "related-links" =>
-               method (topic :: <topic>) => (dita-links :: <sequence>)
-                  map(rcurry(dita-content, target-info), topic.related-links)
-               end method,
+         "rendered-footnote" =>
+               rcurry(dita-content, target-info),
+         "rendered-link" =>
+               rcurry(dita-content, target-info),
          "footnotes" => footnotes,
+         "related-links" => related-links,
          "size" => size
          );
 
@@ -420,11 +423,10 @@ end method;
 
 define method dita-content (xref :: <xref>, target-info)
 => (dita :: <string>)
-   // TODO: Xref output for footnotes and ph-markers.
-   let title = dita-content(xref.text, target-info);
+   let title = dita-content(xref.markup-text, target-info);
    let (href, scope) =
          select (xref.target by instance?)
-            (<topic>, <section>) =>
+            (<topic>, <section>, <footnote>, <exhibit>, <ph-marker>) =>
                let base-href = target-info[xref.target].target-href;
                let href = concatenate("../", base-href).sanitized-xml;
                values(href, #f);
@@ -439,7 +441,9 @@ define method dita-content (xref :: <xref>, target-info)
             <ref-topic> => values("dita", "reference");
             <con-topic> => values("dita", "concept");
             <topic>     => values("dita", "topic");
-            <section>   => values(#f, "section");
+            <section>   => values("dita", "section");
+            <footnote>  => values("dita", "fn");
+            <exhibit>   => values("dita", "fig");
             <url>       => values(#f, #f);
             otherwise   => values(#f, #f);
          end select;
@@ -451,6 +455,14 @@ define method dita-content (xref :: <xref>, target-info)
          if (type) format-to-string("type=\"%s\" ", type) else "" end;
    format-to-string("<xref %s%s%shref=\"%s\"><ph>%s</ph></xref>",
          scope-attr, format-attr, type-attr, href, title);
+end method;
+
+
+define method dita-content (footnote :: <footnote>, target-info)
+=> (dita :: <string>)
+   let id = target-info[footnote].target-id.santized-xml;
+   let content = dita-content(footnote.content, target-info);
+   format-to-string("<fn id=\"%s\">%s</fn>", id, content)
 end method;
 
 
@@ -567,55 +579,55 @@ end method;
 define method dita-content (parm :: <api/parm-name>, target-info)
 => (dita :: <string>)
    // TODO: Can make this a DITA <parmname> tag when appropriate automatically?
-   dita-entag("apiname", parm.text, target-info)
+   dita-entag("apiname", parm.markup-text, target-info)
 end method;
 
 
 define method dita-content (term :: <term>, target-info)
 => (dita :: <string>)
-   dita-entag("term", term.text, target-info)
+   dita-entag("term", term.markup-text, target-info)
 end method;
 
 
 define method dita-content (term :: <term-style>, target-info)
 => (dita :: <string>)
-   dita-content(term.text, target-info)
+   dita-content(term.markup-text, target-info)
 end method;
 
 
 define method dita-content (code :: <code-phrase>, target-info)
 => (dita :: <string>)
-   dita-entag("codeph", code.text, target-info)
+   dita-entag("codeph", code.markup-text, target-info)
 end method;
 
 
 define method dita-content (cite :: <cite>, target-info)
 => (dita :: <string>)
-   dita-entag("cite", cite.text, target-info)
+   dita-entag("cite", cite.markup-text, target-info)
 end method;
 
 
 define method dita-content (bold :: <bold>, target-info)
 => (dita :: <string>)
-   dita-entag("b", bold.text, target-info)
+   dita-entag("b", bold.markup-text, target-info)
 end method;
 
 
 define method dita-content (ital :: <italic>, target-info)
 => (dita :: <string>)
-   dita-entag("i", ital.text, target-info)
+   dita-entag("i", ital.markup-text, target-info)
 end method;
 
 
 define method dita-content (und :: <underline>, target-info)
 => (dita :: <string>)
-   dita-entag("u", und.text, target-info)
+   dita-entag("u", und.markup-text, target-info)
 end method;
 
 
 define method dita-content (em :: <emphasis>, target-info)
 => (dita :: <string>)
-   dita-entag("b", em.text, target-info)
+   dita-entag("b", em.markup-text, target-info)
 end method;
 
 

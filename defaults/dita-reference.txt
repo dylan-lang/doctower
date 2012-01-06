@@ -27,10 +27,15 @@
 {{topic.funcs-returning-section !}}
 {{topic.modules-section !}}
 {{topic.bindings-section !}}
+    <refbodydiv>
+      {{repeat with footnote in topic.footnotes}}
+      {{footnote.rendered-footnote !}}
+      {{end}}
+    </refbodydiv>
   </refbody>
   <related-links>
     {{repeat with link in topic.related-links}}
-    {{link !}}
+    {{link.rendered-link !}}
     {{end}}
   </related-links>
 </reference>

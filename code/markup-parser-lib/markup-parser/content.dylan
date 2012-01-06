@@ -62,13 +62,13 @@ end;
 define caching parser figure-ref-line (<source-location-token>)
    rule seq(sol, opn-brack-spc, fig-lit, many-spc-ls, filename,
             opt-seq(many-spc-ls, scale-factor), spc-cls-brack,
-            opt(text-til-ls), ls)
+            opt-seq(spaces, text-til-ls), ls)
       => tokens;
    slot filename :: <string> = tokens[3];
    slot scale-factor :: false-or(<integer>) = tokens[4] & tokens[4][1].factor;
    slot scale-type :: false-or(<symbol>) = tokens[4] & tokens[4][1].type;
    slot caption :: false-or(<string>) =
-      tokens[6] & remove-multiple-spaces(tokens[6].text);
+      tokens[7] & remove-multiple-spaces(tokens[7][1].text);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;

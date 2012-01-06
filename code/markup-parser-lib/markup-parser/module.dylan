@@ -20,23 +20,23 @@ define module markup-parser
       parse-markup, parse-internal-markup;
    
    export
-      <markup-content-token>, <directive-topic-token>, <titled-topic-token>,
-      <titled-section-token>, <section-directive-token>, <footnote-token>,
-      <topic-or-section-title-token>, <title-nickname-token>,
-      <topic-directive-title-token>, <section-directive-title-token>,
-      <paragraph-directive-token>, <link-directive-token>,
-      <links-directive-token>, <word-directive-token>,
-      <division-directive-token>, <indented-content-directive-token>,
-      <marginal-code-block-token>, <marginal-verbatim-block-token>,
-      <figure-ref-line-token>, <ditto-ref-line-token>,
-      <bracketed-raw-block-token>, <table-token>, <bullet-list-token>,
-      <bullet-list-item-token>, <numeric-list-token>, <numeric-list-item-token>,
-      <hyphenated-list-token>, <hyphenated-list-item-token>,
-      <phrase-list-token>, <phrase-list-item-token>, <paragraph-token>,
-      <raw-line-token>, <image-ref-token>, <line-marker-ref-token>,
-      <footnote-ref-token>, <synopsis-ref-token>, <quote-token>,
-      <quote-spec-token>, <text-word-token>, <link-word-token>,
-      <bracketed-render-span-token>;
+      <bracketed-raw-block-token>, <bracketed-render-span-token>,
+      <bullet-list-item-token>, <bullet-list-token>, <directive-topic-token>,
+      <ditto-ref-line-token>, <division-directive-token>, <exhibit-ref-token>,
+      <exhibit-token>, <figure-ref-line-token>, <footnote-ref-token>,
+      <footnote-token>, <hyphenated-list-item-token>, <hyphenated-list-token>,
+      <image-ref-token>, <indented-content-directive-token>,
+      <line-marker-ref-token>, <link-directive-token>, <link-word-token>,
+      <links-directive-token>, <marginal-code-block-token>,
+      <marginal-verbatim-block-token>, <markup-content-token>,
+      <numeric-list-item-token>, <numeric-list-token>,
+      <paragraph-directive-token>, <paragraph-token>, <phrase-list-item-token>,
+      <phrase-list-token>, <quote-spec-token>, <quote-token>, <raw-line-token>,
+      <section-directive-title-token>, <section-directive-token>,
+      <synopsis-ref-token>, <table-token>, <text-word-token>,
+      <title-nickname-token>, <titled-section-token>, <titled-topic-token>,
+      <topic-directive-title-token>, <topic-or-section-title-token>,
+      <word-directive-token>;
    
    export
       <topic-content-types>, <division-content-types>;

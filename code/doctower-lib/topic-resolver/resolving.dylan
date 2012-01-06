@@ -21,7 +21,7 @@ define method resolve-target-placeholders
    // Assign topics in place of placeholders.
    for (topic in topics)
       let defined-parms = sections-by-parm-name(topic);
-      visit-target-placeholders(topic, resolve-target-placeholder-in-topic,
+      visit-target-references(topic, resolve-target-placeholder-in-topic,
             topic: topic, resolutions: target-resolutions,
             parms: defined-parms, dup-titles: duplicate-title-targets,
             dup-sqns: duplicate-short-qualified-name-targets,
@@ -30,7 +30,7 @@ define method resolve-target-placeholders
 
    // Assign topics in place of tables of content references.
    for (toc in tables-of-content)
-      visit-target-placeholders(toc, resolve-target-placeholder-in-topic,
+      visit-target-references(toc, resolve-target-placeholder-in-topic,
             topic: #f, resolutions: target-resolutions,
             parms: #f, dup-titles: duplicate-title-targets,
             dup-sqns: duplicate-short-qualified-name-targets,
@@ -86,14 +86,14 @@ define method resolve-target-placeholder-in-topic
          remove!(unused-catalogs, resolution);
 
          if (replace-text-with-title?)
-            xref.text := make(<conref>, target: resolution, style: #"title",
+            xref.markup-text := make(<conref>, target: resolution, style: #"title",
                   source-location: placeholder.source-location)
          elseif (parm-style?)
-            let content = if (instance?(xref.text, <title-seq>)) xref.text
-                          else title-seq(xref.text) end;
+            let content = if (instance?(xref.markup-text, <title-seq>)) xref.markup-text
+                          else title-seq(xref.markup-text) end;
             let parm-style = make(<api/parm-name>, text: content.stringify-title,
                   source-location: placeholder.source-location);
-            xref.text := title-seq(parm-style)
+            xref.markup-text := title-seq(parm-style)
          end if;
          #t
 
@@ -101,7 +101,7 @@ define method resolve-target-placeholder-in-topic
          // May not be intended as an actual link target. Give warning and
          // remove unlinkable xref.
          cant-resolve-xref-warning(placeholder, dup-titles, dup-sqns);
-         setter(xref.text);
+         setter(xref.markup-text);
          #f
 
       else

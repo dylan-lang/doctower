@@ -46,7 +46,7 @@ define method stringify-part
                      <bold>, <cite>, <code-phrase>, <term>, <xref>,
                      <api/parm-name>))
 => (string :: <string>)
-   stringify-part(qt.text)
+   stringify-part(qt.markup-text)
 end method;
 
 define method stringify-part (entity :: <entity>) => (string :: <string>)

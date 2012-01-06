@@ -375,11 +375,12 @@ define method write-output-file
                method (topic :: <topic>) => (subtopics :: <sequence>)
                   link-map[topic].child-topics
                end method,
-         "related-links" =>
-               method (topic :: <topic>) => (html-links :: <sequence>)
-                  map(rcurry(html-content, target-info), topic.related-links)
-               end method,
+         "rendered-footnote" =>
+               rcurry(html-content, target-info),
+         "rendered-link" =>
+               rcurry(html-content, target-info),
          "footnotes" => footnotes,
+         "related-links" => related-links,
          "size" => size
          );
 
@@ -510,7 +511,7 @@ end method;
 
 define method html-content (xref :: <xref>, target-info)
 => (html :: <string>)
-   let title = html-content(xref.text, target-info);
+   let title = html-content(xref.markup-text, target-info);
    select (xref.target by instance?)
       <url> =>
          let href = xref.target.sanitized-url.sanitized-xml;
@@ -527,10 +528,22 @@ define method html-content (xref :: <xref>, target-info)
       <section> =>
          let href = target-info[xref.target].target-href.sanitized-xml;
          format-to-string("<a href=\"../%s\">%s</a>", href, title);
+      <footnote> =>
+         let title = xref.target.index.sanitized-xml;
+         let href = target-info[xref.target].target-href.sanitized-xml;
+         format-to-string("<a class=\"footnote-ref\" href=\"../%s\">[%s]</a>", href, title);
       otherwise =>
-         // TODO: Xref output for footnotes and ph-markers.
+         // TODO: Xref output for exhibits and ph-markers.
          next-method();
    end select
+end method;
+
+
+define method html-content (footnote :: <footnote>, target-info)
+=> (html :: <string>)
+   let title = footnote.index.sanitized-xml;
+   let content = html-content(footnote.content, target-info);
+   format-to-string("<span class=\"footnote-label\">%s</span> %s", title, content)
 end method;
 
 
@@ -629,55 +642,55 @@ end method;
 
 define method html-content (parm :: <api/parm-name>, target-info)
 => (html :: <string>)
-   html-entag("var", parm.text, target-info)
+   html-entag("var", parm.markup-text, target-info)
 end method;
 
 
 define method html-content (term :: <term>, target-info)
 => (html :: <string>)
-   html-entag("dfn", term.text, target-info)
+   html-entag("dfn", term.markup-text, target-info)
 end method;
 
 
 define method html-content (term :: <term-style>, target-info)
 => (html :: <string>)
-   enspan("term", term.text, target-info)
+   enspan("term", term.markup-text, target-info)
 end method;
 
 
 define method html-content (code :: <code-phrase>, target-info)
 => (html :: <string>)
-   html-entag("code", code.text, target-info)
+   html-entag("code", code.markup-text, target-info)
 end method;
 
 
 define method html-content (cite :: <cite>, target-info)
 => (html :: <string>)
-   html-entag("cite", cite.text, target-info)
+   html-entag("cite", cite.markup-text, target-info)
 end method;
 
 
 define method html-content (bold :: <bold>, target-info)
 => (html :: <string>)
-   html-entag("b", bold.text, target-info)
+   html-entag("b", bold.markup-text, target-info)
 end method;
 
 
 define method html-content (ital :: <italic>, target-info)
 => (html :: <string>)
-   html-entag("i", ital.text, target-info)
+   html-entag("i", ital.markup-text, target-info)
 end method;
 
 
 define method html-content (und :: <underline>, target-info)
 => (html :: <string>)
-   html-entag("u", und.text, target-info)
+   html-entag("u", und.markup-text, target-info)
 end method;
 
 
 define method html-content (em :: <emphasis>, target-info)
 => (html :: <string>)
-   html-entag("strong", em.text, target-info)
+   html-entag("strong", em.markup-text, target-info)
 end method;
 
 

@@ -81,7 +81,7 @@
         <h2>Related links</h2>
         <ul>
           {{repeat with link in topic.related-links}}
-          <li>{{link !}}</li>
+          <li>{{link.rendered-link !}}</li>
           {{end}}
         </ul>
       </div>
@@ -90,8 +90,8 @@
       {{if topic.footnotes.size > 0}}
       <div class="topic-footnotes">
         {{repeat with footnote in topic.footnotes}}
-        <div class="footnote">
-          (footnote goes here)
+        <div class="footnote" id="{{footnote.id}}">
+          {{footnote.rendered-footnote !}}
         </div>
         {{end}}
       </div>

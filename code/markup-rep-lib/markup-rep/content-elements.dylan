@@ -8,8 +8,9 @@ Synopsis: List of elements corresponding to the markup-words grammar.
    image-ref         - <inline-image>
    quote             - <xref>, <vi-xref>, <api-name>, <bold>, etc.
    bracketed-render-span   - <dita-content> or <html-content>
-   line-marker-ref   - An <xref> to a <ph-marker>.
-   footnote-ref      - An <xref> to a <footnote>.
+   line-marker-ref   - An <xref> to a <ph-marker> or <line-marker-placeholder>.
+   footnote-ref      - An <xref> to a <footnote> or <footnote-placeholder>.
+   exhibit-ref       - An <xref> to an <exhibit> or <exhibit-placeholder>.
    synopsis-ref      - <conref>
 **/
 define constant <markup-seq> = limited(<stretchy-vector>,
@@ -65,12 +66,22 @@ define class <section> (<markup-element>)
 end class;
 
 /**
-In DITA, footnotes are done with the <fn> tag. In HTML, they are rendered at
-the end of the topic before sub-topics.
+In DITA, footnotes are done with <fn>. In HTML, they are rendered at the end of
+the topic before sub-topics.
 **/
 define class <footnote> (<markup-element>)
    slot index :: type-union(<character>, <integer>), 
          init-keyword: #"index";
+   slot content :: <content-seq> = make(<content-seq>),
+         init-keyword: #"content";
+end class;
+
+/// In DITA, exhibits are done with <fig>.
+define class <exhibit> (<markup-element>)
+   slot index :: type-union(<character, <integer>),
+         init-keyword: #"index";
+   slot title :: false-or(<string>) = #f,
+         init-keyword: #"title";
    slot content :: <content-seq> = make(<content-seq>),
          init-keyword: #"content";
 end class;
@@ -135,7 +146,7 @@ define class <fig> (<markup-element>)
    slot image-name :: <string>;
    slot abs-size :: false-or(<integer>) = #f;
    slot rel-size :: false-or(<integer>) = #f;
-   slot title :: <string>;
+   slot title :: false-or(<string>) = #f;
 end class;
 
 define class <simple-table> (<markup-element>)

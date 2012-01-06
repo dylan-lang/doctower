@@ -10,7 +10,7 @@ define method process-tokens
    (seq :: type-union(<markup-seq>, <title-seq>),
     word :: <text-word-token>)
 => ()
-   add-spacer(seq);
+   add-spacer!(seq);
    add!(seq, word.token-text);
 end method;
 
@@ -22,7 +22,7 @@ define method process-tokens
    let img = make(<inline-image>, image: image-ref.filename,
                   alt-text: image-ref.caption | "",
                   source-location: image-ref.token-src-loc);
-   add-spacer(seq);
+   add-spacer!(seq);
    add!(seq, img);
 end method;
 
@@ -34,7 +34,7 @@ define method process-tokens
    let render-content =
          make(if (span.block-type = #"html") <html-content> else <dita-content> end,
               content: span.token-text, source-location: span.token-src-loc);
-   add-spacer(seq);
+   add-spacer!(seq);
    add!(seq, render-content);
 end method;
 
@@ -49,7 +49,7 @@ define method process-tokens
 => ()
    let target = make(<target-placeholder>, link: ref.link.token-text,
                      source-location: ref.link.token-src-loc);
-   add-spacer(seq);
+   add-spacer!(seq);
    add!(seq, make(<conref>, type: #"shortdesc", target: target,
                   source-location: ref.token-src-loc));
 end method;
@@ -60,7 +60,7 @@ define method process-tokens
 => ()
    let marker = make(<line-marker-placeholder>, index: ref.token-index,
                      source-location: ref.token-src-loc);
-   add-spacer(seq);
+   add-spacer!(seq);
    add!(seq, make(<xref>, target: marker, source-location: ref.token-src-loc));
 end method;
 
@@ -70,7 +70,16 @@ define method process-tokens
 => ()
    let marker = make(<footnote-placeholder>, index: ref.token-index,
                      source-location: ref.token-src-loc);
-   add-spacer(seq);
+   add!(seq, make(<xref>, target: marker, source-location: ref.token-src-loc));
+end method;
+
+
+define method process-tokens
+   (seq :: <markup-seq>, ref :: <exhibit-ref-token>)
+=> ()
+   let marker = make(<exhibit-placeholder>, index: ref.token-index,
+                     source-location: ref.token-src-loc);
+   add-spacer!(seq);
    add!(seq, make(<xref>, target: marker, source-location: ref.token-src-loc));
 end method;
 
@@ -85,7 +94,7 @@ define method process-tokens
     quote :: <quote-token>)
 => ()
    let elements = quote-elements(quote);
-   add-spacer(seq);
+   add-spacer!(seq);
    if (quote.prequoted-text) add!(seq, quote.prequoted-text) end;
    seq := concatenate!(seq, elements);
    if (quote.postquoted-text) add!(seq, quote.postquoted-text) end;
@@ -256,7 +265,7 @@ end method;
 
 
 /** Synopsis: Insert a space character into sequence, if needed. **/
-define function add-spacer (seq :: type-union(<title-seq>, <markup-seq>)) => ()
+define function add-spacer! (seq :: type-union(<title-seq>, <markup-seq>)) => ()
    unless (seq.empty?)
       add!(seq, ' ');
    end unless;

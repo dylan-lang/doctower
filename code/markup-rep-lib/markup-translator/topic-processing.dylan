@@ -126,7 +126,7 @@ end method;
    
 
 //
-// Processing <footnote-token>
+// Processing <footnote-token> and <exhibit-token>
 //
 
 
@@ -136,6 +136,17 @@ define method process-tokens
    let footnote = make(<footnote>, source-location: token.token-src-loc);
    footnote.index := token.token-index;
    process-tokens(footnote.content, token.token-content);
+   add!(topic.footnotes, footnote);
+end method;
+
+
+define method process-tokens
+   (topic :: <topic>, token :: <exhibit-token>)
+=> ()
+   let exhibit = make(<exhibit>, source-location: token.token-src-loc);
+   exhibit.index := token.token-index;
+   exhibit.title := token.caption;
+   process-tokens(exhibit.content, token.token-content);
    add!(topic.footnotes, footnote);
 end method;
 

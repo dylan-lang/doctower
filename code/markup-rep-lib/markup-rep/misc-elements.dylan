@@ -21,7 +21,7 @@ end class;
 
 
 /// Synopsis: Used when the target is unknown. May generally refer to a topic,
-/// API, argument, etc., but not an URL.
+/// API, argument, etc., but not an URL, footnote, or other markup element.
 define class <target-placeholder> (<markup-element>)
    slot target :: <string>, init-keyword: #"link";
 end class;
@@ -37,5 +37,9 @@ define class <line-marker-placeholder> (<markup-element>)
 end class;
 
 define class <footnote-placeholder> (<markup-element>)
+   slot index :: type-union(<integer>, <character>), init-keyword: #"index";
+end class;
+
+define class <exhibit-placeholder> (<markup-element>)
    slot index :: type-union(<integer>, <character>), init-keyword: #"index";
 end class;
