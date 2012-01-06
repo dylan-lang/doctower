@@ -187,6 +187,11 @@ p {}
 	margin: 1.5em 0;
 }
 
+.footnote-label {
+   display: run-in;
+   font-weight: bold;
+}
+
 .topic-subtopics {
 	margin: 1.5em 0;
 	border-width: 0;
@@ -214,6 +219,8 @@ p {}
 }
 
 .section {}
+
+.footnote-ref {}
 
 .term {
 	font-style: italic;
