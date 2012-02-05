@@ -13,6 +13,7 @@ define library doctower-library
    use peg-parser;
    use system;
    use regular-expressions;
+   use strings;
    use io;
    use command-line-parser;
    use collection-extensions, import: { vector-search };

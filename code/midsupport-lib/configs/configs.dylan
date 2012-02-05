@@ -34,11 +34,11 @@ define constant $tab-size = 8;
 
 
 /// Synopsis: The set of characters allowed for underline/overline.
-define variable *ascii-line-chars* = "=-:.~^_*+#";
+define variable *ascii-line-chars* :: <string> = "=-:.~^_*+#";
 
 
 /// Synopsis: The set of characters allowed for bullets.
-define variable *bullet-chars* = "-*+";
+define variable *bullet-chars* :: <string> = "-*+";
 
 
 /// Synopsis: The set of quote characters.
@@ -64,7 +64,7 @@ define variable *quote-specs* =
 
 /// Synopsis: The underline/overline style of a section (as opposed to topic).
 /// TODO: Should be configurable.
-define variable *section-style* =
+define variable *section-style* :: <topic-level-style> =
       make(<topic-level-style>, char: '-', under: #f, mid: #t, over: #f);
 
 

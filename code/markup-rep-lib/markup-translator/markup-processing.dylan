@@ -210,9 +210,11 @@ define method quote-specs (quote :: <quote-token>) => (specs :: <sequence>)
    let default-specs = *quote-specs*;
    let (specs, spec-loc) =
          if (~quote.quote-spec)
-            values(default-specs[quote.open-quote], $unknown-source-location)
+            values(element(default-specs, quote.open-quote, default: #[]),
+                   $unknown-source-location)
          else
-            values(quote.quote-spec.quote-options, quote.quote-spec.token-src-loc)
+            values(quote.quote-spec.quote-options,
+                   quote.quote-spec.token-src-loc)
          end if;
 
    when (member?(#"q", specs) & member?(#"qq", specs))

@@ -14,6 +14,9 @@ files:      doctower-library
             source-files/dylan-file
             source-files/markup-file
             source-files/toc-file
+            config-files/module
+            config-files/config-files
+            config-files/parsers-writers
             topic-resolver/module
             topic-resolver/arranging
             topic-resolver/merging

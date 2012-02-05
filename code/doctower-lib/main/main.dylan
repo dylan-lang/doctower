@@ -137,62 +137,64 @@ define function main (name, arguments)
          no-files-in-command-arguments();
    end case;
    
-   // Retrieve and process config files
+   block (exit)
+
+      // Retrieve and process config files
    
-   let file-locators = map(curry(as, <file-locator>), args.files);
-   *config-file-extension* := args.cfg-pattern | *config-file-extension*;
-   let cfg-files = choose(
-         method (loc :: <file-locator>) => (cfg-locator? :: <boolean>)
-            string-equal-ic?(*config-file-extension*, loc.locator-extension)
-         end method, file-locators);
+      let file-locators = map(curry(as, <file-locator>), args.files);
+      *config-file-extension* := args.cfg-pattern | *config-file-extension*;
+      let cfg-files = choose(
+            method (loc :: <file-locator>) => (cfg-locator? :: <boolean>)
+               string-equal-ic?(*config-file-extension*, loc.locator-extension)
+            end method, file-locators);
    
-   // TODO: Process config files. We can have multiple config files, but they
-   // cannot collectively define a config more than once.
+      set-configs-from-files(cfg-files);
 
-   // Override configs with command-line options
+      // Override configs with command-line options
 
-   *contents-file-extension* := args.toc-pattern;
-   *topic-file-extension* := args.doc-pattern;
-   *package-title* := args.package-title;
-   *scan-only?* := args.ignore-comments?;
-   *template-directory* := args.template-path;
-   *output-directory* := args.output-path;
-   *output-types* := args.output-formats;
-   *api-list-file* := args.api-list-filename;
+      *contents-file-extension* := args.toc-pattern;
+      *topic-file-extension* := args.doc-pattern;
+      *package-title* := args.package-title;
+      *scan-only?* := args.ignore-comments?;
+      *template-directory* := args.template-path;
+      *output-directory* := args.output-path;
+      *output-types* := args.output-formats;
+      *api-list-file* := args.api-list-filename;
 
-   // Classify input files
+      // Classify input files
 
-   let toc-files = make(<stretchy-vector>);
-   let doc-files = make(<stretchy-vector>);
-   let src-files = make(<stretchy-vector>);
-   for (loc in file-locators)
-      select (loc.locator-extension by string-equal-ic?)
-         *config-file-extension*
-            => #f /* Already dealt with these */;
-         *topic-file-extension*
-            => doc-files := add!(doc-files, loc);
-         *contents-file-extension*
-            => toc-files := add!(toc-files, loc);
-         ("dylan", "dyl", "lid")
-            => src-files := add!(src-files, loc);
-         otherwise
-            => file-type-not-known(filename: as(<string>, loc));
-      end select;
-   end for;
+      let toc-files = make(<stretchy-vector>);
+      let doc-files = make(<stretchy-vector>);
+      let src-files = make(<stretchy-vector>);
+      for (loc in file-locators)
+         select (loc.locator-extension by string-equal-ic?)
+            *config-file-extension*
+               => #f /* Already dealt with these */;
+            *topic-file-extension*
+               => doc-files := add!(doc-files, loc);
+            *contents-file-extension*
+               => toc-files := add!(toc-files, loc);
+            ("dylan", "dyl", "lid")
+               => src-files := add!(src-files, loc);
+            otherwise
+               => file-type-not-known(filename: as(<string>, loc));
+         end select;
+      end for;
    
-   // Build documentation
+      // Build documentation
 
-   let doc-tree = create-doc-tree(toc-files, doc-files, src-files);
-   
-   unless (*error-code*)
+      if (*error-code*) exit() end;
+      let doc-tree = create-doc-tree(toc-files, doc-files, src-files);
+
+      if (*error-code*) exit() end;
       create-output-files(doc-tree)
-   end unless;
 
-   if (debugging?(#"doc-tree"))
-      log("--- Doc tree ---");
-      print(doc-tree, *standard-output*, pretty?: #t);
-      new-line(*standard-output*);
-   end if;
+      if (debugging?(#"doc-tree"))
+         log("--- Doc tree ---");
+         print(doc-tree, *standard-output*, pretty?: #t);
+         new-line(*standard-output*);
+      end if;
+   end block;
 
    exit-application(*error-code* | 0);
 end function main;

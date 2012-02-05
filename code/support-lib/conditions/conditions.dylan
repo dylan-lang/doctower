@@ -197,6 +197,10 @@ define errors (<user-visible-warning>)
    18 mismatch-in-api-keywords
       "Documented keywords of \"%s\" do not match source code",
       location, qualified-name;
+   
+   19 unknown-config-in-cfg-file
+      "Unknown config \"%s\"",
+      location, config-name;
 end errors;
 
 
@@ -359,7 +363,15 @@ define errors (<user-visible-error>)
       "Library specifier only applies to module topics",
       location;
 
-   90 module-specifier-in-non-binding-topic
+   91 module-specifier-in-non-binding-topic
       "Module specifier only applies to binding topics",
       location;
+   
+   92 duplicate-configs-in-cfg-files
+      "Multiple settings for config \"%s\" found at %s",
+      location, config-name, config-locations;
+   
+   93 error-in-config
+      "Config \"%s\" is not specified with the correct syntax",
+      location, config-name;
 end errors;

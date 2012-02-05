@@ -77,5 +77,5 @@ end method;
 
 define method print-message (o :: <generated-source-location>, s :: <stream>)
 => ()
-   write(s, "automatically-generated documentation")
+   write(s, "automatically-generated location")
 end method;
