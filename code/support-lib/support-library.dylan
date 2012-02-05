@@ -1,7 +1,7 @@
 module: dylan-user
 
 define library support-library
-   use dylan, import: { extensions };
+   use dylan;
    use common-dylan;
    use collection-extensions;
    use collections, import: { table-extensions };
@@ -9,7 +9,6 @@ define library support-library
    use system;
    use io;
    use sequence-stream;
-   use peg-parser;
    use dynamic-binding;
    use skip-list;
    use slot-visitor;

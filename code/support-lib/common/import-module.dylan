@@ -1,8 +1,6 @@
 module: dylan-user
 
 define module common-imports  
-   // from dylan
-   use extensions, import: { <set> }, export: all;
    // from common-dylan
    use dylan, export: all;
    use common-extensions, export: all,
@@ -14,7 +12,7 @@ define module common-imports
       export: all;
    // from collection-extensions
    use collection-utilities, export: all;
-   use sequence-utilities, export: { partition };
+   use sequence-utilities, import: { partition }, export: all;
    // from system
    use file-system, import: { <file-stream>, stream-locator }, export: all;
    use locators, import: { <file-locator>, <directory-locator> }, export: all;

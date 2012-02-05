@@ -106,7 +106,8 @@ end method;
 Synopsis: Retry handler for <user-visible-error>, in case program can continue.
 **/
 define abstract class <user-visible-restart> (<restart>)
-   slot error-condition :: <user-visible-error>, required-init-keyword: #"condition";
+   constant slot error-condition :: <user-visible-error>,
+         required-init-keyword: #"condition";
 end class;
 
 /** Synopsis: Handler to skip an erroneous thing. **/
