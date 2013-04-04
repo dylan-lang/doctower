@@ -36,7 +36,7 @@ define method output-file-info
    let topic-idx = 0;
    for (topic in doc-tree)
       unless (~topic)
-         let prefix-part = format-to-string("%0*d", topic-digits, topic-idx + 1);
+         let prefix-part = integer-to-string(topic-idx + 1, size: topic-digits);
          let title-part = as-filename-part(topic.title.stringify-title);
          let base-name = format-to-string("%s_%s", prefix-part, title-part);
          let locator = make(<file-locator>,
@@ -77,7 +77,7 @@ define method output-file-info
    let css-locator = make(<file-locator>,
          directory: html-dir, base: "stylesheet", extension: "css");
    let css-origin = make(<file-locator>,
-         directory: *template-directory*, base: "default-stylesheet", extension: "css");
+         directory: *template-directory*, base: "html-stylesheet", extension: "css");
    let css-file = make(<copied-output-file>, origin: css-origin, file: css-locator);
    special-files[#"css"] := css-file;
    file-info := add!(file-info, css-file);
@@ -309,7 +309,7 @@ define method write-output-file
                   if (instance?(topic, <topic>))
                      topic.title.stringify-title
                   else
-                     topic
+                     locator-as-string(<string>, topic)
                   end if
                end method,
          "child-topic" =>

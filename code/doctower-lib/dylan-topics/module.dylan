@@ -16,6 +16,7 @@ define module dylan-topics
    use markup-translator;
    use template-files;
    use name-processing;
+   use equal-table, import: { <equal-table> };
    // from template-engine
    use template-engine;
    // from system

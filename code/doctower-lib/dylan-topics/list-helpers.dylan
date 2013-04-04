@@ -37,7 +37,7 @@ define method replace-list-item-docs (defn-list :: <defn-list>, api-items :: <se
          let item-content = content-from-markup(item.markup-tokens.first);
          for (row from 0 below dimension(defn-items, 0))
             let defn-label = defn-items[row, 0].stringify-markup;
-            if (case-insensitive-equal?(defn-label, item-label))
+            if (string-equal-ic?(defn-label, item-label))
                defn-items[row, 1] := item-content;
             end if
          end for

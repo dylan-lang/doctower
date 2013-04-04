@@ -29,17 +29,7 @@ define function item-string-list (items :: <collection>)
       #f
    else
       let item-strings = map(curry(format-to-string, "%s"), items);
-      apply(join, ", ", item-strings);
-   end if
-end function;
-
-
-define function begins-with-string?
-   (big :: <string>, small :: <string>, #key string-test :: <function> = \=)
-=> (begins? :: <boolean>)
-   if (small.size <= big.size)
-      let maybe-small = copy-sequence(big, end: small.size);
-      string-test(maybe-small, small)
+      join(item-strings, ", ")
    end if
 end function;
 
@@ -153,7 +143,7 @@ end method;
    
 
 define class <case-insensitive-skip-list> (<skip-list>)
-   keyword key-test: = case-insensitive-equal?;
+   keyword key-test: = string-equal-ic?;
    keyword key-order: = case-insensitive-less?;
 end class;
 

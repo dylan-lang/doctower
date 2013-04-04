@@ -9,3 +9,5 @@ files:   support-library
          common/io
          ordered-tree/module
          ordered-tree/ordered-tree
+         equal-table/module
+         equal-table/equal-table

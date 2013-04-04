@@ -102,7 +102,7 @@ define method make-apis-from-files
    for (file in files)
       let header = file.module-header;
       let file-module = header.hdr-value;
-      if (case-insensitive-equal?(file-module, "dylan-user"))
+      if (string-equal-ic?(file-module, "dylan-user"))
 
          // Get unscoped documentation comments.
          library.file-markup-tokens := concatenate!
@@ -168,7 +168,7 @@ define method choose-interchange-definitions
 => (seq :: <sequence> /* of type */)
    let source-records = choose(true?, map(source-record, ichange-tokens));
    let source-defns = map(token-definitions, source-records);
-   let defns = apply(concatenate, #[], source-defns);
+   let defns = reduce(concatenate, make(<stretchy-vector>), source-defns);
    choose(rcurry(instance?, type), defns);
 end method;
 
@@ -177,7 +177,7 @@ define method module-header (file :: <interchange-file-token>)
 => (header :: <header-token>)
    let module-headers = choose(
          method (hdr :: <header-token>) => (mod-hdr?)
-            case-insensitive-equal?(hdr.hdr-keyword, "Module")
+            string-equal-ic?(hdr.hdr-keyword, "Module")
          end, file.headers);
 
    when (module-headers.empty?)

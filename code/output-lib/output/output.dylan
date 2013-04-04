@@ -151,7 +151,8 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
 
          // Topic ID
 
-         target-ids[topic] := format-to-string(":Topic-%0*d", topic-digits, topic-num);
+         let padded-digits = integer-to-string(topic-num, size: topic-digits);
+         target-ids[topic] := format-to-string(":Topic-%s", padded-digits);
          topic-num := topic-num + 1;
          
          // Content IDs
@@ -180,7 +181,8 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
                => ()
                   let width = digits(list.size);
                   for (elem keyed-by num in list)
-                     target-ids[elem] := format-to-string(":%s-%0*d", name, width, num)
+                     let padded-num = integer-to-string(num, size: width);
+                     target-ids[elem] := format-to-string(":%s-%s", name, padded-num)
                   end for
                end method;
                
@@ -261,7 +263,7 @@ define method digits (num :: <integer>) => (digits :: <integer>)
    if (num = 0)
       1
    else
-      floor(math-log(num, base: 10)) + 1
+      floor(logn(num, 10)) + 1
    end if
 end method;
 
@@ -322,10 +324,12 @@ define method sanitized-id (id :: <string>) => (xml-id :: <string>)
             case
                c.alphabetic?
                   => add!(sanitized, c);
-               ~first? & (c.digit? | c = '.' | c = '-')
+               ~first? & (c.decimal-digit? | c = '.' | c = '-')
                   => add!(sanitized, c);
                otherwise
-                  => concatenate!(sanitized, format-to-string("_%02X", as(<integer>, c)));
+                  => let hex-string = integer-to-string(as(<integer>, c),
+                                                        size: 2, base: 16);
+                     concatenate!(sanitized, format-to-string("_%s", hex-string));
             end case
    end for;
    as(<string>, sanitized)
@@ -358,7 +362,9 @@ define method sanitized-url-path (locator :: <locator>)
                         c.alphanumeric? | member?(c, "-_.!~*'()") /* RFC 2396 marks */
                            => add!(sanitized, c);
                         otherwise
-                           => let esc = format-to-string("%%%02X", as(<integer>, c));
+                           => let hex-string = integer-to-string(as(<integer>, c),
+                                                                 size: 2, base: 16);
+                              let esc = format-to-string("%%%s", hex-string);
                               concatenate!(sanitized, esc);
                      end case
             end for;
@@ -366,7 +372,7 @@ define method sanitized-url-path (locator :: <locator>)
          end method;
             
    let path-components = map(clean-path-component, locator.pathnames);
-   apply(join, "/", path-components)
+   join(path-components, "/")
 end method;
 
 

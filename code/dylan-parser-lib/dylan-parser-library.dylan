@@ -5,6 +5,6 @@ define library dylan-parser-library
    use midsupport-library, import: { configs, parser-common };
    use markup-parser-library;
    use peg-parser;
-   use string-extensions;
+   use strings;
    export dylan-parser;
 end library;

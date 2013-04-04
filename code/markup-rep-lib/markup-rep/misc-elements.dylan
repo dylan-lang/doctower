@@ -28,7 +28,7 @@ end class;
 
 define method \= (obj-1 :: <target-placeholder>, obj-2 :: <target-placeholder>)
 => (equal? :: <boolean>)
-   case-insensitive-equal?(obj-1.target, obj-2.target)
+   string-equal-ic?(obj-1.target, obj-2.target)
 end method;
 
 

@@ -8,7 +8,7 @@ define method read-matching-string (stream, string :: <string>)
 => (str :: false-or(<string>))
    let in-str = read(stream, string.size, on-end-of-stream: #f);
    case
-      in-str & case-insensitive-equal?(in-str, string) => in-str;
+      in-str & string-equal-ic?(in-str, string) => in-str;
       otherwise => #f;
    end case;
 end method;

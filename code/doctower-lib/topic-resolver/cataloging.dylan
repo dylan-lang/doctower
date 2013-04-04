@@ -253,13 +253,15 @@ define method add-catalog-info-to-topic
 end method;
 
 
+define constant $catalog-type-regex = compile-regex("^(:[A-Za-z]+)");
+
 define method add-catalog-info-to-topic
    (catalog :: <catalog-topic>, catalog-key, doc-tree)
 => ()
-   let catalog-type = regexp-matches(catalog.id, "^(:[A-Za-z]+)");
+   let catalog-type = regex-search-strings($catalog-type-regex, catalog.id);
    if (catalog-type)
       let desired-topic-types =
-            select (catalog-type by case-insensitive-equal?)
+            select (catalog-type by string-equal-ic?)
                (":Bindings", ":Others")
                   => #[ #"function", #"generic-function", #"class", #"variable",
                         #"constant", #"macro", #"unbound", #"placeholder" ];
@@ -272,7 +274,7 @@ define method add-catalog-info-to-topic
                ":Unbound"   => #[ #"unbound" ];
             end select;
       let parent-key =
-            if (case-insensitive-equal?(catalog-type, ":Others")) catalog-key end;
+            if (string-equal-ic?(catalog-type, ":Others")) catalog-key end;
       catalog.api-xrefs := xrefs-for-catalog(doc-tree, parent-key,
             desired-topic-types, catalog.qualified-scope-name);
    end if

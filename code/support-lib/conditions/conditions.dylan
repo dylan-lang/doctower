@@ -57,10 +57,18 @@ define method make
          else
             values("%s: %s: ", vector(error-location, error-class))
          end if;
-   let (postfix-string, postfix-args) = values(" (%02d)", vector(error-code));
+
+   let padded-code = integer-to-string(error-code, size: 2);
+   let (postfix-string, postfix-args) = values(" (%s)", vector(padded-code));
    next-method(cls, error-code: error-code, error-location: error-location,
          format-string: concatenate(prefix-string, format-string, postfix-string),
          format-arguments: concatenate(prefix-args, format-arguments, postfix-args))
+end method;
+
+// Use io library to format string.
+define method condition-to-string (cond :: <user-visible-condition>)
+=> (str :: <string>)
+   apply(format-to-string, cond.condition-format-string, cond.condition-format-arguments)
 end method;
 
 

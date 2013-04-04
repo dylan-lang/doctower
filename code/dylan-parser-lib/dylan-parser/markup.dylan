@@ -70,10 +70,12 @@ for markup parsing.
 define method strip-doc-comment
    (comment-text :: <string>, token :: <delim-doc-comment-token>)
 => (stripped-text :: <string>)
-   let lines = split(comment-text, '\n', trim?: #f);
+   // split-lines is too smart here; use the simpler split.
+   let lines = split(comment-text, '\n');
    
    // Find limit of left-hand margin decorations based on first line.
-   let (delim-start, delim-end) = substring-position(lines.first, "/**");
+   let delim-start = find-substring(lines.first, "/**");
+   let delim-end = delim-start + 3;
    lines.first := replace-subsequence!(lines.first, spaces(3),
                                        start: delim-start, end: delim-end);
    let margin-limit = delim-end;
@@ -113,7 +115,7 @@ define method strip-doc-comment
       lines[i] := replace-subsequence!(lines[i], margin, end: margin.size)
    end for;
 
-   apply(join, "\n", lines);
+   join(lines, "\n");
 end method;
 
 
@@ -121,17 +123,19 @@ define method strip-doc-comment
    (comment-text :: <string>, token :: <eol-doc-comments-token>)
 => (stripped-text :: <string>)
    // Since each line ends with "\n", there will always be at least two elements.
-   let lines = split(comment-text, '\n', trim?: #f);
+   // split-lines is too smart here; use the simpler split.
+   let lines = split(comment-text, '\n');
    
    // Replace leading triple-slashes with spaces. Last line will be empty.
    let delim-spaces = spaces(3);
    for (i from 0 below lines.size - 1)
-      let (delim-start, delim-end) = substring-position(lines[i], "///");
+      let delim-start = find-substring(lines[i], "///");
+      let delim-end = delim-start + 3;
       lines[i] := replace-subsequence!(lines[i], delim-spaces,
                                          start: delim-start, end: delim-end);
    end for;
    
-   apply(join, "\n", lines);
+   join(lines, "\n");
 end method;
 
 
@@ -146,7 +150,7 @@ define method common-margin
                         ~(char = ' ' | char = '*')
                      end method, failure: line.size)
          end method, lines);
-   let shortest-line-size = apply(min, limit, line-limits);
+   let shortest-line-size = reduce(min, limit, line-limits);
    let end-index :: <integer> = 
          if (lines.size > 1)
             let test-lines = copy-sequence(lines, start: 1);

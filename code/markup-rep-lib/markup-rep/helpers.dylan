@@ -66,6 +66,6 @@ end method;
 
 define method stringify-part (seq :: <sequence>) => (string :: <string>)
    let strings = map-as(<vector>, stringify-part, seq);
-   apply(concatenate, "", strings)
+   reduce(concatenate, "", strings)
 end method;
 

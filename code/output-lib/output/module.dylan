@@ -13,9 +13,9 @@ define module output
    // from template-engine
    use template-engine;
    // from transcendental
-   use transcendental, import: { log => math-log };
-   // from string-extensions
-   use character-type;
+   use transcendentals, import: { logn };
+   // from strings
+   use strings;
 
    export
       topic-link-map, target-navigation-ids, output-file-info,

@@ -9,7 +9,8 @@ such as bullet lists.
 define function first-item-and-last-subelements (items :: <sequence>)
 => (simplified-items :: <sequence>)
    let opt-many-items = items[1] | #[];
-   apply(vector, items[0], map(last, opt-many-items))
+   let last-subelements = map(last, opt-many-items);
+   reduce(add!, vector(items[0]), last-subelements)
 end function;
 
 
@@ -125,15 +126,18 @@ Synopsis: Get topic title from topic- or section-title-bare-style or
 */
 define function extract-title (tokens) => (title :: <sequence>)
    let flattened-tokens = choose(true?, integrate-sequences(tokens));
-   apply(concatenate, #[], map(content, flattened-tokens));
+   reduce(concatenate!, make(<stretchy-vector>), map(content, flattened-tokens))
 end function;
 
+
+define constant $lead/trail-space-regex = compile-regex("^ +| +$");
+define constant $consec-space-regex = compile-regex(" {2,}");
 
 /** Synopsis: Removes multiple spaces in a row, and leading/trailing spaces. */
 define function remove-multiple-spaces (string :: <string>)
 => (new-string :: <string>)
-   let trimmed :: <string> = regexp-replace(string, "^ +| +$", "");
-   regexp-replace(trimmed, " {2,}", " ");
+   let trimmed :: <string> = regex-replace(string, $lead/trail-space-regex, "");
+   regex-replace(trimmed, $consec-space-regex, " ");
 end function;
 
 

@@ -143,7 +143,7 @@ define method process-namespace-clause
 => ()
    make-modules-from-export-clause(context, clause);
    library.exported-names := union(library.exported-names, clause.export-names,
-                                   test: case-insensitive-equal?);
+                                   test: string-equal-ic?);
 end method;
 
 
@@ -153,7 +153,7 @@ define method process-namespace-clause
 => ()
    make-bindings-from-export-clause(context, clause);
    module.exported-names := union(module.exported-names, clause.export-names,
-                                  test: case-insensitive-equal?);
+                                  test: string-equal-ic?);
 end method;
 
 
@@ -163,7 +163,7 @@ define method process-namespace-clause
 => ()
    make-bindings-from-create-clause(context, clause);
    module.exported-names := union(module.exported-names, clause.create-names,
-                                  test: case-insensitive-equal?);
+                                  test: string-equal-ic?);
 end method;
 
 
@@ -260,7 +260,7 @@ define method merge-exported-names
 => ()
    let preunion-size = better.exported-names.size;
    better.exported-names := union(better.exported-names, worse.exported-names,
-                                  test: case-insensitive-equal?);
+                                  test: string-equal-ic?);
    if (better.exported-names.size > preunion-size)
       context.changed? := #t;
    end if;

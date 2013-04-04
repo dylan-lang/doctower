@@ -6,7 +6,7 @@ define library output-library
    use markup-rep-library;
    use template-engine;
    use system;
-   use dylan, import: { transcendental };
-   use string-extensions;
+   use common-dylan, import: { transcendentals };
+   use strings;
    export output;
 end library;

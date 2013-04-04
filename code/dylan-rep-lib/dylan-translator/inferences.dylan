@@ -23,7 +23,7 @@ define method infer-and-merge-node (context :: <context>, node :: <node>) => ()
       for (use-clause :: <use-clause-token> in clauses)
          let used-local-name = use-clause.use-name;
          let used-node :: <node> = find-target-node-by-edge-label
-               (node, used-local-name, test: case-insensitive-equal?);
+               (node, used-local-name, test: string-equal-ic?);
          let used-defn :: <namespace> = used-node.value;
          infer-and-merge-used-names(context, defn, used-defn, use-clause);
       end for;
@@ -80,7 +80,7 @@ define method infer-and-merge-used-names
    
    local method find-used-name-index (name :: <string>)
          => (index :: false-or(<integer>))
-            find-key(names-in-used, curry(case-insensitive-equal?, name))
+            find-key(names-in-used, curry(string-equal-ic?, name))
          end,
          
          method add-name-for-used-name (this-name, used-name :: <string>)
@@ -92,7 +92,7 @@ define method infer-and-merge-used-names
                // with <stretchy-vector>.
                names-in-this[name-index] :=
                      add-new!(names-in-this[name-index], this-name,
-                              test: case-insensitive-equal?);
+                              test: string-equal-ic?);
             else
                // Name is not already known in used namespace. Assume it should
                // be, and add it.
@@ -121,7 +121,7 @@ define method infer-and-merge-used-names
       let local-exported-names =
             reduce(concatenate!, make(<stretchy-vector>), names-in-this);
       let reexported-names = difference(export-options, local-exported-names,
-                                        test: case-insensitive-equal?);
+                                        test: string-equal-ic?);
       for (reexported-name in reexported-names)
          let name-in-used = unprefixed-name(reexported-name, prefix-option);
          if (name-in-used)
@@ -181,9 +181,9 @@ define method infer-and-merge-used-names
             export-options
          end if;
    let new-names-to-export = difference(local-names-to-export, namespace.exported-names,
-                                        test: case-insensitive-equal?);
+                                        test: string-equal-ic?);
    let new-names-in-used = difference(imported-names-from-used, used-namespace.exported-names,
-                                      test: case-insensitive-equal?);
+                                      test: string-equal-ic?);
 
    if (new-names-to-export.size > 0)
       context.changed? := #t;
@@ -216,7 +216,7 @@ define method unprefixed-name (name :: <string>, prefix :: false-or(<string>))
 => (name :: false-or(<string>))
    if (prefix & prefix.size < name.size)
       let maybe-prefix = copy-sequence(name, end: prefix.size);
-      if (case-insensitive-equal?(maybe-prefix, prefix))
+      if (string-equal-ic?(maybe-prefix, prefix))
          copy-sequence(name, start: prefix.size)
       end if
    else
@@ -366,7 +366,7 @@ define method clean-up-graph (context :: <context>, graph :: <graph>) => ()
    let edge-groups = group-elements(graph.edges, test:
          method (e1 :: <edge>, e2 :: <edge>) => (dup? :: <boolean>)
             e1.edge-source == e2.edge-source & e1.edge-target == e2.edge-target
-                  & case-insensitive-equal?(e1.edge-label, e2.edge-label)
+                  & string-equal-ic?(e1.edge-label, e2.edge-label)
          end);
 
    for (group :: <sequence> in edge-groups)

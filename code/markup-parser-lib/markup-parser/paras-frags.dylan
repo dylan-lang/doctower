@@ -23,7 +23,7 @@ end;
 // exported -- contents are those of paragraph-lines combined
 define caching parser paragraph (<source-location-token>)
    rule many(paragraph-line) => items;
-   slot content :: <markup-word-sequence> = apply(concatenate, items);
+   slot content :: <markup-word-sequence> = reduce1(concatenate, items);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -34,7 +34,7 @@ define caching parser paragraph-til-null-directive (<paragraph-token>)
    rule many(seq(not-next(null-directive-spec), paragraph-line))
       => items;
    inherited slot content /* :: <markup-word-sequence> */ =
-      apply(concatenate, collect-subelements(items, 1));
+      reduce1(concatenate, collect-subelements(items, 1));
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -44,7 +44,7 @@ end;
 define caching parser paragraph-til-hyphen-ls (<paragraph-token>)
    rule many(paragraph-line-til-hyphen-ls) => items;
    inherited slot content /* :: <markup-word-sequence> */ =
-      apply(concatenate, items);
+      reduce1(concatenate, items);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -223,7 +223,7 @@ define caching parser quoted-words (<token>)
       begin
          if (tokens[0])
             let strings = map(method (sym) as(<string>, sym) end, tokens[0]);
-            apply(concatenate, "", strings);
+            reduce(concatenate, "", strings);
          end if
       end;
    slot open-quote :: <string> = tokens[1];

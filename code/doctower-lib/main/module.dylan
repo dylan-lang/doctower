@@ -13,8 +13,6 @@ define module main
    use pprint, import: { *default-line-length* };
    // from command-line-parser
    use command-line-parser;
-   // from dylan
-   use extensions, import: { report-condition };
    // from system
    use locators, import: { locator-extension };
 end module;

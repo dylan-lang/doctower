@@ -142,22 +142,22 @@ end method;
 define method \= (name1 :: <library-name>, name2 :: <library-name>)
 => (equal? :: <boolean>)
    name1 == name2
-      | case-insensitive-equal?(name1.library-name, name2.library-name)
+      | string-equal-ic?(name1.library-name, name2.library-name)
 end method;
 
 define method \= (name1 :: <module-name>, name2 :: <module-name>)
 => (equal? :: <boolean>)
    name1 == name2
-      | case-insensitive-equal?(name1.library-name, name2.library-name)
-      & case-insensitive-equal?(name1.module-name, name2.module-name)
+      | string-equal-ic?(name1.library-name, name2.library-name)
+      & string-equal-ic?(name1.module-name, name2.module-name)
 end method;
 
 define method \= (name1 :: <binding-name>, name2 :: <binding-name>)
 => (equal? :: <boolean>)
    name1 == name2
-      | case-insensitive-equal?(name1.library-name, name2.library-name)
-      & case-insensitive-equal?(name1.module-name, name2.module-name)
-      & case-insensitive-equal?(name1.binding-name, name2.binding-name)
+      | string-equal-ic?(name1.library-name, name2.library-name)
+      & string-equal-ic?(name1.module-name, name2.module-name)
+      & string-equal-ic?(name1.binding-name, name2.binding-name)
 end method;
 
 
@@ -168,7 +168,7 @@ define method \< (n1 :: <source-name>, n2 :: <source-name>)
 => (n1-first? :: <boolean>)
    unless (n1 == n2)
       let less-than? = case-insensitive-less?;
-      let equal-to? = case-insensitive-equal?;
+      let equal-to? = string-equal-ic?;
       let rank1 = find-key($ranked-name-types, curry(instance?, n1));
       let rank2 = find-key($ranked-name-types, curry(instance?, n2));
       case

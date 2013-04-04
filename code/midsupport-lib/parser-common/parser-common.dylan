@@ -130,8 +130,8 @@ define method combined-stream-positions (seq :: <sequence>)
    end for;
    let pos-seq = choose(true?, pos-seq);
    if (~pos-seq.empty?)
-      let start-pos = apply(min, map(head, pos-seq));
-      let end-pos = apply(max, map(tail, pos-seq));
+      let start-pos = reduce1(min, map(head, pos-seq));
+      let end-pos = reduce1(max, map(tail, pos-seq));
       values(start-pos, end-pos)
    end if;
 end method;

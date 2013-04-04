@@ -8,11 +8,12 @@ define module common-imports
    use simple-profiling, import: { profiling }, export: all;
    // from collections
    use table-extensions,
-      rename: { case-insensitive-equal => case-insensitive-equal? },
-      export: all;
+      export: { <string-table>, <case-insensitive-string-table>, table };
    // from collection-extensions
    use collection-utilities, export: all;
    use sequence-utilities, import: { partition }, export: all;
+   // from strings
+   use strings, import: { string-equal-ic? }, export: all;
    // from system
    use file-system, import: { <file-stream>, stream-locator }, export: all;
    use locators, import: { <file-locator>, <directory-locator> }, export: all;
@@ -26,8 +27,6 @@ define module common-imports
    use pprint, import: { printing-logical-block, pprint-newline }, export: all;
    // from sequence-stream
    use sequence-stream, export: all;
-   // from regular-expressions
-   use regular-expressions, import: { join }, export: all;
    // from source-location
    use source-location, export: all;
    // from dynamic-binding

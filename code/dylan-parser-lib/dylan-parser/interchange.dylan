@@ -1,7 +1,7 @@
 module: dylan-parser
 
-define function join-header-values (#rest value-lines) => (value :: <string>)
-   reduce1(method (a,b) concatenate(a, "\n", b) end, value-lines)
+define function join-header-values (value-lines :: <sequence>) => (value :: <string>)
+   join(value-lines, "\n")
 end function;
 
 define lexical-parsers
@@ -28,7 +28,7 @@ define parser header (<source-location-token>)
    => tokens;
    slot hdr-keyword :: <string> = tokens[0];
    slot hdr-value :: <string>
-      = apply(join-header-values, tokens[1], tokens[2] | #[]); 
+      = join-header-values(concatenate(vector(tokens[1]), tokens[2] | #[])); 
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value);
 end parser;
@@ -36,19 +36,19 @@ end parser;
 define parser hdr-keyword :: <string>
    rule seq(alphabetic-character, opt-many(hdr-char), colon, opt(hdr-whitespace))
    => tokens;
-   yield apply(concatenate, tokens[0], tokens[1] | #[]);
+   yield reduce(concatenate, tokens[0], tokens[1] | #[]);
 end parser;
 
 define parser hdr-value :: <string>
    rule seq(opt-many(seq(not-next(hdr-eol), char)), hdr-eol)
    => tokens;
-   yield apply(concatenate, "", collect-subelements(tokens[0], 1));
+   yield reduce(concatenate, "", collect-subelements(tokens[0], 1));
 end parser;
 
 define parser hdr-addl-value :: <string>
    rule seq(hdr-whitespace, many(seq(not-next(hdr-eol), char)), hdr-eol)
    => tokens;
-   yield apply(concatenate, collect-subelements(tokens[1], 1));
+   yield reduce(concatenate, "", collect-subelements(tokens[1], 1));
 end parser;
 
 define parser hdr-whitespace

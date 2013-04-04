@@ -4,7 +4,7 @@ define library doctower-library
    use support-library;
    use midsupport-library;
    use template-engine;
-   use string-extensions, import: { character-type };
+   use strings;
    use dylan-parser-library;
    use markup-parser-library;
    use dylan-rep-library;

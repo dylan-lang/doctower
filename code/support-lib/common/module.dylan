@@ -3,7 +3,7 @@ module: dylan-user
 define module common
    use common-imports, export: all;
    use conditions, import: { file-error, file-not-found };
-   
+
    // from system
    use file-system,
       import: { <file-system-error>, <file-does-not-exist-error>, <file-error>,
@@ -19,5 +19,5 @@ define module common
    export item-string-list, group-elements, any-element;
    export add-row;
    export <case-insensitive-skip-list>;
-   export begins-with-string?, case-insensitive-less?;
+   export case-insensitive-less?;
 end module;   

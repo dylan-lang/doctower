@@ -40,7 +40,7 @@ define method output-file-info
             let topic-digits = topic-list.size.digits;
             let topic-idx = 0;
             for (topic in topic-list)
-               let prefix-part = format-to-string("%0*d", topic-digits, topic-idx + 1);
+               let prefix-part = integer-to-string(topic-idx + 1, size: topic-digits);
                let title-part = as-filename-part(topic.title.stringify-title);
                let base-name = format-to-string("%s_%s", prefix-part, title-part);
                let locator = make(<file-locator>,

@@ -402,7 +402,7 @@ define method inherit-init-args (apis :: <sequence>, sorted-classes :: <sequence
    
    local method same-keyword? (init1 :: <init-arg>, init2 :: <init-arg>)
          => (same? :: <boolean>)
-            case-insensitive-equal?(init1.symbol, init2.symbol)
+            string-equal-ic?(init1.symbol, init2.symbol)
          end method;
    
    // Determine init-args for each class, deepest inheritance last.

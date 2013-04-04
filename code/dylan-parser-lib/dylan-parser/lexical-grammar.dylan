@@ -10,7 +10,7 @@ define method concatenated-strings (s :: <string>) => (s :: <string>)
 end method;
 
 define method concatenated-strings (s :: <sequence>) => (s :: <string>)
-   apply(concatenate, "", s)
+   reduce(concatenate, "", s)
 end method;
 
 define method translate-escape-char (s :: <string>) => (s :: <string>)
@@ -881,18 +881,18 @@ end;
 
 define parser leading-alphabetic :: <string>
    rule seq(alphabetic-character, opt-many(any-character)) => tokens;
-   yield apply(concatenate, tokens[0], tokens[1] | #[""]);
+   yield reduce(concatenate, tokens[0], tokens[1] | #[]);
 end;
 
 define parser leading-numeric :: <string>
    rule seq(numeric-character, opt-many(word-character-not-double-alphabetic))
    => tokens;
-   yield apply(concatenate, tokens[0], tokens[1] | #[""]);
+   yield reduce(concatenate, tokens[0], tokens[1] | #[]);
 end;
 
 define parser leading-graphic :: <string>
    rule seq(graphic-character, opt-many(word-character-not-alphabetic)) => tokens;
-   yield apply(concatenate, tokens[0], tokens[1] | #[""]);
+   yield reduce(concatenate, tokens[0], tokens[1] | #[]);
 end;
 
 define parser word-character-not-alphabetic :: <string>
@@ -934,9 +934,9 @@ define parser-method numeric-character (stream, context)
    label "numeric character";
    let char = read-element(stream, on-end-of-stream: #f);
    case
-      char & char.digit? =>   values(format-to-string("%c", char), #t, #f);
-      ~char =>                values(#f, #f, $eof);
-      otherwise =>            values(#f, #f, #f);
+      char & char.decimal-digit? => values(format-to-string("%c", char), #t, #f);
+      ~char =>                      values(#f, #f, $eof);
+      otherwise =>                  values(#f, #f, #f);
    end case;
 end parser-method;
 

@@ -363,7 +363,7 @@ define method template-adjectives
       <explicit-variable-defn>))
 => (adjs :: <string>)
    let adj-strings = map(curry(as, <string>), defn.adjectives);
-   apply(join, " ", adj-strings)
+   join(adj-strings, " ")
 end method;
 
 

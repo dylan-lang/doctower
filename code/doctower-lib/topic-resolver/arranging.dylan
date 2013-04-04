@@ -46,7 +46,7 @@ define method arrange-topics (topics :: <sequence>, tocs :: <sequence>)
               ct)
       end for;
       let combined-tree = reduce(combine-trees, tree, overlapping-trees);
-      arranged-trees := apply(vector, combined-tree, spare-trees);
+      arranged-trees := reduce(add!, vector(combined-tree), spare-trees);
    end for;
 
    // Pick out the main table of contents tree and the other unrooted trees.
@@ -420,7 +420,7 @@ define method parent-directive-arrangement (topics :: <sequence>)
       let arranged-child = make(<arranged-topic>, topic: topic,
                                 type: #"parent-directive",
                                 source-location: topic.parent.source-location);
-      let tree = make-parent-child-tree(arranged-parent, arranged-child);
+      let tree = make-parent-child-tree(arranged-parent, vector(arranged-child));
       trees := add!(trees, tree);
    end for;
    trees
@@ -443,7 +443,7 @@ define method vi-arrangement (topics :: <sequence>)
             let arranged-child
                   = make(<arranged-topic>, topic: child-topic, type: #"vi-directive",
                         source-location: xref.source-location);
-            let tree = make-parent-child-tree(arranged-parent, arranged-child);
+            let tree = make-parent-child-tree(arranged-parent, vector(arranged-child));
             trees := add!(trees, tree);
             #f
          end method;
@@ -485,7 +485,7 @@ define method generic-function-arrangement (topics :: <sequence>)
       unless (arranged-children.empty?)
          let arranged-parent = make(<arranged-topic>, type: #"none",
                source-location: generic-topic.source-location, topic: generic-topic);
-         let tree = apply(make-parent-child-tree, arranged-parent, arranged-children);
+         let tree = make-parent-child-tree(arranged-parent, arranged-children);
          trees := add!(trees, tree)
       end unless
    end for;
@@ -513,14 +513,14 @@ define method title-style-arrangement (topics :: <sequence>)
             end method;
             
       let arranged-children = map(make-arranged-child, group);
-      let tree = apply(make-parent-child-tree, arranged-parent, arranged-children);
+      let tree = make-parent-child-tree(arranged-parent, arranged-children);
       trees := add!(trees, tree);
    end for;
    trees
 end method;
 
 
-define function make-parent-child-tree (parent, #rest children)
+define function make-parent-child-tree (parent, children :: <sequence>)
 => (tree :: <ordered-tree>)
    let tree = make(<ordered-tree>, root: parent);
    let root = tree.root-key;

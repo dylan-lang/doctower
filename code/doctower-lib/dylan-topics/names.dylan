@@ -223,7 +223,7 @@ define function promote-canonical-local-name
    let canonical-local = canonical-name.local-name;
    let promote-index = find-key(source-names,
          method (sn :: <source-name>) => (found? :: <boolean>)
-            case-insensitive-equal?(sn.local-name, canonical-local)
+            string-equal-ic?(sn.local-name, canonical-local)
          end);
    if (promote-index)
       concatenate(vector(source-names[promote-index]),

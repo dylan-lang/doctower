@@ -5,7 +5,7 @@ synopsis: Calls parser for files containing nothing but markup.
 define method topics-from-markup-files (locator-seq :: <sequence>)
 => (topic-seq :: <sequence>)
    let per-file-topics = map(topics-from-markup-file, locator-seq);
-   apply(concatenate, #[], per-file-topics)
+   reduce(add!, make(<stretchy-vector>), per-file-topics)
 end method;
 
 

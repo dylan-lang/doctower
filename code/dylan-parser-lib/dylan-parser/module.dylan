@@ -9,9 +9,8 @@ define module dylan-parser
 
    // from peg-parser
    use peg-parser, export: { <token>, *parser-trace* };
-   // from string-extensions
-   use character-type;
-   use substring-search;
+   // from strings
+   use strings;
 
    export parse-dylan;
 

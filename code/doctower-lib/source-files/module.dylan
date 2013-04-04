@@ -18,7 +18,7 @@ define module source-files
    use dylan-topics;
    
    // from regular-expressions
-   use regular-expressions, import: { regexp-position };
+   use regular-expressions, import: { regex-position, compile-regex };
    // from system
    use file-system, import: { <file-does-not-exist-error>, file-exists? };
    use locators, import: { locator-extension, merge-locators };

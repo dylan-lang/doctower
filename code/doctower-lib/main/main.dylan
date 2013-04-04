@@ -4,63 +4,85 @@ module: main
 
 // TODO: Make --names a separate task from doc gen.
 
-define argument-parser <my-arg-parser> ()
-   regular-arguments files;
-   option output-path, " <directory>",
-      format-to-string("Documentation path [%s]", *output-directory*),
-      long: "output-dir", short: "o", kind: <parameter-option-parser>;
-   option output-formats, " html|dita",
-      format-to-string("Documentation format [%s]", *output-types*.item-string-list),
-      long: "format", short: "f", kind: <repeated-parameter-option-parser>;
-   option package-title, " <title>",
-      format-to-string("Documentation title [%s]", *package-title*),
-      long: "title", short: "t", kind: <parameter-option-parser>;
-   option cfg-pattern, " <ext>",
-      format-to-string("Configuration files [%s]", *config-file-extension*),
-      long: "cfg", short: "c", kind: <parameter-option-parser>;
-   option toc-pattern, " <ext>",
-      format-to-string("Table of contents files [%s]", *contents-file-extension*),
-      long: "toc", kind: <parameter-option-parser>;
-   option doc-pattern, " <ext>",
-      format-to-string("Documentation text files [%s]", *topic-file-extension*),
-      long: "doc", kind: <parameter-option-parser>;
-   option template-path, " <directory>",
-      format-to-string("Template files [%s]", *template-directory*),
-      long: "templates", short: "T", kind: <parameter-option-parser>;
-   option api-list-filename, " <filename>",
-      "Write fully qualified API names to file",
-      long: "names", short: "n", kind: <parameter-option-parser>;
+define command-line <my-command-line-parser> ()
+   positional-options files;
+   option output-path :: <directory-locator> = *output-directory*,
+      names: #("output-dir", "o"), 
+      variable: "DIRECTORY", help: "Documentation path [\"%default\"]",
+      kind: <parameter-option>;
+   option output-formats :: <symbol> = *output-types*,
+      names: #("format", "f"), 
+      variable: "html|dita",
+      help: format-to-string("Documentation format [%s]",
+                             *output-types*.item-string-list),
+      kind: <repeated-parameter-option>;
+   option package-title = *package-title*,
+      names: #("title", "t"),
+      help: "Documentation title [\"%default\"]",
+      kind: <parameter-option>;
+   option cfg-pattern = *config-file-extension*, 
+      names: #("cfg", "c"), 
+      variable: "EXT", help: "Configuration files [\"%default\"]",
+      kind: <parameter-option>;
+   option toc-pattern = *contents-file-extension*, 
+      names: #("toc"),
+      variable: "EXT", help: "Table of contents files [\"%default\"]",
+      kind: <parameter-option>;
+   option doc-pattern = *topic-file-extension*, 
+      names: #("doc"),
+      variable: "EXT", help: "Documentation text files [\"%default\"]",
+      kind: <parameter-option>;
+   option template-path :: <directory-locator> = *template-directory*, 
+      names: #("templates", "T"),
+      variable: "DIRECTORY", help: "Template files [\"%default\"]",
+      kind: <parameter-option>;
+   option api-list-filename :: <file-locator>, 
+      names: #("names", "n"), 
+      variable: "FILENAME", help: "Write fully qualified API names to file",
+      kind: <parameter-option>;
    option ignore-comments?,
-      "Ignore source code documentation comments",
-      long: "no-comment", short: "N";
-   option disabled-warnings, " <nn>",
-      "Hide warning message",
-      long: "no-warn", short: "w", kind: <repeated-parameter-option-parser>;
+      names: #("no-comment", "N"),
+      help: "Ignore source code documentation comments";
+   option disabled-warnings, 
+      names: #("no-warn", "w"), 
+      variable: "NN", help: "Hide warning message",
+      kind: <repeated-parameter-option>;
    option stop-on-errors?,
-      "Stop on first error or warning",
-      long: "stop";
-   option debug-features, " <feature>",
-      "Enable developer debugging feature",
-      long: "debug", short: "D", kind: <repeated-parameter-option-parser>;
+      names: #("stop"),
+      help: "Stop on first error or warning";
+   option debug-features :: <symbol>, 
+      names: #("debug", "D"),
+      variable: "FEATURE", help: "Enable developer debugging feature",
+      kind: <repeated-parameter-option>;
    option quiet?,
-      "Hide progress messages",
-      long: "quiet", short: "q";
-   option new-config-file, " <filename>",
-      "Create blank config file and exit",
-      long: "new-config", kind: <parameter-option-parser>;
+      names: #("quiet", "q"),
+      help: "Hide progress messages";
+   option new-config-file, 
+      names: #("new-config"), 
+      variable: "FILENAME", help: "Create blank config file and exit",
+      kind: <parameter-option>;
    option help?,
-      "Show this help message and exit",
-      long: "help";
+      names: #("help", "h"),
+      help: "Show this help message and exit";
    option version?,
-      "Show program version and exit",
-      long: "version";
-   synopsis print-help,
-      usage: "doctower [options] <files>",
-      description: "\n"
-         "Creates Dylan API documentation from files. Files may include configuration\n"
-         "files, table of contents files, documentation text files, Dylan source code\n"
-         "files, and Dylan LID files."
-end argument-parser;
+      names: #("version"),
+      help: "Show program version and exit";
+   synopsis "Usage: doctower [OPTIONS] FILES\n",
+      description:
+      "Creates Dylan API documentation from files. Files may include configuration\n"
+      "files, table of contents files, documentation text files, Dylan source code\n"
+      "files, and Dylan LID files.\n"
+end command-line;
+
+define method parse-option-parameter (param :: <string>, type == <directory-locator>)
+=> (value)
+   as(<directory-locator>, param)
+end method;
+
+define method parse-option-parameter (param :: <string>, type == <file-locator>)
+=> (value)
+   as(<file-locator>, param)
+end method;
 
 
 //// Main
@@ -73,10 +95,12 @@ define function main (name, arguments)
 
    // Retrieve arguments
 
-   let args = make(<my-arg-parser>);
-   if (~parse-arguments(args, arguments))
+   let args = make(<my-command-line-parser>, provide-help-option?: #f);
+   block()
+      parse-command-line(args, arguments)
+   exception (err :: <usage-error>)
       error-in-command-arguments();
-   end if;
+   end block;
 
    // Set basic configs
 
@@ -89,7 +113,7 @@ define function main (name, arguments)
    end block;
 
    *stop-on-errors?* := args.stop-on-errors?;
-   *debug-features* := map(curry(as, <symbol>), args.debug-features);
+   *debug-features* := args.debug-features;
    unless (every?(rcurry(member?, $debug-features), *debug-features*))
       error-in-command-option(option: "--debug");
    end unless;
@@ -102,7 +126,7 @@ define function main (name, arguments)
          create-config-file(args.new-config-file);
          exit-application(0);
       args.help? =>
-         print-help(args, *standard-output*);
+         print-synopsis(args, *standard-output*);
          format-out("\nDeveloper debugging features that can be enabled are:\n%s\n",
                $debug-features.item-string-list);
          exit-application(0);
@@ -119,7 +143,7 @@ define function main (name, arguments)
    *config-file-extension* := args.cfg-pattern | *config-file-extension*;
    let cfg-files = choose(
          method (loc :: <file-locator>) => (cfg-locator? :: <boolean>)
-            case-insensitive-equal?(*config-file-extension*, loc.locator-extension)
+            string-equal-ic?(*config-file-extension*, loc.locator-extension)
          end method, file-locators);
    
    // TODO: Process config files. We can have multiple config files, but they
@@ -127,26 +151,14 @@ define function main (name, arguments)
 
    // Override configs with command-line options
 
-   *contents-file-extension* := args.toc-pattern | *contents-file-extension*;
-   *topic-file-extension* := args.doc-pattern | *topic-file-extension*;
-   *package-title* := args.package-title | *package-title*;
-   *scan-only?* := args.ignore-comments? | *scan-only?*;
-
-   if (args.template-path)
-      *template-directory* := as(<directory-locator>, args.template-path)
-   end if;
-   
-   if (args.output-path)
-      *output-directory* := as(<directory-locator>, args.output-path)
-   end if;
-   
-   if (~args.output-formats.empty?)
-      *output-types* := map(curry(as, <symbol>), args.output-formats);
-   end if;
-   
-   if (args.api-list-filename)
-      *api-list-file* := as(<file-locator>, args.api-list-filename)
-   end if;
+   *contents-file-extension* := args.toc-pattern;
+   *topic-file-extension* := args.doc-pattern;
+   *package-title* := args.package-title;
+   *scan-only?* := args.ignore-comments?;
+   *template-directory* := args.template-path;
+   *output-directory* := args.output-path;
+   *output-types* := args.output-formats;
+   *api-list-file* := args.api-list-filename;
 
    // Classify input files
 
@@ -154,7 +166,7 @@ define function main (name, arguments)
    let doc-files = make(<stretchy-vector>);
    let src-files = make(<stretchy-vector>);
    for (loc in file-locators)
-      select (loc.locator-extension by case-insensitive-equal?)
+      select (loc.locator-extension by string-equal-ic?)
          *config-file-extension*
             => #f /* Already dealt with these */;
          *topic-file-extension*
@@ -190,8 +202,7 @@ end function main;
 begin
    let handler <user-visible-error> =
          method (cond, next)
-            report-condition(cond, *standard-error*);
-            new-line(*standard-error*);
+            format(*standard-error*, "%s\n", cond);
             force-output(*standard-error*);
             when (*stop-on-errors?*)
                exit-application(cond.error-code);
@@ -199,24 +210,22 @@ begin
             *error-code* := *error-code* | cond.error-code;
             signal(make(<skip-error-restart>, condition: cond));
          end method;
-
+   
    let handler <user-visible-warning> =
          method (cond, next)
             case
                member?(cond.error-code, $disabled-warnings) =>
                   #f;
                *stop-on-errors?* =>
-                  report-condition(cond, *standard-error*);
-                  new-line(*standard-error*);
+                  format(*standard-error*, "%s\n", cond);
                   force-output(*standard-error*);
                   exit-application(cond.error-code);
                otherwise =>
-                  report-condition(cond, *standard-output*);
-                  new-line(*standard-output*);
+                  format(*standard-output*, "%s\n", cond);
                   force-output(*standard-output*);
             end case
          end method;
-
+   
    let handler <skip-error-restart> =
          method (cond, next)
             exit-application(*error-code*);

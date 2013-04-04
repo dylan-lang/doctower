@@ -131,7 +131,7 @@ end class;
 
 define class <api-doc> (<ref-topic>)
    // The fully qualified name, automatically generated and standardized. No 
-   // need to test with case-insensitive-equal?.
+   // need to test with string-equal-ic?.
    slot fully-qualified-name :: false-or(<string>) = #f, 
          init-keyword: #"qualified-name";
    
@@ -143,7 +143,7 @@ define class <api-doc> (<ref-topic>)
          init-keyword: #"existent-api";
    
    // If the topic is an existent API, the enclosing namespace
-   // (e.g. "Dylan:Dylan"). No need to test with case-insensitive-equal?.
+   // (e.g. "Dylan:Dylan"). No need to test with string-equal-ic?.
    slot canonical-namespace :: false-or(<string>) = #f,
          init-keyword: #"namespace";
    slot canonical-namespace-source-loc :: <source-location> = $unknown-source-location,
@@ -154,7 +154,7 @@ define class <api-doc> (<ref-topic>)
    // the API presentation names. These names are used when constructing API
    // catalog lists for a specific namespace and as alternative link targets
    // (after converting to FQN form). No need to test with
-   // case-insensitive-equal?.
+   // string-equal-ic?.
    slot names-in-namespace :: <table> = make(<string-table>);
          
    slot declarations-section :: false-or(<section>) = #f;

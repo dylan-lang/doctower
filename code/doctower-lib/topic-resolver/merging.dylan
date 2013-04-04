@@ -343,7 +343,7 @@ define method check-parmlist-items
    let auth-names = map(curry(parm-name, authored),
                         range(below: authored.items.dimensions.first));
    unless (gen-names.size = auth-names.size
-         & every?(true?, map(case-insensitive-equal?, gen-names, auth-names)))
+         & every?(true?, map(string-equal-ic?, gen-names, auth-names)))
       warning()
    end unless
 end method;

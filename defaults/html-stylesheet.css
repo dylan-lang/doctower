@@ -235,5 +235,10 @@ p {}
 	column-gap: 2em;
 }
 
+.catalog > ul {
+   margin-top: 0;
+   margin-bottom: 0;
+}
+
 dl.one-line {}
 dl.many-line {}

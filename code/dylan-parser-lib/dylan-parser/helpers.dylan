@@ -176,7 +176,7 @@ define method slot-from-clause (tok :: <slot-spec-token>)
    slot.slot-type := tok.slot-type | clauses-type-option(tok.clause-options);
    slot.slot-init := tok.init-expression | clauses-init-option(tok.clause-options);
 
-   let const? = member?("constant", slot.slot-modifiers, test: case-insensitive-equal?);
+   let const? = member?("constant", slot.slot-modifiers, test: string-equal-ic?);
    let (setter-present?, setter-name) = clauses-setter-option(tok.clause-options);
    slot.slot-setter :=
          case
@@ -258,7 +258,7 @@ define method remove-duplicate-keywords (seq) => (seq)
             // This keyword is from a slot clause. Skip it, but only if there is
             // a keyword clause later.
             for (k2 from k1 + 1 below seq.size)
-               if (case-insensitive-equal?(seq[k1].keyword-name, seq[k2].keyword-name))
+               if (string-equal-ic?(seq[k1].keyword-name, seq[k2].keyword-name))
                   if (seq[k2].keyword-slot-name = #f)
                      skip();
                   end if;

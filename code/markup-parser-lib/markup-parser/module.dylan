@@ -9,12 +9,12 @@ define module markup-parser
    
    // from peg-parser
    use peg-parser, export: { <token>, *parser-trace* };
-   // from string-extensions
-   use character-type;
+   // from strings
+   use strings;
    // from wrapper-streams
    use replacing-stream;
    // from regular-expressions
-   use regular-expressions, import: { regexp-replace };
+   use regular-expressions, import: { regex-replace, compile-regex };
    
    export
       parse-markup, parse-internal-markup;

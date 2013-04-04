@@ -4,6 +4,7 @@ synopsis: Code to translate Dylan parser tokens to higher-level API representati
 
 define module dylan-translator
    use common, rename: { binding-name => dyn-binding-name };
+   use equal-table, import: { <equal-table> };
    use conditions;
    use dylan-parser,
       rename: { source-location => token-src-loc, local-name => token-local-name,

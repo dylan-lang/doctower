@@ -334,7 +334,7 @@ end;
 
 define parser string-literal (<text-token>)
    rule many(lex-STRING) => tokens;
-   slot value :: <string> = apply(concatenate, map(value, tokens));
+   slot value :: <string> = reduce1(concatenate, map(value, tokens));
 afterwards (context, tokens, value, start-pos, end-pos)
    note-combined-source-location(context, value, tokens);
    capture-text-and-names(context, value, #[]);
@@ -588,15 +588,17 @@ define parser-method macro-definition (stream, context)
          = parse-lex-MACRO-NAME(stream, context);
    if (name-success?)
       // Isolate part of name that goes in definer macros.
-      // Can't use substring-position here because that can't handle a name like
+      // Can't use find-substring here because that can't handle a name like
       // "x-definer-definer".
       let match = "-definer";
       let full-name = parsed-name.value;
-      let sub-start = full-name.size - match.size;
+      let suff-start = full-name.size - match.size;
       let short-name =
-            if (full-name.size > match.size
-                  & copy-sequence(full-name, start: sub-start, end: match.size))
-               copy-sequence(full-name, end: sub-start)
+            if (full-name.size > match.size)
+               let suff-str = copy-sequence(full-name, start: suff-start, end: full-name.size);
+               if (suff-str = match)
+                  copy-sequence(full-name, end: suff-start)
+               end if;
             end if;
       // Make available to lower productions.
       with-attributes (full-macro-name :: <string> = full-name,
@@ -620,7 +622,7 @@ define parser-method full-macro-name (stream, context)
    let parsed-name :: false-or(<lex-MACRO-NAME-token>)
          = parse-lex-MACRO-NAME(stream, context);
    let expected-name = attr(full-macro-name);
-   if (parsed-name & case-insensitive-equal?(expected-name, parsed-name.value))
+   if (parsed-name & string-equal-ic?(expected-name, parsed-name.value))
       parsed-name
    end if
 end parser-method;
@@ -632,7 +634,7 @@ define parser-method short-macro-name (stream, context)
    let parsed-name :: false-or(<lex-MACRO-NAME-token>)
          = parse-lex-MACRO-NAME(stream, context);
    let expected-name = attr(short-macro-name);
-   if (parsed-name & case-insensitive-equal?(expected-name, parsed-name.value))
+   if (parsed-name & string-equal-ic?(expected-name, parsed-name.value))
       parsed-name
    end if
 end parser-method;

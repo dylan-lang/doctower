@@ -19,12 +19,16 @@ define function standardize-id (id :: <string>) => (id :: <string>)
 end function;
 
 
+define constant $consec-space-regex = compile-regex(" {2,}");
+define constant $spaced-comma-regex = compile-regex(" ?, ?([^ ])");
+define constant $spaced-parens-regex = compile-regex(" ?([.\\(\\)\\[\\]]) ?");
+
 /// Synopsis: Fixes spaces and makes titlecase in API titles.
 define function standardize-title (title :: <string>) => (title :: <string>)
    title := as-titlecase(title);
-   title := regexp-replace(title, " {2,}", " ");
-   title := regexp-replace(title, " ?, ?([^ ])", ", \\1");
-   title := regexp-replace(title, " ?([.\\(\\)\\[\\]]) ?", "\\1");
+   title := regex-replace(title, $consec-space-regex, " ");
+   title := regex-replace(title, $spaced-comma-regex, ", \\1");
+   title := regex-replace(title, $spaced-parens-regex, "\\1");
 end function;
 
 

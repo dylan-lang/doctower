@@ -37,7 +37,7 @@ define parser-method number (stream, context)
    let num-str = "";
    iterate cont ()
       let next = peek(stream, on-end-of-stream: #f);
-      if (instance?(next, <character>) & next.digit?)
+      if (instance?(next, <character>) & next.decimal-digit?)
          num-str := add!(num-str, read-element(stream));
          cont();
       end if;

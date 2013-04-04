@@ -4,6 +4,7 @@ synopsis: Represention of Dylan API elements, at a higher level than what the
 
 define module dylan-rep
    use common, exclude: { binding-name };
+   use equal-table;
 
    export
       <api-object>, <documentable-api-object>, <definition>,

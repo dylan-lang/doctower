@@ -4,7 +4,7 @@ define library midsupport-library
    use support-library;
    use peg-parser;
    use regular-expressions;
-   use string-extensions;
+   use strings;
    use collection-extensions;
    use system;
    use template-engine;

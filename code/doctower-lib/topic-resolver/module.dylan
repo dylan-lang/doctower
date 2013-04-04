@@ -7,7 +7,8 @@ define module topic-resolver
    use markup-rep;
    use ordered-tree;
    use name-processing;
-   use regular-expressions, import: { regexp-replace, regexp-matches };
+   use regular-expressions, 
+      import: { regex-replace, regex-search-strings, compile-regex };
    
    export
       group-mergeable-topics, check-and-merge-topics,

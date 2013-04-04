@@ -2,6 +2,8 @@ module: source-files
 synopsis: This file parses a table-of-contents file into a set of ordered trees.
 
 
+define constant $toc-line-regex = compile-regex("^(-+)\\s+(.*)\\s*$");
+
 define method toc-from-file (locator :: <file-locator>)
 => (toc :: <ordered-tree>)
    verbose-log("Parsing %s", locator);
@@ -18,7 +20,7 @@ define method toc-from-file (locator :: <file-locator>)
                let loc = make(<file-source-location>, file: locator,
                               start-line: line-num, end-line: line-num);
                let (dummy, dummy, dash-start, dash-end, link-start, link-end) =
-                     regexp-position(line, "^(-+)\\s+(.*)\\s*$");
+                     regex-position($toc-line-regex, line);
 
                unless (dash-start & dash-end & link-start & link-end)
                   bad-syntax-in-toc-file(location: loc);

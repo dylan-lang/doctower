@@ -6,7 +6,7 @@ define method topics-from-dylan-files (locator-seq :: <sequence>)
 => (topic-seq :: <sequence>, catalog-topic-seq :: <sequence>)
    let (lid-locators, dylan-locators) = partition(
          method (loc :: <file-locator>) => (bool)
-            case-insensitive-equal?("lid", loc.locator-extension)
+            string-equal-ic?("lid", loc.locator-extension)
          end method,
          locator-seq);
 
@@ -64,7 +64,7 @@ end method;
 define method filenames-from-headers (token :: <interchange-file-token>)
 => (filenames :: <sequence>)
    local method file-header? (hdr :: <header-token>) => (bool :: <boolean>)
-            case-insensitive-equal?(hdr.hdr-keyword, "Files")
+            string-equal-ic?(hdr.hdr-keyword, "Files")
          end method;
 
    let file-headers = choose(file-header?, token.headers);
@@ -74,8 +74,8 @@ define method filenames-from-headers (token :: <interchange-file-token>)
    end when;
    
    let names-per-header = map(rcurry(split, '\n'), map(hdr-value, file-headers));
-   let names = apply(concatenate, #[], names-per-header);
-   let names = choose(complement(empty?), names); // "Files:" first line may be blank.
+   let name-lines = reduce(concatenate!, make(<stretchy-vector>), names-per-header);
+   let names = choose(complement(empty?), name-lines); // "Files:" first line may be blank.
    when (names.empty?)
       empty-header-in-interchange-file
             (location: token.token-src-loc.source-file, header: "Files:");

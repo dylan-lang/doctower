@@ -186,7 +186,7 @@ define method exported-name? (name :: type-union(<module-name>, <binding-name>))
       let namespace-defn = element(*definitions*, namespace, default: #f);
       if (namespace-defn)
          member?(name.local-name, namespace-defn.exported-names,
-                 test: case-insensitive-equal?)
+                 test: string-equal-ic?)
       end if
    end if
 end method;
@@ -204,7 +204,7 @@ define method predefined-and-renamed? (defn :: <definition>)
    if (defn.provenance = #"predefined")
       let canonical-local = defn.canonical-name.local-name;
       let local-names = map(local-name, defn.aliases);
-      any?(complement(curry(case-insensitive-equal?, canonical-local)), local-names)
+      any?(complement(curry(string-equal-ic?, canonical-local)), local-names)
    end if
 end method;
 

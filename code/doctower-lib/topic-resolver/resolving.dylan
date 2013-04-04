@@ -44,11 +44,17 @@ define method resolve-target-placeholders
 end method;
 
 
-define method resolve-target-placeholder-in-topic
-   (object :: <object>,
+define generic resolve-target-placeholder-in-topic
+   (object :: <markup-element>,
     #key setter, visited, topic, resolutions, parms, dup-titles, dup-sqns,
          unused-catalogs)
-=> (visit-slots? :: <boolean>)
+=> (visit-slots? :: <boolean>);
+
+define method resolve-target-placeholder-in-topic
+   (object :: <markup-element>,
+    #key setter, visited, topic, resolutions, parms, dup-titles, dup-sqns,
+         unused-catalogs)
+=> (visit-slots? :: <boolean>);
    // Allow recursion in the general case.
    #t
 end method;
@@ -231,12 +237,16 @@ define method resolve-parm-link
 end method;
 
 
+define constant $consec-space-regex = compile-regex(" {2,}");
+define constant $leading-hash-regex = compile-regex("^#[^ ]+ ");
+define constant $trailing-colon-regex = compile-regex(":$");
+
 define method standardize-parm-target (target :: <string>) => (cleaned :: <string>)
    let cleaned = target.copy-sequence;
    cleaned := replace-elements!(cleaned, rcurry(\=, '\n'), always(' '));
-   cleaned := regexp-replace(cleaned, " {2,}", " ");
-   cleaned := regexp-replace(cleaned, "^#[^ ]+ ", "");
-   cleaned := regexp-replace(cleaned, ":$", "");
+   cleaned := regex-replace(cleaned, $consec-space-regex, " ");
+   cleaned := regex-replace(cleaned, $leading-hash-regex, "");
+   cleaned := regex-replace(cleaned, $trailing-colon-regex, "");
    cleaned
 end method;
 
