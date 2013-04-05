@@ -1,0 +1,36 @@
+[submodule "code/ext/collection-extensions"]
+	path = code/ext/collection-extensions
+	url = https://BarAgent@github.com/dylan-lang/collection-extensions.git
+[submodule "code/ext/command-line-parser"]
+	path = code/ext/command-line-parser
+	url = https://BarAgent@github.com/dylan-lang/command-line-parser.git
+[submodule "code/ext/dynamic-binding"]
+	path = code/ext/dynamic-binding
+	url = https://BarAgent@github.com/dylan-lang/dynamic-binding.git
+[submodule "code/ext/peg-parser"]
+	path = code/ext/peg-parser
+	url = https://BarAgent@github.com/dylan-lang/peg-parser.git
+[submodule "code/ext/regular-expressions"]
+	path = code/ext/regular-expressions
+	url = https://BarAgent@github.com/dylan-lang/regular-expressions.git
+[submodule "code/ext/sequence-stream"]
+	path = code/ext/sequence-stream
+	url = https://BarAgent@github.com/dylan-lang/sequence-stream.git
+[submodule "code/ext/skip-list"]
+	path = code/ext/skip-list
+	url = https://BarAgent@github.com/dylan-lang/skip-list.git
+[submodule "code/ext/slot-visitor"]
+	path = code/ext/slot-visitor
+	url = https://BarAgent@github.com/dylan-lang/slot-visitor.git
+[submodule "code/ext/monday"]
+	path = code/ext/monday
+	url = https://BarAgent@github.com/dylan-lang/monday.git
+[submodule "code/ext/strings"]
+	path = code/ext/strings
+	url = https://BarAgent@github.com/dylan-lang/strings.git
+[submodule "code/ext/template-engine"]
+	path = code/ext/template-engine
+	url = https://BarAgent@github.com/dylan-lang/template-engine.git
+[submodule "code/ext/wrapper-streams"]
+	path = code/ext/wrapper-streams
+	url = https://BarAgent@github.com/dylan-lang/wrapper-streams.git

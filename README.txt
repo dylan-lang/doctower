@@ -22,15 +22,13 @@ DOCTOWER IS STILL UNDER DEVELOPMENT. Only some of what I said above is true at
 the moment. If you want to help (and I can definitely use some), check out the
 TODO file and source-code comments, or ask me, |Agent, on IRC.
 
-- I use the Gwydion Dylan compiler because of the available libraries and
-  because the Open Dylan compiler crashes when compiling the project.
 - I use 3-space tab stops.
 
 
 ### Directories ###
 
-code      - Source code. Each directory is a library, and the directories within
-            those are modules.
+code      - Source code. Aside from "registry" and "ext", each directory is a
+            library, and the directories within those are modules.
 thoughts  - What passes for design documents. These contain some of my thought
             processes. I also have a notebook, which I cannot really upload.
 defaults  - Prototype designs for HTML, CSS, and various generated elements.
@@ -38,4 +36,4 @@ defaults  - Prototype designs for HTML, CSS, and various generated elements.
 
 ### Making ###
 
-Run "make required-libs" and then run "make".
+dylan-compiler -build doctower-library
