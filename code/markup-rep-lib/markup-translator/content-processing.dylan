@@ -167,9 +167,7 @@ define method process-tokens
    for (i from 0, list-item-token in list-item-tokens)
       let list-item-label = make(<markup-seq>);
       let list-item-content = make(<content-seq>);
-      with-dynamic-bindings (*quote-specs* = *list-quote-specs*)
-         process-tokens(list-item-label, list-item-token.item-label);
-      end with-dynamic-bindings;
+      process-tokens(list-item-label, list-item-token.item-label);
       process-tokens(list-item-content, list-item-token.token-content);
       list.items[i, 0] := list-item-label;
       list.items[i, 1] := list-item-content;

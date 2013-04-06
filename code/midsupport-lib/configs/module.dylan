@@ -12,9 +12,8 @@ define module configs
       debugging?;
       
    export
-      *ascii-line-chars*, *bullet-chars*, *quote-chars*, *markup-quote-specs*,
-      *list-quote-specs*, *title-quote-specs*, *section-style*, $tab-size,
-      $debug-features;
+      *ascii-line-chars*, *bullet-chars*, *quote-pairs*, *quote-specs*,
+      *section-style*, $tab-size, $debug-features;
 
    export
       <topic-level-style>, line-character, underline?, midline?, overline?;

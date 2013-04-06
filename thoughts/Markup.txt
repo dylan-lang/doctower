@@ -53,9 +53,11 @@ Quoted words
 Quoted words can be followed by bracket options, but does not have to be. The
 quotes and default processing is:
 
-  "..." - Smart quotes. Default options are [qq].
-  '...' - Linked text. Default options are [qv].
-  `...` - Inline code. Default options are [code].
+  "..."   - Smart quotes. [qq]
+  {...}   - Link. [qv]
+  '...'   - Binding or parameter names, with link. [api qv]
+  `...`   - Binding or parameter names, without link. [api]
+  ``...`` - Inline code. [code]
   
 When followed by bracket options, the default processing is not done. Instead,
 the processing specified in the brackets is done. Bracket options are:
@@ -66,11 +68,12 @@ the processing specified in the brackets is done. Bracket options are:
   sic     - Do not remove quotes.
   q       - Surround text with typographical single quotes.
   qq      - Surround text with typographical double quotes.
-  code    - Indicates a code excerpt. If possible, code elements are linked to
-            the relevant documentation.
+  code    - Indicates a code excerpt or literal. [TODO: If possible, code
+            elements are linked to the relevant documentation.]
   term    - Indicate a technical term being defined.
   bib     - Indicates a book or article title.
-  api     - Indicates an API or parameter name.
+  api     - Indicates an API or parameter name in running text (as distinct from
+            "code", which is for an inline sample or excerpt).
   em      - Indicates a phrase that requires emphasis.
   b       - Use bold font.
   i       - Use italic font.

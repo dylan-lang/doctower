@@ -2,6 +2,20 @@ module: markup-parser
 synopsis: Parser initialization, pre-processing, and overall control.
 
 
+define class <markup-precomputed-context> (<object>)
+   constant slot sorted-quote-pairs :: <sequence>,
+      required-init-keyword: #"quote-pairs";
+end class;
+
+define class <markup-file-parse-context>
+      (<file-parse-context>, <markup-precomputed-context>)
+end class;
+
+define class <markup-internal-parse-context>
+      (<internal-parse-context>, <markup-precomputed-context>)
+end class;
+
+
 /**
 Synopsis: Entry point into parsing a user-supplied file.
 
@@ -26,7 +40,8 @@ define method parse-markup
          text.stream-with-indentation;
 
    block ()
-      let context = make(<file-parse-context>,
+      let context = make(<markup-file-parse-context>,
+            quote-pairs: sort-quote-pairs(*quote-pairs*),
             cache-stream: indented-stream,
             file-locator: locator,
             line-col-position-method:
@@ -82,9 +97,10 @@ define method parse-internal-markup
          text.stream-with-indentation;
 
    block ()
-      let context = make(<internal-parse-context>,
-                         cache-stream: indented-stream,
-                         locator: locator);
+      let context = make(<markup-internal-parse-context>,
+            quote-pairs: sort-quote-pairs(*quote-pairs*),
+            cache-stream: indented-stream,
+            locator: locator);
 
       if (debugging?(#"template-markup-parser"))
          log("--- (template) ---");
@@ -197,4 +213,12 @@ define method count-spaces (stream)
    let (elems, found?) = read-to(stream, ' ', test: \~=, on-end-of-stream: #f);
    adjust-stream-position(stream, -1); // because read-to reads non-space delimiter
    (found? & elems.size) | 0;
+end method;
+
+define method sort-quote-pairs (pairs :: <sequence> /* of size 2 <sequence> */)
+=> (sorted :: <sequence>)
+   sort(pairs, test:
+         method (p1 :: <sequence>, p2 :: <sequence>) => (p1-first? :: <boolean>)
+            p1.first.size > p2.first.size
+         end)
 end method;

@@ -231,32 +231,38 @@ define caching parser quoted-words (<token>)
    slot close-quote :: <string> = tokens[3];
    slot postquoted-text :: false-or(<string>) = tokens[4] & tokens[4].text;
 attributes
-   close-quote-char :: false-or(<character>) = #f;
+   close-quote-chars :: false-or(<string>) = #f;
 end;
 
-define parser-method quote-start (stream, context)
+define parser-method quote-start (stream, context :: <markup-precomputed-context>)
 => (open-quote :: false-or(<string>))
-   label format-to-string("opening quote character (%s)", map(first, *quote-chars*));
-   let char = read-element(stream, on-end-of-stream: #f);
-   let key = find-key(map(first, *quote-chars*), curry(\=, char));
-   if (key)
-      attr(close-quote-char) := *quote-chars*[key].second;
-      as(<string>, char);
+   label format-to-string("opening quote characters (%s)",
+                          join(map(first, *quote-pairs*), ", "));
+   let stream-pos = stream.stream-position;
+   let match-pair = any?(method (quote-pair)
+                            stream.stream-position := stream-pos;
+                            let res = read-expected(stream, quote-pair.first, failure: #f);
+                            if (res) quote-pair else #f end
+                         end, context.sorted-quote-pairs);
+   if (match-pair)
+      attr(close-quote-chars) := match-pair.second;
+      match-pair.first
    else
-      #f;
+      #f
    end if;
 end;
 
 define parser-method quote-end (stream, context)
 => (close-quote :: false-or(<string>), success? :: <boolean>,
     err :: false-or(<parse-failure>))
-   label format-to-string("closing quote character (%s)", map(second, *quote-chars*));
-   let char = read-element(stream, on-end-of-stream: #f);
-   let close-quote-char = attr(close-quote-char);
-   if (char = close-quote-char)
-      values(as(<string>, char), #t, #f)
+   label format-to-string("closing quote characters (%s)",
+                          join(map(second, *quote-pairs*), ", "));
+   let close-quote-chars = attr(close-quote-chars);
+   let result = read-expected(stream, close-quote-chars, failure: #f);
+   if (result)
+      values(close-quote-chars, #t, #f)
    else
-      let desc = format-to-string("closing quote character \"%c\"", close-quote-char);
+      let desc = format-to-string("closing quote characters \"%s\"", close-quote-chars);
       values(#f, #f, make(<parse-failure>, expected: desc))
    end if;
 end;

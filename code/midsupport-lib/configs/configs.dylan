@@ -42,34 +42,23 @@ define variable *bullet-chars* = "-*+";
 
 
 /// Synopsis: The set of quote characters.
-define variable *quote-chars* = #[ "''", "\"\"", "``" ];
+define variable *quote-pairs* :: <vector> =
+      #[ #["{", "}"],
+         #["'", "'"],
+         #["\"", "\""],
+         #["`", "`"], 
+         #["``", "``"] ];
 
 
-/// Synopsis: The specifiers for each quote type in normal markup.
-/// Key is open-quote character.
-define constant *markup-quote-specs* =
+/// Synopsis: The specifiers for each quote type in markup.
+/// Key is open-quote characters.
+define variable *quote-specs* =
       table(<string-table>,
-            "'" => #[#"qv"],
-            "\"" => #[#"qq"],
-            "`" => #[#"code"]
-      );
-
-/// Synopsis: The specifiers for each quote type in hyphenated and phrase lists.
-/// Key is open-quote character.
-define constant *list-quote-specs* =
-      table(<string-table>,
-            "'" => #[#"q"],
-            "\"" => #[#"qq"],
-            "`" => #[#"code"]
-      );
-
-/// Synopsis: The specifiers for each quote type in titles.
-/// Key is open-quote character.
-define constant *title-quote-specs* =
-      table(<string-table>,
-            "'" => #[#"q"],
-            "\"" => #[#"qq"],
-            "`" => #[#"code"]
+            "{" =>   #[#"qv"],
+            "'" =>   #[#"api", #"qv"],
+            "\"" =>  #[#"qq"],
+            "`" =>   #[#"api"],
+            "``" =>  #[#"code"]
       );
 
 

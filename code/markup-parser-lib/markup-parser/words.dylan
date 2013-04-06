@@ -102,7 +102,7 @@ define caching parser link-word (<source-location-token>)
       => token;
    slot text :: <string> = remove-multiple-spaces(token[1].text);
 attributes
-   close-quote-char :: false-or(<character>) = #f;
+   close-quote-chars :: false-or(<string>) = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -114,7 +114,7 @@ define caching parser link-line (<link-word-token>)
       => token;
    inherited slot text = remove-multiple-spaces(token[2].text);
 attributes
-   close-quote-char :: false-or(<character>) = #f;
+   close-quote-chars :: false-or(<string>) = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -126,7 +126,7 @@ define caching parser link-til-cls-brack (<link-word-token>)
       => token;
    inherited slot text = remove-multiple-spaces(token[1].text);
 attributes
-   close-quote-char :: false-or(<character>) = #f;
+   close-quote-chars :: false-or(<string>) = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -139,7 +139,7 @@ define caching parser filename :: <string>
    rule seq(quote-start, text-til-end-quote, quote-end) => tokens;
    yield tokens[1].text;
 attributes
-   close-quote-char :: false-or(<character>) = #f;
+   close-quote-chars :: false-or(<string>) = #f;
 end;
 
 define caching parser nickname-word :: <string>
