@@ -187,7 +187,7 @@ define function main (name, arguments)
       let doc-tree = create-doc-tree(toc-files, doc-files, src-files);
 
       if (*error-code*) exit() end;
-      create-output-files(doc-tree)
+      create-output-files(doc-tree);
 
       if (debugging?(#"doc-tree"))
          log("--- Doc tree ---");

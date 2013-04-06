@@ -9,7 +9,7 @@ define function parse-filename
    unless (value-string)
       error-in-config(location: locator(lines.first), config-name: name)
    end unless;
-   let value = as(<file-locator>, trim(value-string));
+   let value = as(<file-locator>, strip(value-string));
    make(<setting>, key: name, value: value)
 end function;
 
@@ -22,7 +22,7 @@ define function parse-directory
    unless (value-string)
       error-in-config(location: locator(lines.first), config-name: name)
    end unless;
-   let value = as(<directory-locator>, trim(value-string));
+   let value = as(<directory-locator>, strip(value-string));
    make(<setting>, key: name, value: value)
 end function;
 
@@ -35,7 +35,7 @@ define function parse-string
    unless (value-string)
       error-in-config(location: locator(lines.first), config-name: name)
    end unless;
-   make(<setting>, key: name, value: trim(value-string))
+   make(<setting>, key: name, value: strip(value-string))
 end function;
 
 define constant parse-char-list = parse-string;
@@ -46,8 +46,11 @@ define function parse-symbol-list
    (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
     locator :: <function>)
 => (setting :: <setting>)
-   let value-string = apply(join, "\n", header-rest | "", copy-sequence(lines, start: 1));
-   let symbol-strings = regexp-split("\\w", value-string);
+   let lines-and-header =
+         concatenate(vector(header-rest | ""), copy-sequence(lines, start: 1));
+   let value-string =
+         replace-elements!(join(lines-and-header, " "), whitespace?, always(' '));
+   let symbol-strings = split(value-string, ' ', remove-if-empty?: #t);
    unless (symbol-strings.size > 0)
       error-in-config(location: locator(lines.first), config-name: name)
    end unless;
@@ -64,7 +67,7 @@ define function parse-boolean-complement
    unless (value-string)
       error-in-config(location: locator(lines.first), config-name: name)
    end unless;
-   let value = select (trim(value-string) by case-insensitive-equal?)
+   let value = select (strip(value-string) by string-equal-ic?)
                   ("yes", "#t", "true") => #t;
                   ("no", "#f", "false") => #f;
                   otherwise =>
@@ -76,4 +79,15 @@ end function;
 
 
 // TODO: parse-quote-setting
+define function parse-quote-setting
+      (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
+       locator :: <function>)
+   #f
+end function;
+
 // TODO: parse-title-style
+define function parse-title-style
+      (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
+       locator :: <function>)
+   #f
+end function;

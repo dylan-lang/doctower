@@ -4,6 +4,7 @@ define module main
    use common;
    use conditions;
    use configs;
+   use config-files;
    use tasks;
    use markup-parser, import: { *parser-trace* };
    
