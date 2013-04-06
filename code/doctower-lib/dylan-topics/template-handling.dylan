@@ -53,7 +53,7 @@ define method topics-from-template
             else
                as(<string>, template-name)
             end if;
-      let dir = as(<directory-locator>, "template-output");
+      let dir = as(<directory-locator>, "./template-output");
       let locator = make(<file-locator>, directory: dir, base: base-name,
                          extension: *topic-file-extension*);
       with-open-file (template-output = locator, direction: #"output")
