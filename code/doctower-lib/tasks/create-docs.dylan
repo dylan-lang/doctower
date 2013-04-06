@@ -30,10 +30,16 @@ define method create-doc-tree
    let topics = concatenate(doc-file-topics, src-file-topics, catalog-topics)
          .remove-duplicates!;
 
+   if (debugging?(#"raw-topics"))
+      log("--- Raw topics ---");
+      print(topics, *standard-output*, pretty?: #t);
+      new-line(*standard-output*);
+   end if;
+
    // Check and combine API topic fragments.
    let grouped-topics = group-mergeable-topics(topics);
    let topics = map(check-and-merge-topics, grouped-topics);
-
+   
    // Index topics and sections by various means.
    // Check for duplicate IDs and other issues.
    let (target-res, dup-titles, dup-sqns) = topics.resolution-info;

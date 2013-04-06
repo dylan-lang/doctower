@@ -4,7 +4,9 @@ module: dylan-user
 /// model of the documentation and output.
 define module tasks
    use common;
-   use configs, import: { *output-types*, *output-directory*, *template-directory* };
+   use configs,
+      import: { *output-types*, *output-directory*, *template-directory*, 
+                debugging? };
    use conditions;
    use template-files;
    use source-files;

@@ -18,8 +18,8 @@ define variable *output-types* :: <sequence> = #[ #"html" ];
 define variable *scan-only?* :: <boolean> = #f;
 
 define constant $debug-features =
-      #[ #"dylan-parser", #"doc-tree", #"file-markup-parser", #"template-markup-parser",
-         #"template-output" ];
+      #[ #"doc-tree", #"raw-topics", #"dylan-parser", #"file-markup-parser",
+         #"template-markup-parser", #"template-output" ];
 
 define variable *debug-features* :: <sequence> = #[];
 
