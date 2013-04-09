@@ -14,6 +14,7 @@ define module main
    use pprint, import: { *default-line-length* };
    // from command-line-parser
    use command-line-parser;
+   use option-parser-protocol, import: { option-present? };
    // from system
    use locators, import: { locator-extension };
 end module;

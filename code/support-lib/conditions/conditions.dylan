@@ -374,4 +374,12 @@ define errors (<user-visible-error>)
    93 error-in-config
       "Config \"%s\" is not specified with the correct syntax",
       location, config-name;
+   
+   94 error-in-config-option
+      "Config \"%s\" does not allow \"%s\"",
+      location, config-name, option;
+      
+   95 illegal-character-in-section-style
+      "Section markup character \"%c\" not included in valid header characters \"%s\"",
+      section-header-char, header-chars;
 end errors;

@@ -59,7 +59,7 @@ define command-line <my-command-line-parser> ()
       help: "Hide progress messages";
    option new-config-file, 
       names: #("new-config"), 
-      variable: "FILENAME", help: "Create blank config file and exit",
+      variable: "FILENAME", help: "Create default config file and exit",
       kind: <parameter-option>;
    option help?,
       names: #("help", "h"),
@@ -148,18 +148,41 @@ define function main (name, arguments)
                string-equal-ic?(*config-file-extension*, loc.locator-extension)
             end method, file-locators);
    
-      set-configs-from-files(cfg-files);
+      set-configs-with-files(cfg-files);
 
       // Override configs with command-line options
 
-      *contents-file-extension* := args.toc-pattern;
-      *topic-file-extension* := args.doc-pattern;
-      *package-title* := args.package-title;
-      *scan-only?* := args.ignore-comments?;
-      *template-directory* := args.template-path;
-      *output-directory* := args.output-path;
-      *output-types* := args.output-formats;
-      *api-list-file* := args.api-list-filename;
+      if (args.toc-pattern-parser.option-present?)
+         *contents-file-extension* := args.toc-pattern;
+      end;
+
+      if (args.doc-pattern-parser.option-present?)
+         *topic-file-extension* := args.doc-pattern;
+      end;
+
+      if (args.package-title-parser.option-present?)
+         *package-title* := args.package-title;
+      end;
+
+      if (args.ignore-comments?-parser.option-present?)
+         *scan-only?* := args.ignore-comments?;
+      end;
+
+      if (args.template-path-parser.option-present?)
+         *template-directory* := args.template-path;
+      end;
+
+      if (args.output-path-parser.option-present?)
+         *output-directory* := args.output-path;
+      end;
+
+      if (args.output-formats-parser.option-present?)
+         *output-types* := args.output-formats;
+      end;
+
+      if (args.api-list-filename-parser.option-present?)
+         *api-list-file* := args.api-list-filename;
+      end;
 
       // Classify input files
 

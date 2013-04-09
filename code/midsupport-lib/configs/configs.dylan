@@ -52,7 +52,7 @@ define variable *quote-pairs* :: <vector> =
 
 /// Synopsis: The specifiers for each quote type in markup.
 /// Key is open-quote characters.
-define variable *quote-specs* =
+define variable *quote-specs* :: <string-table> =
       table(<string-table>,
             "{" =>   #[#"qv"],
             "'" =>   #[#"api", #"qv"],

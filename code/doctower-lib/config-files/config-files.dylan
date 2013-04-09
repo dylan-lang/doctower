@@ -1,11 +1,16 @@
 module: config-files
+synopsis: Processes .cfg files and declares information about configs.
 
 
 /**
 There can be multiple config files, but to prevent surprising precedence issues,
 they cannot set overlapping configs.
 **/
-define function set-configs-from-files (files :: <sequence>) => ()
+define function set-configs-with-files (files :: <sequence>) => ()
+   unless (files.empty?)
+      verbose-log("Reading config files");
+   end unless;
+
    let settings = reduce(concatenate, #[], map(config-file-settings, files));
    let settings-by-key = group-elements(settings,
          test: method (s1, s2) s1.key = s2.key end);
@@ -28,7 +33,7 @@ define function set-configs-from-files (files :: <sequence>) => ()
    
    let settings = map(first, single-settings);
    let quote-setting :: false-or(<quote-setting>) =
-         any?(method (s) s.key = #"quote-specs" end, settings);
+         any?(method (s) if (s.key = #"quote-specs") s end if end method, settings);
    if (quote-setting)
       let quote-pairs-setting = make(<setting>, key: #"quote-pairs",
             source-location: quote-setting.source-location,
@@ -38,17 +43,24 @@ define function set-configs-from-files (files :: <sequence>) => ()
    
    // Activate settings.
    
-   do(set-config, settings)
+   do(set-config, settings);
+   
+   // Check consistency.
+   
+   unless (member?(*section-style*.line-character, *ascii-line-chars*))
+      illegal-character-in-section-style(header-chars: *ascii-line-chars*,
+            section-header-char: *section-style*.line-character)
+   end unless;
 end function;
 
 
 define class <setting> (<source-location-mixin>)
-   slot key :: <symbol>, init-keyword: #"key";
-   slot value :: <object>, init-keyword: #"value";
+   constant slot key :: <symbol>, required-init-keyword: #"key";
+   constant slot value :: <object>, required-init-keyword: #"value";
 end class;
 
 define class <quote-setting> (<setting>)
-   slot quote-pairs :: <sequence>, init-keyword: #"quotes";
+   constant slot quote-pairs :: <sequence>, required-init-keyword: #"quote-pairs";
 end class;
 
 
@@ -67,7 +79,7 @@ define function set-config (setting :: <setting>) => ()
       #"section-style" =>           *section-style* :=            setting.value;
       #"template-directory" =>      *template-directory* :=       setting.value;
       #"topic-file-extension" =>    *topic-file-extension* :=     setting.value;
-   end select
+   end select;
 end function;
 
 
@@ -78,9 +90,9 @@ define table $setting-names = {
    #"contents-file-extension" => "TOC file extension",
    #"output-directory" =>        "Output directory",
    #"output-types" =>            "Doc formats",
-   #"package-title" =>           "Package title",
+   #"package-title" =>           "Documentation title",
    #"quote-pairs" =>             "Quote pairs",    // Unused, except for diagnostics.
-   #"quote-specs" =>             "Quote options",
+   #"quote-specs" =>             "Quotes",
    #"scan-only?" =>              "Ignore doc comments",
    #"section-style" =>           "Section markup",
    #"template-directory" =>      "Template directory",
@@ -105,60 +117,67 @@ define table $setting-parsers = {
 };
 
 
-/*
-define table $setting-writers = {
-   #"api-list-file" =>           write-filename,
-   #"ascii-line-chars" =>        write-char-list,
-   #"bullet-chars" =>            write-char-list,
-   #"contents-file-extension" => write-file-ext,
-   #"output-directory" =>        write-directory,
-   #"output-types" =>            write-symbol-list,
-   #"package-title" =>           write-string,
-   // #"quote-pairs" =>             #f,
-   #"quote-specs" =>             write-quote-setting,
-   #"scan-only?" =>              write-boolean-complement,
-   #"section-style" =>           write-title-style,
-   #"template-directory" =>      write-directory,
-   #"topic-file-extension" =>    write-file-ext
-};
-*/
- 
-
 define function config-file-settings (file :: <file-locator>)
 => (settings :: <sequence>)
    with-open-file (s = file)
       let lines = map(strip, read-lines-to-end(s));
       let noncomment-lines =
             choose(method (line) line.empty? | line.first ~= '#' end, lines);
-      let config-blocks = split(noncomment-lines,
-            method (lines :: <sequence>, start-idx :: <integer>, end-idx :: <integer>)
-            => (start-idx, end-idx)
-               let k = find-key(lines, empty?, start: start-idx, end: end-idx);
-               values(k, k & (k + 1))
-            end,
-            remove-if-empty?: #t);
+      let config-blocks = split-on-empty-lines(noncomment-lines);
 
       local method line-location (line :: <string>) => (loc :: <file-source-location>)
-               let line-num = find-key(lines, curry(\==, line));
+               let line-num = find-key(lines, curry(\==, line)) + 1;
                make(<file-source-location>, file: file,
                     start-line: line-num, end-line: line-num)
             end;
 
-      map(rcurry(config-block-setting, line-location), config-blocks)
+      let settings = make(<stretchy-vector>);
+      for (config-block in config-blocks)
+         block()
+            add!(settings, config-block-setting(config-block, line-location))
+         exception (<skip-error-restart>)
+         end block
+      end for;
+      choose(true?, settings)
    end with-open-file;
+end function;
+
+define function split-on-empty-lines (lines :: <sequence> /* of <string> */)
+=> (blocks :: <sequence> /* of <sequence> of <string> */)
+   split(lines,
+         method (lines :: <sequence>, start-idx :: <integer>, end-idx :: <integer>)
+         => (sep-start-idx, sep-end-idx)
+            if (start-idx < lines.size)
+               for (i :: <integer> from start-idx below end-idx,
+                     found? :: <boolean> = lines[start-idx].empty? then lines[i + 1].empty?,
+                     until: found?)
+               finally
+                  if (found?) values(i, i + 1) else values(#f) end
+               end for
+            else
+               values(#f)
+            end if
+         end method,
+         remove-if-empty?: #t)
 end function;
 
 
 define function config-block-setting (lines :: <sequence>, locator :: <function>)
-=> (setting :: <setting>)
+=> (setting :: false-or(<setting>))
    let (config-name, first-line-rest) = config-block-header(lines.first, locator);
-   let key = find-key($setting-names, curry(string-equal-ic?, config-name));
-   unless (key)
-      unknown-config-in-cfg-file(location: locator(lines.first),
-            config-name: config-name);
-   end unless;
-   let parser = $setting-parsers[key];
-   parser(lines, key, first-line-rest, locator)
+   if (config-name)
+      let key = find-key($setting-names, curry(string-equal-ic?, config-name));
+      if (key)
+         let parser = $setting-parsers[key];
+         parser(lines, key, first-line-rest, locator)
+      else
+         unknown-config-in-cfg-file(location: locator(lines.first),
+               config-name: config-name);
+      end if;
+   else
+      error-in-config(location: locator(lines.first),
+            config-name: lines.first)
+   end if;
 end function;
 
 

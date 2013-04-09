@@ -9,5 +9,5 @@ define module config-files
       import: { compile-regex, regex-search-strings };
    
    export
-      set-configs-from-files;
+      set-configs-with-files;
 end module;

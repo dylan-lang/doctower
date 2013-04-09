@@ -16,7 +16,7 @@ files:      doctower-library
             source-files/toc-file
             config-files/module
             config-files/config-files
-            config-files/parsers-writers
+            config-files/parsers
             topic-resolver/module
             topic-resolver/arranging
             topic-resolver/merging
