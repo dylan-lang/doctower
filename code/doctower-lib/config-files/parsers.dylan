@@ -5,18 +5,34 @@ synopsis: Converts between .cfg and internal representations of each setting.
 define constant $illegal-quote-chars = "()[]";
 define constant $valid-quote-options = #[ "unq", "sic", "q", "qq", "code",
       "term", "bib", "api", "em", "b", "i", "u", "qv", "vi" ];
-      
+
+define constant $valid-output-types = #[ "html", "dita" ];
+
 define constant $valid-line-positions = #[ "above", "below", "sides" ];
+
+
+define table $setting-parsers = {
+   #"api-list-file" =>           parse-filename,
+   #"ascii-line-chars" =>        parse-char-list,
+   #"bullet-chars" =>            parse-char-list,
+   #"contents-file-extension" => parse-file-ext,
+   #"output-directory" =>        parse-directory,
+   #"output-types" =>            rcurry(parse-symbol-list, $valid-output-types),
+   #"package-title" =>           parse-string,
+   // #"quote-pairs" =>             #f,
+   #"quote-specs" =>             parse-quote-setting,
+   #"scan-only?" =>              parse-boolean-complement,
+   #"section-style" =>           parse-title-style,
+   #"template-directory" =>      parse-directory,
+   #"topic-file-extension" =>    parse-file-ext
+};
+
 
 define function parse-filename
    (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
     locator :: <function>)
 => (setting :: <setting>)
    let value-string = header-rest | element(lines, 1, default: #f);
-   unless (value-string)
-      error-in-config(location: locator(lines.first),
-            config-name: $setting-names[name])
-   end unless;
    let value = as(<file-locator>, strip(value-string));
    make(<setting>, key: name, value: value)
 end function;
@@ -27,10 +43,6 @@ define function parse-directory
     locator :: <function>)
 => (setting :: <setting>)
    let value-string = header-rest | element(lines, 1, default: #f);
-   unless (value-string)
-      error-in-config(location: locator(lines.first),
-            config-name: $setting-names[name])
-   end unless;
    let value = as(<directory-locator>, strip(value-string));
    make(<setting>, key: name, value: value)
 end function;
@@ -41,10 +53,6 @@ define function parse-string
     locator :: <function>)
 => (setting :: <setting>)
    let value-string = header-rest | element(lines, 1, default: #f);
-   unless (value-string)
-      error-in-config(location: locator(lines.first),
-            config-name: $setting-names[name])
-   end unless;
    make(<setting>, key: name, value: strip(value-string))
 end function;
 
@@ -54,7 +62,7 @@ define constant parse-file-ext = parse-string;
 
 define function parse-symbol-list
    (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
-    locator :: <function>)
+    locator :: <function>, valid-strings :: <sequence>)
 => (setting :: <setting>)
    let lines-and-header =
          concatenate(vector(header-rest | ""), copy-sequence(lines, start: 1));
@@ -65,6 +73,12 @@ define function parse-symbol-list
       error-in-config(location: locator(lines.first),
             config-name: $setting-names[name])
    end unless;
+   for (symbol-string in symbol-strings)
+      unless (member?(symbol-string, valid-strings, test: string-equal-ic?))
+         error-in-config-option(location: locator(lines.first), option: symbol-string,
+               config-name: $setting-names[name]);
+      end unless
+   end for;
    let symbols = map(curry(as, <symbol>), symbol-strings);
    make(<setting>, key: name, value: symbols)
 end function;
@@ -75,10 +89,6 @@ define function parse-boolean-complement
     locator :: <function>)
 => (setting :: <setting>)
    let value-string = header-rest | element(lines, 1, default: #f);
-   unless (value-string)
-      error-in-config(location: locator(lines.first), 
-            config-name: $setting-names[name])
-   end unless;
    let value = select (strip(value-string) by string-equal-ic?)
                   ("yes", "#t", "true") => #t;
                   ("no", "#f", "false") => #f;
@@ -91,7 +101,7 @@ end function;
 
 
 define constant $quote-setting-regex =
-      compile-regex("^\\s*(\\S+)\\s+(\\S+)\\s+\\[\\s*([a-zA-Z ]+)\\s*\\]\\s*$");
+      compile-regex("^(\\S+)\\s+(\\S+)\\s+\\[\\s*([a-zA-Z ]+)\\s*\\]$");
 
 define function parse-quote-setting
       (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
@@ -154,16 +164,12 @@ end function;
 
 
 define constant $section-style-regex =
-      compile-regex("^\\s*'(\\S)'\\s+(\\w+)(?:,\\s*(\\w+))?(?:,\\s*(\\w+))?\\s*$");
+      compile-regex("^'(\\S)'\\s+(\\w+)(?:,\\s*(\\w+))?(?:,\\s*(\\w+))?$");
 
 define function parse-title-style
       (lines :: <sequence>, name :: <symbol>, header-rest :: false-or(<string>),
        locator :: <function>)
    let value-string = header-rest | element(lines, 1, default: #f);
-   unless (value-string)
-      error-in-config(location: locator(lines.first), 
-            config-name: $setting-names[name])
-   end unless;
    let (match, char-str, pos-1, pos-2, pos-3) =
          regex-search-strings($section-style-regex, value-string);
    unless (match & char-str & pos-1)

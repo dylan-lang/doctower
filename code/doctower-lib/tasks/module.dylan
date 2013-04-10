@@ -18,5 +18,5 @@ define module tasks
    use file-system, import: { file-exists? };
    
    export
-      create-doc-tree, create-output-files, create-config-file;
+      create-doc-tree, create-output-files;
 end module;

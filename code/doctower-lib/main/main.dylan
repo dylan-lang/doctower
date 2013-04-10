@@ -122,7 +122,7 @@ define function main (name, arguments)
 
    case
        args.new-config-file =>
-         verbose-log("Writing %s\n", args.new-config-file);
+         verbose-log("Writing %s", args.new-config-file);
          create-config-file(args.new-config-file);
          exit-application(0);
       args.help? =>

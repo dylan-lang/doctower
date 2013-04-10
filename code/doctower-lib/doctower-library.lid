@@ -17,6 +17,7 @@ files:      doctower-library
             config-files/module
             config-files/config-files
             config-files/parsers
+            config-files/writer
             topic-resolver/module
             topic-resolver/arranging
             topic-resolver/merging
@@ -25,6 +26,5 @@ files:      doctower-library
             topic-resolver/placeholders
             tasks/module
             tasks/create-docs
-            tasks/create-config-file
             main/module
             main/main
