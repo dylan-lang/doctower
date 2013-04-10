@@ -24,7 +24,6 @@ files:      doctower-library
             topic-resolver/cataloging
             topic-resolver/resolving
             topic-resolver/placeholders
-            tasks/module
-            tasks/create-docs
             main/module
+            main/create-docs
             main/main

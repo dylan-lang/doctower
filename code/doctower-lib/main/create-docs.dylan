@@ -1,4 +1,4 @@
-module: tasks
+module: main
 
 
 define method create-doc-tree
