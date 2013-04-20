@@ -63,7 +63,6 @@ define variable *quote-specs* :: <string-table> =
 
 
 /// Synopsis: The underline/overline style of a section (as opposed to topic).
-/// TODO: Should be configurable.
 define variable *section-style* :: <topic-level-style> =
       make(<topic-level-style>, char: '-', under: #f, mid: #t, over: #f);
 
