@@ -162,7 +162,7 @@ end method;
 
 
 define method add-html-link-info
-   (content :: type-union(<footnote>, <ph-marker>),
+   (content :: type-union(<footnote>, <line-marker>),
     #key setter, visited, target-info, current-topic, fallback-ids, output-file)
 => (visit-slots? :: <boolean>)
    let raw-topic-id = current-topic.id | fallback-ids[current-topic];
@@ -173,9 +173,10 @@ define method add-html-link-info
    let info-class =
          select (content by instance?)
             <footnote> => <footnote-target>;
-            <ph-marker> => <ph-marker-target>;
+            <line-marker> => <line-marker-target>;
          end select;
-   target-info[content] := make(info-class, id: content-id, href: content-href);
+   target-info[content] := make(info-class, id: content-id, href: content-href,
+         markup-id: raw-content-id);
    #t
 end method;
 
@@ -289,8 +290,8 @@ define method write-output-file
                   end if
                end method,
          "id" =>
-               method (topic :: <topic>) => (id :: <string>)
-                  target-info[topic].target-id
+               method (target :: type-union(<topic>, <footnote>)) => (id :: <string>)
+                  target-info[target].target-id
                end method,
          "markup-id" =>
                method (topic :: <topic>) => (id :: <string>)
@@ -488,6 +489,12 @@ define method html-content (char :: <character>, target-info)
 end method;
 
 
+define method html-content (int :: <integer>, target-info)
+=> (html :: <string>)
+   sanitized-xml(integer-to-string(int))
+end method;
+
+
 define method html-content (sect :: <section>, target-info)
 => (html :: <string>)
    let section-content = html-content(sect.content, target-info);
@@ -529,11 +536,16 @@ define method html-content (xref :: <xref>, target-info)
          let href = target-info[xref.target].target-href.sanitized-xml;
          format-to-string("<a href=\"../%s\">%s</a>", href, title);
       <footnote> =>
-         let title = xref.target.index.sanitized-xml;
+         let title = html-content(xref.target.index, target-info);
          let href = target-info[xref.target].target-href.sanitized-xml;
-         format-to-string("<a class=\"footnote-ref\" href=\"../%s\">[%s]</a>", href, title);
+         format-to-string("<a class=\"footnote-ref\" href=\"../%s\"><sup>%s</sup></a>",
+               href, title);
+      <line-marker> =>
+         let title = html-content(xref.target.index, target-info);
+         let href = target-info[xref.target].target-href.sanitized-xml;
+         format-to-string("<a class=\"line-ref\" href=\"../%s\">%s</a>", href, title);
       otherwise =>
-         // TODO: Xref output for exhibits and ph-markers.
+         // TODO: Xref output for exhibits.
          next-method();
    end select
 end method;
@@ -541,7 +553,7 @@ end method;
 
 define method html-content (footnote :: <footnote>, target-info)
 => (html :: <string>)
-   let title = footnote.index.sanitized-xml;
+   let title = html-content(footnote.index, target-info);
    let content = html-content(footnote.content, target-info);
    format-to-string("<span class=\"footnote-label\">%s</span> %s", title, content)
 end method;
@@ -621,6 +633,11 @@ define method html-content (code :: type-union(<code-block>, <pre>), target-info
    html-entag("pre", code.content, target-info)
 end method;
 
+
+define method html-content (marker :: <line-marker>, target-info)
+=> (html :: <string>)
+   format-to-string("<a id=\"%s\" />", target-info[marker].target-id)
+end method;
 
 define method html-content (raw :: <dita-content>, target-info)
 => (html :: <string>)

@@ -19,7 +19,7 @@ define module markup-rep
       <italic>, <library-doc>, <macro-doc>, <many-line-defn-list>,
       <many-line-parm-list>, <line-marker-placeholder>, <markup-seq>,
       <module-doc>, <note>, <one-line-defn-list>, <one-line-parm-list>,
-      <ordered-list>, <paragraph>, <parm-list>, <ph-marker>, <placeholder-doc>,
+      <ordered-list>, <paragraph>, <parm-list>, <line-marker>, <placeholder-doc>,
       <pre>, <ref-topic>, <section>, <simple-table>, <target-placeholder>,
       <term-style>, <term>, <title-seq>, <topic-ref>, <topic>,
       <topic-content-seq>, <underline>, <unordered-list>, <variable-doc>,
@@ -56,6 +56,7 @@ define module markup-rep
 
    export
       stringify-title, stringify-markup, printed-topic-type,
-      visit-target-references, visit-content-references, visit-targets;
+      visit-target-references, visit-content-references, visit-markup-references,
+      visit-targets;
       
 end module;

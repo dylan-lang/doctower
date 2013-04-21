@@ -8,7 +8,7 @@ Synopsis: List of elements corresponding to the markup-words grammar.
    image-ref         - <inline-image>
    quote             - <xref>, <vi-xref>, <api-name>, <bold>, etc.
    bracketed-render-span   - <dita-content> or <html-content>
-   line-marker-ref   - An <xref> to a <ph-marker> or <line-marker-placeholder>.
+   line-marker-ref   - An <xref> to a <line-marker> or <line-marker-placeholder>.
    footnote-ref      - An <xref> to a <footnote> or <footnote-placeholder>.
    exhibit-ref       - An <xref> to an <exhibit> or <exhibit-placeholder>.
    synopsis-ref      - <conref>
@@ -78,7 +78,7 @@ end class;
 
 /// In DITA, exhibits are done with <fig>.
 define class <exhibit> (<markup-element>)
-   slot index :: type-union(<character, <integer>),
+   slot index :: type-union(<character>, <integer>),
          init-keyword: #"index";
    slot title :: false-or(<string>) = #f,
          init-keyword: #"title";
@@ -188,7 +188,7 @@ end class;
 /// DITA <codeph> is a sub-class of <ph>, but I'm not using them at all the same.
 /// Don't want to include content in the tag in case DITA processors won't consider
 /// it as code in a code block.
-define class <ph-marker> (<markup-element>)
+define class <line-marker> (<markup-element>)
    slot index :: type-union(<integer>, <character>), 
          init-keyword: #"index";
 end class;
@@ -199,7 +199,7 @@ define class <inline-image> (<markup-element>)
 end class;
 
 define class <pre> (<markup-element>)
-   slot content :: <sequence> /* of <string>, <ph-marker> */
+   slot content :: <sequence> /* of <string>, <line-marker> */
          = make(<stretchy-vector>);
 end class;
 

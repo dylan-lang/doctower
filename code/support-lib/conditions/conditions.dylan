@@ -382,4 +382,12 @@ define errors (<user-visible-error>)
    95 illegal-character-in-section-style
       "Section markup character \"%c\" not included in valid header characters \"%s\"",
       section-header-char, header-chars;
+      
+   96 no-target-for-indexed-reference
+      "Markup does not include %s \"%s\"",
+      location, reference-type, reference-index;
+      
+   97 footnote-referenced-outside-topic
+      "Footnote \"%s\" must be defined in same topic",
+      location, reference-index;
 end errors;

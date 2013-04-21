@@ -179,9 +179,10 @@ end;
 
 // exported
 define caching parser exhibit (<source-location-token>)
-   rule seq(sol, opt-brack-spc, exhibit-lit, many-spc-ls, choice(number, ordinal),
+   rule seq(sol, opn-brack-spc, exhibit-lit, many-spc-ls, choice(number, ordinal),
             spc-cls-brack, colon, opt-seq(spaces, text-til-ls), ls,
             division-content)
+      => tokens;
    slot index :: type-union(<integer>, <character>) = tokens[3];
    slot caption :: false-or(<string>) =
       tokens[7] & remove-multiple-spaces(tokens[7][1].text);

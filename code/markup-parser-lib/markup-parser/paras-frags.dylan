@@ -96,7 +96,7 @@ end;
 // content promoted to <raw-line-token> -- includes literal string representation
 define caching parser raw-line-end (<token>)
    rule seq(opt(line-marker), ls) => tokens;
-   slot text :: <string> = (tokens[0] & tokens[0].content) | "";
+   slot text :: <string> = (tokens[0] & tokens[0].text) | "";
    slot index :: false-or(type-union(<integer>, <character>)) =
       tokens[0] & tokens[0].index
 end;

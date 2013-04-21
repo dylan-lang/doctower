@@ -23,7 +23,6 @@ files:      doctower-library
             topic-resolver/merging
             topic-resolver/cataloging
             topic-resolver/resolving
-            topic-resolver/placeholders
             main/module
             main/create-docs
             main/main

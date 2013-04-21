@@ -3,18 +3,18 @@ synopsis: Intermediate elements from quote directives.
 
 
 define class <xref> (<markup-element>)
-   // If the target is <topic>, <footnote>, <exhibit>, <ph-marker>, or <section>,
+   // If the target is <topic>, <footnote>, <exhibit>, <line-marker>, or <section>,
    // the DITA xref tag will have a format attr of "dita," else based on the URL;
    // the scope attr will be "local," else "external." If the text is <conref>,
    // its style must be #"title" and the target's title is used as the text.
-   slot target :: type-union(<topic>, <footnote>, <exhibit>, <section>, <ph-marker>,
+   slot target :: type-union(<topic>, <footnote>, <exhibit>, <section>, <line-marker>,
                              <url>, <target-placeholder>, <footnote-placeholder>,
                              <line-marker-placeholder>, <exhibit-placeholder>),
          init-keyword: #"target";
    // Can be a <conref>, <title-seq>, or anything allowed in a <title-seq>. This
    // includes <cite> which is not normally allowed in DITA <xref>, but we put
    // the link text in a <ph> so it is okay. Ignored for <footnote>, <exhibit>,
-   // and <ph-marker> targets.
+   // and <line-marker> targets.
    slot markup-text = make(<title-seq>),
          init-keyword: #"text";
    slot target-from-text? :: <boolean> = #f,

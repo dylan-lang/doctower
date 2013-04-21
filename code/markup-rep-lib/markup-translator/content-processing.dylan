@@ -69,7 +69,7 @@ define method process-tokens
    (blk :: <pre>, line-token :: <raw-line-token>)
 => ()
    when (line-token.token-index)
-      add!(blk.content, make(<ph-marker>, index: line-token.token-index,
+      add!(blk.content, make(<line-marker>, index: line-token.token-index,
                              source-location: line-token.token-src-loc));
    end when;
    add!(blk.content, concatenate(line-token.token-text, "\n"));

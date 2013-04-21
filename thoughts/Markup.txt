@@ -412,25 +412,29 @@ lower-case words are parameters.
 content
   Create an exhibit. The content extends until the next topic, section, exhibit,
   or footnote. The scope of "n" is the current comment block or file and does
-  not overlap with footnotes or line markers. "n" may be a letter or number.
+  not overlap with footnotes or line markers. "n" may be a letter or number, and
+  is case sensitive.
   
 ... [EXHIBIT n] ...
   Link to an exhibit. The link text is replaced by the caption if available.
   
 [n]: ...
-  Create a footnote. The content extends until the next topic, section, exhibit,
-  or footnote. The scope of "n" is the current comment block or file and does
-  not overlap with exhibits or line markers. "n" may be a letter or number, but
-  is only for your reference. The footnote could be renumbered and relocated
-  upon output.
+  Create a footnote. The content extends until the next topic, section,
+  exhibit, or footnote. The scope of "n" is the current comment block or file
+  and does not overlap with exhibits or line markers. "n" may be a letter or
+  number, and is case sensitive, but it is only for your reference. The
+  footnote could be renumbered and relocated upon output.
 
 ... [n] ...
-  Link to a footnote. Appears as a superscript.
+  Link to a footnote. Appears as a superscript. Footnotes cannot link across
+  topics; the footnote "[n]:" must appear in the same topic as this "[n]"
+  directive.
   
 ... [:n]
   Create a line marker. Only recognized at the end of a verbatim or code block
   line. The scope of "n" is the current comment block or file and does not
-  overlap with footnotes or exhibits. "n" may be a letter or number.
+  overlap with footnotes or exhibits. "n" may be a letter or number, and is
+  case sensitive.
   
 ... [:n] ...
   Link to a line marker. Recognized outside of verbatim or code block lines.

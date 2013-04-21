@@ -120,7 +120,8 @@ end slot-visitor;
 
 /// Generic function: visit-markup-references
 /// Synopsis: Visit a <topic> and its nested elements that can contain
-/// <footnote-placeholder> or <exhibit-placeholder> objects.
+/// <footnote-placeholder>, <exhibit-placeholder>, or <line-marker-placeholder>
+/// objects.
 ///
 /// Arguments:
 ///   element     - The <markup-element> or collection to visit.
@@ -130,48 +131,49 @@ end slot-visitor;
 
 define collection-recursive slot-visitor visit-markup-references
    // Topic elements
-   <topic>,                content, footnotes;
-   <api-doc>,              declarations-section;
-   <library-doc>,          modules-section;
-   <module-doc>,           bindings-section;
-   <class-doc>,            adjectives-section, keywords-section, conds-section,
-                           inheritables-section, supers-section, subs-section,
-                           funcs-on-section, funcs-returning-section;
-   <function-doc>,         adjectives-section, args-section, vals-section, conds-section;
-   <variable-doc>,         adjectives-section, value-section;
-   <macro-doc>,            syntax-section, args-section, vals-section;
-   <placeholder-doc>,      ;
-   <unbound-doc>,          ;
+   <topic>,                   content, footnotes;
+   <api-doc>,                 declarations-section;
+   <library-doc>,             modules-section;
+   <module-doc>,              bindings-section;
+   <class-doc>,               adjectives-section, keywords-section, conds-section,
+                              inheritables-section, supers-section, subs-section,
+                              funcs-on-section, funcs-returning-section;
+   <function-doc>,            adjectives-section, args-section, vals-section, conds-section;
+   <variable-doc>,            adjectives-section, value-section;
+   <macro-doc>,               syntax-section, args-section, vals-section;
+   <placeholder-doc>,         ;
+   <unbound-doc>,             ;
    
    // Body elements
-   <defn-list>,            items;
-   <footnote>,             content;
-   <exhibit>,              content;
-   <note>,                 content;
-   <ordered-list>,         items;
-   <paragraph>,            content;
-   <section>,              content;
-   <simple-table>,         items;
-   <unordered-list>,       items;
+   <defn-list>,               items;
+   <footnote>,                content;
+   <exhibit>,                 content;
+   <note>,                    content;
+   <ordered-list>,            items;
+   <paragraph>,               content;
+   <section>,                 content;
+   <simple-table>,            items;
+   <unordered-list>,          items;
    
    // Quote elements
-   <api/parm-name>,        markup-text;
-   <bold>,                 markup-text;
-   <cite>,                 markup-text;
-   <code-phrase>,          markup-text;
-   <emphasis>,             markup-text;
-   <italic>,               markup-text;
-   <term-style>,           markup-text;
-   <term>,                 markup-text;
-   <underline>,            markup-text;
-   <xref>,                 target, markup-text;
+   <api/parm-name>,           markup-text;
+   <bold>,                    markup-text;
+   <cite>,                    markup-text;
+   <code-phrase>,             markup-text;
+   <emphasis>,                markup-text;
+   <italic>,                  markup-text;
+   <term-style>,              markup-text;
+   <term>,                    markup-text;
+   <underline>,               markup-text;
+   <xref>,                    target, markup-text;
 
    // Placeholders
-   <footnote-placeholder>, ;
-   <exhibit-placeholder>,  ;
+   <footnote-placeholder>,    ;
+   <exhibit-placeholder>,     ;
+   <line-marker-placeholder>, ;
    
    // Cut collection recursion
-   <string>                ;
+   <string>                   ;
 end slot-visitor;
 
 
@@ -179,7 +181,7 @@ end slot-visitor;
 /// Synopsis: Visit a <topic> and its nested elements that can contain <xref> or
 /// <conref> targets.
 ///
-/// These targets are <topic>, <section>, <footnote>, <exhibit>, and <ph-marker>.
+/// These targets are <topic>, <section>, <footnote>, <exhibit>, and <line-marker>.
 ///
 /// Arguments:
 ///   element     - The <markup-element> or collection to visit.
@@ -211,7 +213,7 @@ define collection-recursive slot-visitor visit-targets
    <unordered-list>,  items;
    <defn-list>,       items;
    <simple-table>,    items;
-   <ph-marker>,       ;
+   <line-marker>,     ;
    <pre>,             content;
    
    // Cut collection recursion

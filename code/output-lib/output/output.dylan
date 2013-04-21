@@ -69,7 +69,7 @@ end class;
 define class <footnote-target> (<target>)
 end class;
 
-define class <ph-marker-target> (<target>)
+define class <line-marker-target> (<target>)
 end class;
 
 define class <exhibit-target> (<target>)
@@ -161,7 +161,7 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
          let line-list = make(<stretchy-vector>);
 
          local method add-to-list
-                  (obj :: type-union(<section>, <footnote>, <ph-marker>),
+                  (obj :: type-union(<section>, <footnote>, <line-marker>),
                    #key setter, visited)
                => (visit-slots? :: <boolean>)
                   select (obj by instance?)
@@ -171,7 +171,7 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
                         footnote-list := add!(footnote-list, obj);
                      <exhibit> =>
                         exhibit-list := add!(exhibit-list, obj);
-                     <ph-marker> =>
+                     <line-marker> =>
                         line-list := add!(line-list, obj);
                   end select;
                   #t

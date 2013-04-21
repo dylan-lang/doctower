@@ -68,6 +68,13 @@ information, and be absolutely sure of parm-lists.
 Implement comment block that follow the element to be documented, à la Doxygen's
 "//<" comments.
 
+------
+
+Handle spaces in markup better. Sometimes spaces (or lack of spaces) needs to be
+preserved. For example, "Footnote [1]." renders as "Footnote<sup>1</sup> ." Note
+the extra space. This is done for the special case of quotes, but needs to be
+generalized.
+
 
 ============
 Bonus Points

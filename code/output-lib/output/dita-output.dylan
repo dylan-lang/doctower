@@ -134,7 +134,7 @@ end method;
 
 
 define method add-dita-link-info
-   (content :: type-union(<footnote>, <exhibit>, <ph-marker>),
+   (content :: type-union(<footnote>, <exhibit>, <line-marker>),
     #key setter, visited, target-info, current-topic, fallback-ids, output-file)
 => (visit-slots? :: <boolean>)
    let topic-id = (current-topic.id | fallback-ids[current-topic]).sanitized-id;
@@ -145,7 +145,7 @@ define method add-dita-link-info
          select (content by instance?)
             <footnote> => <footnote-target>;
             <exhibit> => <exhibit-target>;
-            <ph-marker> => <ph-marker-target>;
+            <line-marker> => <line-marker-target>;
          end select;
    target-info[content] := make(info-class, id: content-id, href: content-href);
    #t
@@ -396,6 +396,12 @@ define method dita-content (char :: <character>, target-info)
 end method;
 
 
+define method dita-content (int :: <integer>, target-info)
+=> (html :: <string>)
+   sanitized-xml(integer-to-string(int))
+end method;
+
+
 define method dita-content (sect :: <section>, target-info)
 => (dita :: <string>)
    let section-content = dita-content(sect.content, target-info);
@@ -426,7 +432,7 @@ define method dita-content (xref :: <xref>, target-info)
    let title = dita-content(xref.markup-text, target-info);
    let (href, scope) =
          select (xref.target by instance?)
-            (<topic>, <section>, <footnote>, <exhibit>, <ph-marker>) =>
+            (<topic>, <section>, <footnote>, <exhibit>, <line-marker>) =>
                let base-href = target-info[xref.target].target-href;
                let href = concatenate("../", base-href).sanitized-xml;
                values(href, #f);
@@ -460,7 +466,7 @@ end method;
 
 define method dita-content (footnote :: <footnote>, target-info)
 => (dita :: <string>)
-   let id = target-info[footnote].target-id.santized-xml;
+   let id = target-info[footnote].target-id.sanitized-xml;
    let content = dita-content(footnote.content, target-info);
    format-to-string("<fn id=\"%s\">%s</fn>", id, content)
 end method;
@@ -556,6 +562,9 @@ define method dita-content (code :: <pre>, target-info)
 => (dita :: <string>)
    dita-entag("pre", code.content, target-info)
 end method;
+
+
+// TODO: Implement missing bit to link to lines within code block.
 
 
 define method dita-content (raw :: <dita-content>, target-info)

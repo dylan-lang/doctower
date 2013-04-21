@@ -30,7 +30,13 @@ define method topics-from-markup
 
       topics := concatenate(topics, map(make-topic-from-token, token.token-topics));
    
-      // TODO: Resolve markers, exhibits, and footnotes.
+      // Resolve markers, exhibits, and footnotes. The scope of the numeric
+      // identifier of a line marker, exhibit, or footnote number in any topic
+      // or section of the markup is isolated to 'token'; this function is the
+      // highest point at which they can be properly resolved.
+      resolve-line-markers(topics);
+      resolve-exhibits(topics);
+      resolve-footnotes(topics);
       
    end with-dynamic-bindings;
    
