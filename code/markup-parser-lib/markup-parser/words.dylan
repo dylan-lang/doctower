@@ -19,15 +19,11 @@ define constant <title-word-types> =
                  <bracketed-render-span-token>,
                  <text-word-token>);
 
-// These result in an error if actually used in type specifications.
-// define constant <markup-word-sequence> =
-//       limited(<sequence>, of: <markup-word-types>);
-// 
-// define constant <link-word-sequence> =
-//       limited(<sequence>, of: <link-word-token>);
+define constant <markup-word-sequence> =
+      limited(<vector>, of: <markup-word-types>);
 
-define constant <markup-word-sequence> = <sequence>;
-define constant <link-word-sequence> = <sequence>;
+define constant <link-word-sequence> =
+      limited(<vector>, of: <link-word-token>);
 
 //
 // Markup & title words
@@ -35,12 +31,12 @@ define constant <link-word-sequence> = <sequence>;
 
 define caching parser markup-words :: <markup-word-sequence>
    rule many(seq(markup-word, opt-spaces)) => items;
-   yield collect-subelements(items, 0);
+   yield as(<markup-word-sequence>, collect-subelements(items, 0));
 end;
 
 define caching parser markup-words-til-hyphen-spc :: <markup-word-sequence>
    rule many(seq(not-next(hyphen-spc), markup-word, opt-spaces)) => items;
-   yield collect-subelements(items, 1);
+   yield as(<markup-word-sequence>, collect-subelements(items, 1));
 end;
 
 define caching parser markup-word :: <markup-word-types>
@@ -87,12 +83,12 @@ end;
 
 define caching parser link-word-lines :: <link-word-sequence>
    rule many(seq(sol, link-words, ls)) => tokens;
-   yield integrate-sequences(collect-subelements(tokens, 1));
+   yield as(<link-word-sequence>, integrate-sequences(collect-subelements(tokens, 1)));
 end;
 
 define caching parser link-words :: <link-word-sequence>
    rule seq(link-word, opt-many(seq(spaces, link-word))) => tokens;
-   yield first-item-and-last-subelements(tokens);
+   yield as(<link-word-sequence>, first-item-and-last-subelements(tokens));
 end;
 
 // exported

@@ -14,7 +14,7 @@ define constant <title-seq> = limited(<stretchy-vector>,
       of: type-union(<string>, <character>, <inline-image>, <html-content>,
                      <dita-content>, <api/parm-name>, <cite>, <term>, <term-style>,
                      <code-phrase>, <entity>, <bold>, <italic>, <underline>,
-                     <emphasis>, singleton(#f)));
+                     <emphasis>));
 
 define method title-seq (#rest elements) => (seq :: <title-seq>)
    make-limited-seq(<title-seq>, elements)
@@ -35,7 +35,7 @@ Synopsis: List of elements corresponding to topic-content grammar.
 define constant <topic-content-seq> = limited(<stretchy-vector>,
       of: type-union(<code-block>, <pre>, <fig>, <ditto-placeholder>,
                      <simple-table>, <unordered-list>, <ordered-list>, <defn-list>,
-                     <paragraph>, <note>, <section>, <footnote>, singleton(#f)));
+                     <paragraph>, <note>, <section>, <footnote>));
 
 define method topic-content-seq (#rest elements) => (seq :: <topic-content-seq>)
    make-limited-seq(<topic-content-seq>, elements)

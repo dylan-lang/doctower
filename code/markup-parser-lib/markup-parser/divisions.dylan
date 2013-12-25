@@ -29,15 +29,11 @@ define constant <division-content-types> =
                  <indented-content-directive-token>,
                  <paragraph-token>);
 
-// These result in an error if actually used in type specifications.
-// define constant <topic-content-sequence> =
-//       limited(<sequence>, of: <topic-content-types>);
-// 
-// define constant <division-content-sequence> =
-//       limited(<sequence>, of: <division-content-types>);
+define constant <topic-content-sequence> =
+      limited(<vector>, of: <topic-content-types>);
 
-define constant <topic-content-sequence> = <sequence>;
-define constant <division-content-sequence> = <sequence>;
+define constant <division-content-sequence> =
+      limited(<vector>, of: <division-content-types>);
 
 //
 // Markup
@@ -54,7 +50,8 @@ end;
 // exported
 define caching parser markup-content (<source-location-token>)
    rule seq(opt(topic-content), opt-many(topic)) => tokens;
-   slot default-topic-content :: <topic-content-sequence> = tokens[0] | #[];
+   slot default-topic-content :: <topic-content-sequence> = 
+      as(<topic-content-sequence>, tokens[0] | #[]);
    slot topics :: <sequence>
       /* of <directive-topic-token> or <titled-topic-token> */ =
       tokens[1] | #[]; 
@@ -78,7 +75,8 @@ define caching parser directive-topic (<source-location-token>)
    slot topic-title :: <topic-directive-title-token> = tokens[0];
    slot topic-nickname :: false-or(<title-nickname-token>) =
       tokens[0].title-nickname;
-   slot content :: <topic-content-sequence> = tokens[1] | #[];
+   slot content :: <topic-content-sequence> =
+      as(<topic-content-sequence>, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -89,14 +87,15 @@ define caching parser titled-topic (<source-location-token>)
    slot topic-title :: <topic-or-section-title-token> = tokens[0];
    slot topic-nickname :: false-or(<title-nickname-token>) =
       tokens[0].title-nickname;
-   slot content :: <topic-content-sequence> = tokens[1] | #[];
+   slot content :: <topic-content-sequence> =
+      as(<topic-content-sequence>, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
 
 define caching parser topic-content :: <topic-content-sequence>
    rule many(choice(section, footnote, division-content)) => tokens;
-   yield integrate-sequences(tokens);
+   yield as(<topic-content-sequence>, integrate-sequences(tokens));
 end;
 
 //
@@ -140,7 +139,8 @@ define caching parser titled-section (<source-location-token>)
    slot section-title :: <topic-or-section-title-token> = tokens[0];
    slot section-nickname :: false-or(<title-nickname-token>) =
       tokens[0].title-nickname;
-   slot content :: <division-content-sequence> = tokens[1] | #[];
+   slot content :: <division-content-sequence> =
+      as(<division-content-sequence>, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -154,7 +154,8 @@ define caching parser section-directive (<source-location-token>)
    slot section-title :: <section-directive-title-token> = tokens[0];
    slot section-nickname :: false-or(<title-nickname-token>) =
       tokens[0].title-nickname;
-   slot content :: <division-content-sequence> = tokens[1] | #[];
+   slot content :: <division-content-sequence> =
+      as(<division-content-sequence>, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -183,7 +184,8 @@ define caching parser division-content :: <division-content-sequence>
    rule many(choice(seq(nil(#f), indented-content),
                     seq(not-next(division-break), content-block)))
       => tokens;
-   yield choose(true?, collect-subelements(tokens, 1));
+   yield as(<division-content-sequence>,
+            choose(true?, integrate-sequences(collect-subelements(tokens, 1))));
 end;
 
 define caching parser division-break
@@ -194,7 +196,7 @@ end;
 // The choose removes #f (i.e. blank-lines) from the content blocks.
 define caching parser indented-content :: <division-content-sequence>
    rule seq(indent, many(content-block), dedent) => tokens;
-   yield choose(true?, tokens[1]);
+   yield as(<division-content-sequence>, choose(true?, tokens[1]));
 end;
 
 define caching parser remainder-and-indented-content :: <division-content-sequence>

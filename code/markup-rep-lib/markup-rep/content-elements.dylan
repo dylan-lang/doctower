@@ -16,7 +16,7 @@ define constant <markup-seq> = limited(<stretchy-vector>,
       of: type-union(<string>, <character>, <inline-image>, <html-content>,
                      <dita-content>, <conref>, <xref>, <api/parm-name>, <cite>,
                      <term>, <term-style>, <code-phrase>, <entity>, <bold>,
-                     <italic>, <underline>, <emphasis>, singleton(#f)));
+                     <italic>, <underline>, <emphasis>));
 
 define method markup-seq (#rest elements) => (seq :: <markup-seq>)
    make-limited-seq(<markup-seq>, elements)
@@ -40,7 +40,7 @@ Synopsis: List of elements corresponding to content-block grammar.
 define constant <content-seq> = limited(<stretchy-vector>,
    of: type-union(<code-block>, <pre>, <fig>, <ditto-placeholder>,
                   <simple-table>, <unordered-list>, <ordered-list>, <defn-list>,
-                  <paragraph>, singleton(#f)));
+                  <paragraph>));
 
 define method content-seq (#rest elements) => (seq :: <content-seq>)
    make-limited-seq(<content-seq>, elements)

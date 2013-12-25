@@ -1,14 +1,14 @@
 module: parser-common
 
 
-define constant <string-vector> = limited(<vector>, of: <string>);
-define variable *tabstop-fillers* :: <string-vector> = make(<string-vector>, size: 0);
+define constant <string-vector> = limited(<vector>, of: <string>, default-fill: "");
+define variable *tabstop-fillers* :: <string-vector> = make(<string-vector>);
          
 
 define method canonical-text-stream (file :: <positionable-stream>)
 => (text-stream :: <string-stream>)
    unless (*tabstop-fillers*.size > 0)
-      *tabstop-fillers* := make(<string-vector>, size: $tab-size, fill: "");
+      *tabstop-fillers* := make(<string-vector>, size: $tab-size);
       for (tab-pos from 0 below $tab-size)
          let filler-size = $tab-size - tab-pos;
          *tabstop-fillers*[tab-pos] := make(<string>, size: filler-size, fill: ' ');

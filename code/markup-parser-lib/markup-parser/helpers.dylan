@@ -124,9 +124,9 @@ Synopsis: Get topic title from topic- or section-title-bare-style or
    - #[ #f,                        title-nickname-line-x-style ]
    - #[ #[title-line-x-style,...], #f ]
 */
-define function extract-title (tokens) => (title :: <sequence>)
+define function extract-title (tokens) => (title :: <title-word-sequence>)
    let flattened-tokens = choose(true?, integrate-sequences(tokens));
-   reduce(concatenate!, make(<stretchy-vector>), map(content, flattened-tokens))
+   reduce(concatenate!, make(<title-word-sequence>), map(content, flattened-tokens))
 end function;
 
 

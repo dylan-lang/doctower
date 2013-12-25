@@ -4,11 +4,8 @@ module: markup-parser
 // Types
 //
 
-// This results in an error if actually used in type specifications.
-// define constant <title-word-sequence> =
-//       limited(<sequence>, of: <title-word-types>);
-
-define constant <title-word-sequence> = <sequence>;
+define constant <title-word-sequence> =
+      limited(<vector>, of: <title-word-types>);
 
 //
 // Titled topics and sections
@@ -148,14 +145,16 @@ define caching parser title-nickname-line-midline-style (<token>)
             opt(title-words-til-midline-nickname),
             opt-seq(ascii-midline, spaces), title-nickname)
       => tokens;
-   slot content :: <title-word-sequence> = tokens[4] | #[];
+   slot content :: <title-word-sequence> =
+      as(<title-word-sequence>, tokens[4] | #[]);
    slot title-nickname :: <title-nickname-token> = tokens[6];
 end;
 
 define caching parser title-nickname-line-bare-style (<token>)
    rule seq(not-next(ascii-underline), sol, opt(title-words-til-nickname),
             title-nickname) => tokens;
-   slot content :: <title-word-sequence> = tokens[2] | #[];
+   slot content :: <title-word-sequence> = 
+      as(<title-word-sequence>, tokens[2] | #[]);
    slot title-nickname :: <title-nickname-token> = tokens[3];
 end;
 
@@ -165,24 +164,24 @@ end;
 
 define caching parser title-words :: <title-word-sequence>
    rule many(seq(title-word, opt-spaces)) => tokens;
-   yield collect-subelements(tokens, 0);
+   yield as(<title-word-sequence>, collect-subelements(tokens, 0));
 end;
 
 define caching parser title-words-til-midline :: <title-word-sequence>
    rule many(seq(not-next(ascii-midline), title-word, opt-spaces)) => tokens;
-   yield collect-subelements(tokens, 1);
+   yield as(<title-word-sequence>, collect-subelements(tokens, 1));
 end;
 
 define caching parser title-words-til-nickname :: <title-word-sequence>
    rule many(seq(not-next(title-nickname), title-word, opt-spaces)) => tokens;
-   yield collect-subelements(tokens, 1);
+   yield as(<title-word-sequence>, collect-subelements(tokens, 1));
 end;
 
 define caching parser title-words-til-midline-nickname :: <title-word-sequence>
    rule many(seq(not-next(ascii-midline), not-next(title-nickname),
                  title-word, opt-spaces))
       => tokens;
-   yield collect-subelements(tokens, 2);
+   yield as(<title-word-sequence>, collect-subelements(tokens, 2));
 end;
 
 // exported

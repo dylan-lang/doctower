@@ -4,10 +4,7 @@ module: markup-parser
 // Types
 //
 
-// This results in an error if actually used in type specifications.
-// define constant <quote-options-sequence> = limited(<sequence>, of: <symbol>);
-
-define constant <quote-options-sequence> = <sequence>;
+define constant <quote-options-sequence> = limited(<vector>, of: <symbol>);
 
 //
 // Paragraphs
@@ -34,7 +31,7 @@ define caching parser paragraph-til-null-directive (<paragraph-token>)
    rule many(seq(not-next(null-directive-spec), paragraph-line))
       => items;
    inherited slot content /* :: <markup-word-sequence> */ =
-      reduce1(concatenate, collect-subelements(items, 1));
+      as(<markup-word-sequence>, reduce1(concatenate, collect-subelements(items, 1)));
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -63,7 +60,7 @@ define caching parser paragraph-line-til-hyphen-ls :: <markup-word-sequence>
             many(seq(not-next(hyphen-ls), markup-word, spaces)),
             choice(req-next(hyphen-ls), ls))
       => tokens;
-   yield collect-subelements(tokens[2], 1);
+   yield as(<markup-word-sequence>, collect-subelements(tokens[2], 1));
 end;
 
 define caching parser paragraph-break
@@ -273,7 +270,7 @@ define caching parser quote-spec (<source-location-token>)
             opt(link-til-cls-brack), spc-cls-brack)
       => tokens;
    slot quote-options :: <quote-options-sequence> =
-      collect-subelements(tokens[1], 0).remove-duplicates;
+      as(<quote-options-sequence>, collect-subelements(tokens[1], 0).remove-duplicates);
    slot link :: false-or(<link-word-token>) = tokens[2];
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)

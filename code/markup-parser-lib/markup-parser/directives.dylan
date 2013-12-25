@@ -31,7 +31,7 @@ define caching parser links-directive (<source-location-token>)
       => tokens;
    slot directive-type :: <symbol> = tokens[0];
    slot links :: <link-word-sequence> =
-      concatenate(tokens[1] | #[], tokens[3] | #[]);
+      as(<link-word-sequence>, concatenate(tokens[1] | #[], tokens[3] | #[]));
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -50,7 +50,8 @@ define caching parser division-directive (<source-location-token>)
    rule seq(division-directive-spec, opt(division-content))
       => tokens;
    slot directive-type :: <symbol> = tokens[0];
-   slot content :: <division-content-sequence> = tokens[1];
+   slot content :: <division-content-sequence> = 
+      as(<division-content-sequence>, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -60,7 +61,8 @@ define caching parser indented-content-directive (<source-location-token>)
    rule seq(indented-content-directive-spec, opt(remainder-and-indented-content))
       => tokens;
    slot directive-type :: <symbol> = tokens[0];
-   slot content :: <division-content-sequence> = tokens[1];
+   slot content :: <division-content-sequence> =
+      as(<division-content-sequence, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -68,7 +70,7 @@ end;
 define caching parser null-directive :: <division-content-sequence>
    rule seq(null-directive-spec, opt(division-content))
       => tokens;
-   yield tokens[1];
+   yield as(<division-content-sequence>, tokens[1] | #[]);
 end;
 
 //

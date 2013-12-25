@@ -208,9 +208,7 @@ end method;
 define method section-parm-list (section :: false-or(<section>))
 => (parm-list :: false-or(<parm-list>))
    if (section)
-      let section-content = as(<simple-object-vector>, section.content);
-            // BUGFIX: Necessary because choose cannot create a limited sequence on demand.
-      let parm-lists = choose(rcurry(instance?, <parm-list>), section-content);
+      let parm-lists = choose(rcurry(instance?, <parm-list>), section.content);
       ~parm-lists.empty? & parm-lists.first;
    end if
 end method;

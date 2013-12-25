@@ -4,10 +4,7 @@ module: markup-parser
 // Types
 //
 
-// This results in an error if actually used in type specifications.
-// define constant <raw-line-sequence> = limited(<sequence>, of: <raw-line-token>);
-
-define constant <raw-line-sequence> = <sequence>;
+define constant <raw-line-sequence> = limited(<vector>, of: <raw-line-token>);
 
 //
 // Content
@@ -34,7 +31,7 @@ end;
 // exported
 define caching parser marginal-code-block (<source-location-token>)
    rule many(marginal-code-block-line) => lines;
-   slot content :: <raw-line-sequence> = lines;
+   slot content :: <raw-line-sequence> = as(<raw-line-sequence>, lines);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -47,7 +44,7 @@ end;
 // exported
 define caching parser marginal-verbatim-block (<source-location-token>)
    rule many(marginal-verbatim-block-line) => lines;
-   slot content :: <raw-line-sequence> = lines;
+   slot content :: <raw-line-sequence> = as(<raw-line-sequence>, lines);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -99,7 +96,8 @@ define caching parser bracketed-raw-block (<source-location-token>)
             bracketed-raw-block-end-line)
       => tokens;
    slot block-type :: <symbol> = tokens[0];
-   slot content :: <raw-line-sequence> = collect-subelements(tokens[1], 1) | #[];
+   slot content :: <raw-line-sequence> =
+      as(<raw-line-sequence>, collect-subelements(tokens[1], 1) | #[]);
 attributes
    raw-leading-spaces :: <integer> = 0,
    bracketed-spec-text :: false-or(<symbol>) = #f;
