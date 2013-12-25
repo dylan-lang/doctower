@@ -1,6 +1,27 @@
 module: dylan-parser
 synopsis: Grammars that recover from parse failures.
 
+/**
+=== Error Recovery ===
+
+Most productions don't bother to recover from parse failures. The parse
+failures that I expect and wish to recover from involve weird macros or
+something in expressions or types. The "checked-type" and "checked-expression"
+parsers are just like the "type" or "expression" parsers, but in the event of a
+problem they skip ahead to the next place where parsing can continue.
+
+They detect problems by verifying that they have one of the expected followers,
+for example a comma or closing parenthesis. Higher parsers that have
+"checked-type" or "checked-expression" in their tree specify the expected
+followers using the "type-followers" or "expression-followers" attributes.
+
+If they don't have one of the expected followers, then the input stream is
+skipped using a skipping parser. Higher parsers (not necessarily the same ones)
+specify this as well, using the "type-skipper" or "expression-skipper"
+attributes.
+**/
+
+
 define class <skipped-token> (<token>)
 end class;
 
