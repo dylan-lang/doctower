@@ -36,4 +36,5 @@ defaults  - Prototype designs for HTML, CSS, and various generated elements.
 
 ### Making ###
 
+cd code
 dylan-compiler -build doctower-library

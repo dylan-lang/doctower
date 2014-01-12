@@ -139,7 +139,7 @@ define method process-tokens
          end select;
    list.items := make(<vector>, size: list-item-tokens.size);
    for (i from 0, list-item-token in list-item-tokens)
-      let list-item-content = make(<content-seq>);
+      let list-item-content = content-seq();
       process-tokens(list-item-content, list-item-token.token-content);
       list.items[i] := list-item-content;
    end for;
@@ -165,8 +165,8 @@ define method process-tokens
    let list = make(list-class, source-location: token.token-src-loc);
    list.items := make(<array>, dimensions: vector(list-item-tokens.size, 2));
    for (i from 0, list-item-token in list-item-tokens)
-      let list-item-label = make(<markup-seq>);
-      let list-item-content = make(<content-seq>);
+      let list-item-label = markup-seq();
+      let list-item-content = content-seq();
       process-tokens(list-item-label, list-item-token.item-label);
       process-tokens(list-item-content, list-item-token.token-content);
       list.items[i, 0] := list-item-label;
