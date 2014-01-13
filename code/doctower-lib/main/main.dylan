@@ -145,7 +145,8 @@ define function main (name, arguments)
       *config-file-extension* := args.cfg-pattern | *config-file-extension*;
       let cfg-files = choose(
             method (loc :: <file-locator>) => (cfg-locator? :: <boolean>)
-               string-equal-ic?(*config-file-extension*, loc.locator-extension)
+               loc.locator-extension
+                  & string-equal-ic?(*config-file-extension*, loc.locator-extension)
             end method, file-locators);
    
       set-configs-with-files(cfg-files);
@@ -190,18 +191,22 @@ define function main (name, arguments)
       let doc-files = make(<stretchy-vector>);
       let src-files = make(<stretchy-vector>);
       for (loc in file-locators)
-         select (loc.locator-extension by string-equal-ic?)
-            *config-file-extension*
-               => #f /* Already dealt with these */;
-            *topic-file-extension*
-               => doc-files := add!(doc-files, loc);
-            *contents-file-extension*
-               => toc-files := add!(toc-files, loc);
-            ("dylan", "dyl", "lid")
-               => src-files := add!(src-files, loc);
-            otherwise
-               => file-type-not-known(filename: as(<string>, loc));
-         end select;
+         if (loc.locator-extension)
+            select (loc.locator-extension by string-equal-ic?)
+               *config-file-extension*
+                  => #f /* Already dealt with these */;
+               *topic-file-extension*
+                  => doc-files := add!(doc-files, loc);
+               *contents-file-extension*
+                  => toc-files := add!(toc-files, loc);
+               ("dylan", "dyl", "lid")
+                  => src-files := add!(src-files, loc);
+               otherwise
+                  => file-type-not-known(filename: as(<string>, loc));
+            end select
+         else
+            file-type-not-known(filename: as(<string>, loc))
+         end if
       end for;
    
       // Build documentation
