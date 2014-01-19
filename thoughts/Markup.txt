@@ -405,18 +405,19 @@ lower-case words are parameters.
 [FIG "imagename" scale%|linesX?] caption?
   Include a centered image. The quotation here is strictly for the purposes of
   escaping spaces and special characters; the quote options cannot be used. The
-  scope of "n" is the current comment block or file and does not overlap with
-  [:n] references. "n" may a letter or number.
+  caption is displayed below the image.
   
 [EXHIBIT n]: caption?
 content
-  Create an exhibit. The content extends until the next topic, section, exhibit,
-  or footnote. The scope of "n" is the current comment block or file and does
-  not overlap with footnotes or line markers. "n" may be a letter or number, and
-  is case sensitive.
+  Create an exhibit (like a footnote, but presented in place rather than at the
+  bottom of the page). The content extends until the next topic, section,
+  exhibit, or footnote. The caption is displayed above the content and will be
+  "Exhibit N" if not provided. The scope of "n" is the current comment block or
+  file and does not overlap with footnotes or line markers. "n" may be a letter
+  or number, and is case sensitive.
   
 ... [EXHIBIT n] ...
-  Link to an exhibit. The link text is replaced by the caption if available.
+  Link to an exhibit. The link text is replaced by the caption.
   
 [n]: ...
   Create a footnote. The content extends until the next topic, section,

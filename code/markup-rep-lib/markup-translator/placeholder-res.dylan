@@ -67,10 +67,7 @@ define method resolve-footnotes (topics :: <sequence>) => ()
       visit-markup-references(topic,
             method (ref :: <footnote-placeholder>, #key setter, #all-keys)
             => (slots? :: <boolean>)
-               let target = find-element(footnote-catalog,
-                     method (target) => (match? :: <boolean>)
-                        target.index = ref.index
-                     end);
+               let target = target-with-index(ref, footnote-catalog);
                if (target & member?(target, footnotes-by-topic[topic]))
                   setter(target)
                elseif (target)
@@ -91,4 +88,4 @@ define method target-with-index (ref, target-list) => ()
          method (target) => (match? :: <boolean>)
             target.index = ref.index
          end);
-end method
+end method;

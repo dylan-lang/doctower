@@ -147,7 +147,7 @@ define method process-tokens
    exhibit.index := token.token-index;
    exhibit.title := token.caption;
    process-tokens(exhibit.content, token.token-content);
-   add!(topic.footnotes, exhibit);
+   add!(topic.content, exhibit);
 end method;
 
 

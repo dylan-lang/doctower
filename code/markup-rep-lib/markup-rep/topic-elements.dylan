@@ -30,12 +30,13 @@ end method;
 Synopsis: List of elements corresponding to topic-content grammar.
    section           - <section>, <note>, or <warning-note>
    footnote          - <footnote>
+   exhibit           - <exhibit>
    division-content  - As in <content-seq>
 **/
 define constant <topic-content-seq> = limited(<stretchy-vector>,
       of: type-union(<code-block>, <pre>, <fig>, <ditto-placeholder>,
                      <simple-table>, <unordered-list>, <ordered-list>, <defn-list>,
-                     <paragraph>, <note>, <section>, <footnote>));
+                     <paragraph>, <note>, <section>, <footnote>, <exhibit>));
 
 define method topic-content-seq (#rest elements) => (seq :: <topic-content-seq>)
    make-limited-seq(<topic-content-seq>, elements)

@@ -108,7 +108,8 @@ Style changes affect the entire render. Link and monospace affect everything
 inside typographical quotes. The actual link tag is innermost so its text can
 be easily replaced by a topic title.
 
-To support that, from innermost to outermost, the quoted text is wrapped in:
+To support that, from innermost to outermost and as appropriate, the quoted text
+is wrapped in:
 link-placeholder, api, term, code, typographical quotes, bib, b, i, u, term formatting, em
 **/
 define method quote-elements (quote :: <quote-token>) => (elements :: <sequence>)
@@ -265,6 +266,7 @@ end method;
 
 
 /** Synopsis: Insert a space character into sequence, if needed. **/
+// TODO: Should probably use a truth table based on preceding/following.
 define function add-spacer! (seq :: type-union(<title-seq>, <markup-seq>)) => ()
    unless (seq.empty?)
       add!(seq, ' ');

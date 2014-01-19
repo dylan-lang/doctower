@@ -95,7 +95,7 @@ afterwards (context, tokens, value, start-pos, end-pos)
 end;
 
 define caching parser topic-content :: <topic-content-sequence>
-   rule many(choice(section, footnote, division-content)) => tokens;
+   rule many(choice(section, footnote, exhibit, division-content)) => tokens;
    yield as(<topic-content-sequence>, integrate-sequences(tokens));
 end;
 
@@ -183,7 +183,7 @@ define caching parser exhibit (<source-location-token>)
             spc-cls-brack, colon, opt-seq(spaces, text-til-ls), ls,
             division-content)
       => tokens;
-   slot index :: type-union(<integer>, <character>) = tokens[3];
+   slot index :: type-union(<integer>, <character>) = tokens[4];
    slot caption :: false-or(<string>) =
       tokens[7] & remove-multiple-spaces(tokens[7][1].text);
    slot content :: <division-content-sequence> = tokens[9];
