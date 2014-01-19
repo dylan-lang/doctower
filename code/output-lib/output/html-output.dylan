@@ -162,7 +162,7 @@ end method;
 
 
 define method add-html-link-info
-   (content :: type-union(<footnote>, <line-marker>),
+   (content :: type-union(<footnote>, <exhibit>, <line-marker>),
     #key setter, visited, target-info, current-topic, fallback-ids, output-file)
 => (visit-slots? :: <boolean>)
    let raw-topic-id = current-topic.id | fallback-ids[current-topic];
@@ -173,6 +173,7 @@ define method add-html-link-info
    let info-class =
          select (content by instance?)
             <footnote> => <footnote-target>;
+            <exhibit> => <exhibit-target>;
             <line-marker> => <line-marker-target>;
          end select;
    target-info[content] := make(info-class, id: content-id, href: content-href,
@@ -294,8 +295,8 @@ define method write-output-file
                   target-info[target].target-id
                end method,
          "markup-id" =>
-               method (topic :: <topic>) => (id :: <string>)
-                  target-info[topic].markup-id
+               method (target :: type-union(<topic>, <footnote>)) => (id :: <string>)
+                  target-info[target].markup-id
                end method,
          "shortdesc" =>
                method (topic :: type-union(<topic>, <url>)) => (desc :: <string>)
@@ -524,7 +525,7 @@ define method html-content (xref :: <xref>, target-info)
          let href = xref.target.sanitized-url.sanitized-xml;
          format-to-string("<a href=\"%s\">%s</a>", href, title);
       <topic> =>
-         let href = target-info[xref.target].target-href.sanitized-xml;
+         let href = target-info[xref.target].target-href;
          let desc =
                if (xref.target.shortdesc)
                   xref.target.shortdesc.content.stringify-markup.sanitized-xml
@@ -533,19 +534,23 @@ define method html-content (xref :: <xref>, target-info)
                end if;
          format-to-string("<a href=\"../%s\" title=\"%s\">%s</a>", href, desc, title);
       <section> =>
-         let href = target-info[xref.target].target-href.sanitized-xml;
+         let href = target-info[xref.target].target-href;
          format-to-string("<a href=\"../%s\">%s</a>", href, title);
       <footnote> =>
          let title = html-content(xref.target.index, target-info);
-         let href = target-info[xref.target].target-href.sanitized-xml;
+         let href = target-info[xref.target].target-href;
          format-to-string("<a class=\"footnote-ref\" href=\"../%s\"><sup>%s</sup></a>",
                href, title);
       <line-marker> =>
          let title = html-content(xref.target.index, target-info);
-         let href = target-info[xref.target].target-href.sanitized-xml;
+         let href = target-info[xref.target].target-href;
          format-to-string("<a class=\"line-ref\" href=\"../%s\">%s</a>", href, title);
+      <exhibit> =>
+         let title = html-content(exhibit-display-title(xref.target), target-info);
+         let href = target-info[xref.target].target-href;
+         format-to-string("<a class=\"exhibit-ref\" href=\"../%s\">%s</a>",
+               href, title);
       otherwise =>
-         // TODO: Xref output for exhibits.
          next-method();
    end select
 end method;
@@ -556,6 +561,20 @@ define method html-content (footnote :: <footnote>, target-info)
    let title = html-content(footnote.index, target-info);
    let content = html-content(footnote.content, target-info);
    format-to-string("<span class=\"footnote-label\">%s</span> %s", title, content)
+end method;
+
+
+define method html-content (exhibit :: <exhibit>, target-info)
+=> (html :: <string>)
+   let title = html-content(exhibit.exhibit-display-title, target-info);
+   let content = html-content(exhibit.content, target-info);
+   let exhibit-info = target-info[exhibit];
+   format-to-string(
+         "<!-- %s -->"
+         "<figure class=\"exhibit\" id=\"%s\">"
+         "<figcaption class=\"exhibit-label\">%s</figcaption>"
+         "<div class=\"exhibit-content\">%s</div></figure>",
+         exhibit-info.markup-id, exhibit-info.target-id, title, content);
 end method;
 
 
@@ -578,7 +597,7 @@ define method html-content (link :: <topic-ref>, target-info)
          format-to-string("<a href=\"%s\">%s</a>", href, title);
       <topic> =>
          let title = html-content(link.target.title, target-info);
-         let href = target-info[link.target].target-href.sanitized-xml;
+         let href = target-info[link.target].target-href;
          let desc =
                if (link.target.shortdesc)
                   link.target.shortdesc.content.stringify-markup.sanitized-xml
@@ -601,9 +620,7 @@ end method;
 
 define method html-content (defn-list :: <defn-list>, target-info)
 => (html :: <string>)
-   // BUGFIX: Map can't create an <array>. Bug #7473.
-   let html-items = make(<array>, dimensions: defn-list.items.dimensions);
-   map-into(html-items, rcurry(html-content, target-info), defn-list.items);
+   let html-items :: <array> = map(rcurry(html-content, target-info), defn-list.items);
    let vars = table(<case-insensitive-string-table>,
          "class" =>
                if (instance?(defn-list, <one-line-defn-list>))
@@ -636,7 +653,9 @@ end method;
 
 define method html-content (marker :: <line-marker>, target-info)
 => (html :: <string>)
-   format-to-string("<a id=\"%s\" />", target-info[marker].target-id)
+   let marker-info = target-info[marker];
+   format-to-string("<!-- %s --><a id=\"%s\" />",
+         marker-info.markup-id, marker-info.target-id)
 end method;
 
 define method html-content (raw :: <dita-content>, target-info)

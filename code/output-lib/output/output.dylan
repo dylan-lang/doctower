@@ -161,7 +161,7 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
          let line-list = make(<stretchy-vector>);
 
          local method add-to-list
-                  (obj :: type-union(<section>, <footnote>, <line-marker>),
+                  (obj :: type-union(<section>, <footnote>, <exhibit>, <line-marker>),
                    #key setter, visited)
                => (visit-slots? :: <boolean>)
                   select (obj by instance?)
@@ -190,7 +190,7 @@ define method target-navigation-ids (doc-tree :: <ordered-tree>)
          visit-targets(topic, add-to-list);
          process-list(section-list, "Sect");
          process-list(footnote-list, "Foot");
-         process-list(exhibit-list, "Exbt");
+         process-list(exhibit-list, "Exhb");
          process-list(line-list, "Line");
       end unless
    end for;
@@ -267,6 +267,24 @@ define method digits (num :: <integer>) => (digits :: <integer>)
    else
       floor(logn(num, 10)) + 1
    end if
+end method;
+
+
+define method exhibit-display-title (exhibit :: <exhibit>) => (title :: <string>)
+   exhibit.title
+   | format-to-string("Exhibit %s", index-string(exhibit.index)).as-titlecase
+end method;
+
+
+/** Synopsis: Convert alphanumeric index to string. */
+define generic index-string (index) => (string :: <string>);
+
+define method index-string (index :: <integer>) => (string :: <string>)
+   index.integer-to-string
+end method;
+   
+define method index-string (index :: <character>) => (string :: <string>)
+   as(<string>, index)
 end method;
 
 

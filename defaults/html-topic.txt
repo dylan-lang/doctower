@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="../{{css-file}}" type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
-  <div class="package-navbar">
-    <div class="package-navlinks">
+  <header class="package-navbar">
+    <nav class="package-navlinks">
       {{if home-file = topic-file}}
       <span>Home</span>
       {{else}}
@@ -16,14 +16,14 @@
       {{end}}
       <a href="../{{toc-file}}#{{topic.id}}">Contents</a>
       <a href="../{{index-file}}">Index</a>
-    </div>
+    </nav>
     <div class="package-title">
       {{package-title}}
     </div>
-  </div>
+  </header>
 
   <div class="topic">
-    <div class="topic-navbar">
+    <nav class="topic-navbar">
       <div class="seq-navlinks">
         {{if topic.child-topic}}
         <a href="../{{topic.child-topic.href}}"
@@ -53,10 +53,10 @@
         {{end}}
         &nbsp;
       </div>
-    </div>
+    </nav>
 
     <!-- {{topic.markup-id !}} -->
-    <div class="topic-content" id="{{topic.id}}">
+    <main class="topic-content" id="{{topic.id}}">
       <h1>{{topic.formatted-title !}}</h1>
 {{topic.formatted-shortdesc !}}
 {{topic.main-body !}}
@@ -77,40 +77,41 @@
 {{topic.bindings-section !}}
 
       {{if topic.related-links.size > 0}}
-      <div class="topic-related">
+      <footer class="topic-related">
         <h2>Related links</h2>
         <ul>
           {{repeat with link in topic.related-links}}
           <li>{{link.rendered-link !}}</li>
           {{end}}
         </ul>
-      </div>
+      </footer>
       {{end}}
 
       {{if topic.footnotes.size > 0}}
       <div class="topic-footnotes">
         {{repeat with footnote in topic.footnotes}}
+        <!-- {{footnote.markup-id !}} -->
         <div class="footnote" id="{{footnote.id}}">
           {{footnote.rendered-footnote !}}
         </div>
         {{end}}
       </div>
       {{end}}
-    </div>
+    </main>
 
     {{if topic.subtopics.size > 0}}
-    <div class="topic-subtopics">
+    <nav class="topic-subtopics">
       {{repeat with subtopic in topic.subtopics}}
       <div class="summary-link">
         <a href="../{{subtopic.href}}">{{subtopic.formatted-title !}}</a>
         {{subtopic.formatted-shortdesc !}}
       </div>
       {{end}}
-    </div>
+    </nav>
     {{end}}
 
     <div class="topic-navbar">
-      <div class="seq-navlinks">
+      <nav class="seq-navlinks">
         {{if topic.prev-topic}}
         <a href="../{{topic.prev-topic.href}}"
            title="{{topic.prev-topic.shortdesc}}">
@@ -123,7 +124,7 @@
           {{topic.next-topic.title}} →
         </a>
         {{end}}
-      </div>
+      </nav>
       <div class="hier-navlinks">
         &nbsp;
       </div>

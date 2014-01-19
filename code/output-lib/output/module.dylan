@@ -4,6 +4,7 @@ define module output
    use common;
    use conditions, import: { file-error };
    use configs, import: { *template-directory*, *output-directory*, *package-title* };
+   use name-processing, import: { as-titlecase };
    use ordered-tree;
    use markup-rep;
    use template-files;

@@ -7,21 +7,21 @@
   <link rel="stylesheet" href="../{{css-file}}" type="text/css" media="screen" charset="utf-8" />
 </head>
 <body>
-  <div class="package-navbar">
-    <div class="package-navlinks">
+  <header class="package-navbar">
+    <nav class="package-navlinks">
       <a href="../{{home-file}}">Home</a>
       <span>Contents</span>
       <a href="../{{index-file}}">Index</a>
-    </div>
+    </nav>
     <div class="package-title">
       {{package-title}}
     </div>
-  </div>
+  </header>
   <div class="toc">
     <div class="toc-bar">
        &nbsp;
     </div>
-    <div class="toc-content">
+    <nav class="toc-content">
       <h1>Table of Contents</h1>
       <ul>
         {{repeat with topic in root-topics}}
@@ -35,7 +35,7 @@
         </li>
         {{end}}
       </ul>
-    </div>
+    </nav>
     <div class="toc-bar">
        &nbsp;
     </div>
