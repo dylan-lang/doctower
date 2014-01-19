@@ -62,7 +62,7 @@ define caching parser indented-content-directive (<source-location-token>)
       => tokens;
    slot directive-type :: <symbol> = tokens[0];
    slot content :: <division-content-sequence> =
-      as(<division-content-sequence, tokens[1] | #[]);
+      as(<division-content-sequence>, tokens[1] | #[]);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;

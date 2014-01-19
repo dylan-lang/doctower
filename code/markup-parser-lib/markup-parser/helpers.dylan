@@ -151,8 +151,8 @@ end function;
 /**
 Synopsis: Prepends a line to division content.
 
-In the following example of an argument list section, the line "Of course..."
-needs to be prepended to the paragraph following.
+In the following example of a footnote, the line "Of course..." needs to be
+prepended to the paragraph following.
 
 [example]
  [1]: Of course, the translation here 
@@ -202,9 +202,13 @@ end method;
 define method prepend-words
    (words :: <markup-word-sequence>, body :: <division-content-sequence>)
 => (new-body :: <division-content-sequence>)
-   let old-first = element(body, 0, default: #f);
-   let new-first = prepend-words(words, old-first);
-   replace-subsequence!(body, new-first, start: 0, end: 1)
+   if (body.empty?)
+      prepend-words(words, #f)
+   else
+      let old-first = element(body, 0, default: #f);
+      let new-first = prepend-words(words, old-first);
+      replace-subsequence!(body, new-first, start: 0, end: 1)
+   end if
 end method;
 
 /// Synopsis: Prepend to paragraph.
