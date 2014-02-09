@@ -30,7 +30,8 @@ except that they are only used in DITA title conrefs.
 
 The IDs and the ID part of the HREFs are constructed as namespace-compatible XML
 IDs. The 'markup-id', 'title-markup-id', and 'shortdesc-markup-id' slots are the
-IDs as used in the markup; they are not valid in HTML or DITA "id" attributes.
+IDs as used in the markup; they are not valid in HTML or DITA "id" attributes and
+need to be sanitized if used outside comments.
 */
 
 define abstract class <target> (<object>)

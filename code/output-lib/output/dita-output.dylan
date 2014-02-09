@@ -138,7 +138,8 @@ define method add-dita-link-info
     #key setter, visited, target-info, current-topic, fallback-ids, output-file)
 => (visit-slots? :: <boolean>)
    let topic-id = (current-topic.id | fallback-ids[current-topic]).sanitized-id;
-   let content-id = fallback-ids[content].sanitized-id;
+   let raw-content-id = fallback-ids[content];
+   let content-id = raw-content-id.sanitized-id;
    let filename = output-file.locator.sanitized-url-path;
    let content-href = format-to-string("%s#%s/%s", filename, topic-id, content-id);
    let info-class =
@@ -147,7 +148,8 @@ define method add-dita-link-info
             <exhibit> => <exhibit-target>;
             <line-marker> => <line-marker-target>;
          end select;
-   target-info[content] := make(info-class, id: content-id, href: content-href);
+   target-info[content] := make(info-class,
+         id: content-id, href: content-href, markup-id: raw-content-id);
    #t
 end method;
 
@@ -370,9 +372,9 @@ define method dita-section
 end method;
 
 
+/// Fallback method.
 define method dita-content (obj :: <object>, target-info)
 => (dita :: <string>)
-   /**/
    format-to-string("%=", obj).sanitized-xml;
 end method;
 
@@ -429,7 +431,13 @@ end method;
 
 define method dita-content (xref :: <xref>, target-info)
 => (dita :: <string>)
-   let title = dita-content(xref.markup-text, target-info);
+   let title = 
+         select (xref.target by instance?)
+            (<url>, <topic>, <section>) => xref.markup-text;
+            (<footnote>, <line-marker>) => xref.target.index;
+            <exhibit> => exhibit-display-title(xref.target);
+         end select;
+   let dita-title = dita-content(title, target-info);
    let (href, scope) =
          select (xref.target by instance?)
             (<topic>, <section>, <footnote>, <exhibit>, <line-marker>) =>
@@ -444,14 +452,14 @@ define method dita-content (xref :: <xref>, target-info)
          end select;
    let (format, type) =
          select (xref.target by instance?)
-            <ref-topic> => values("dita", "reference");
-            <con-topic> => values("dita", "concept");
-            <topic>     => values("dita", "topic");
-            <section>   => values("dita", "section");
-            <footnote>  => values("dita", "fn");
-            <exhibit>   => values("dita", "fig");
-            <url>       => values(#f, #f);
-            otherwise   => values(#f, #f);
+            <ref-topic>   => values("dita", "reference");
+            <con-topic>   => values("dita", "concept");
+            <topic>       => values("dita", "topic");
+            <section>     => values("dita", "section");
+            <footnote>    => values("dita", "fn");
+            <exhibit>     => values("dita", "fig");
+            <url>         => values(#f, #f);
+            otherwise     => values(#f, #f);
          end select;
    let scope-attr =
          if (scope) format-to-string("scope=\"%s\" ", scope) else "" end;
@@ -460,15 +468,26 @@ define method dita-content (xref :: <xref>, target-info)
    let type-attr =
          if (type) format-to-string("type=\"%s\" ", type) else "" end;
    format-to-string("<xref %s%s%shref=\"%s\"><ph>%s</ph></xref>",
-         scope-attr, format-attr, type-attr, href, title);
+         scope-attr, format-attr, type-attr, href, dita-title);
 end method;
 
 
 define method dita-content (footnote :: <footnote>, target-info)
 => (dita :: <string>)
-   let id = target-info[footnote].target-id.sanitized-xml;
+   let footnote-info = target-info[footnote];
    let content = dita-content(footnote.content, target-info);
-   format-to-string("<fn id=\"%s\">%s</fn>", id, content)
+   format-to-string("<fn id=\"%s\" otherprops=\"%s\">%s</fn>",
+         footnote-info.target-id, footnote-info.markup-id.sanitized-xml, content)
+end method;
+
+
+define method dita-content (exhibit :: <exhibit>, target-info)
+=> (dita :: <string>)
+   let title = dita-content(exhibit.exhibit-display-title, target-info);
+   let content = dita-content(exhibit.content, target-info);
+   let exhibit-info = target-info[exhibit];
+   format-to-string("<fig id=\"%s\" otherprops=\"%s\"><title><ph>%s</ph></title>%s</fig>",
+         exhibit-info.target-id, exhibit-info.markup-id.sanitized-xml, title, content)
 end method;
 
 
@@ -564,7 +583,12 @@ define method dita-content (code :: <pre>, target-info)
 end method;
 
 
-// TODO: Implement missing bit to link to lines within code block.
+define method dita-content (marker :: <line-marker>, target-info)
+=> (dita :: <string>)
+   let marker-info = target-info[marker];
+   format-to-string("<ph id=\"%s\" otherprops=\"%s\"/>",
+         marker-info.target-id, marker-info.markup-id.sanitized-xml)
+end method;
 
 
 define method dita-content (raw :: <dita-content>, target-info)

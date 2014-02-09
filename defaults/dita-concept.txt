@@ -10,11 +10,11 @@
   </ph></shortdesc>
   <conbody>
 {{topic.main-body !}}
-    <conbodydiv>
+    <conbodydiv><section>
       {{repeat with footnote in topic.footnotes}}
       {{footnote.rendered-footnote !}}
       {{end}}
-    </conbodydiv>
+    </section></conbodydiv>
   </conbody>
   <related-links>
     {{repeat with link in topic.related-links}}

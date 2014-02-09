@@ -10,7 +10,7 @@ define command-line <my-command-line-parser> ()
       names: #("output-dir", "o"), 
       variable: "DIRECTORY", help: "Documentation path [\"%default\"]",
       kind: <parameter-option>;
-   option output-formats :: <symbol> = *output-types*,
+   option output-formats :: <symbol>,
       names: #("format", "f"), 
       variable: "html|dita",
       help: format-to-string("Documentation format [%s]",

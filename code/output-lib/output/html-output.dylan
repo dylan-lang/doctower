@@ -176,8 +176,8 @@ define method add-html-link-info
             <exhibit> => <exhibit-target>;
             <line-marker> => <line-marker-target>;
          end select;
-   target-info[content] := make(info-class, id: content-id, href: content-href,
-         markup-id: raw-content-id);
+   target-info[content] := make(info-class,
+         id: content-id, href: content-href, markup-id: raw-content-id);
    #t
 end method;
 
@@ -464,9 +464,9 @@ define method html-section
 end method;
 
 
+/// Fallback method.
 define method html-content (obj :: <object>, target-info)
 => (html :: <string>)
-   /**/
    format-to-string("%=", obj).sanitized-xml;
 end method;
 
@@ -519,37 +519,41 @@ end method;
 
 define method html-content (xref :: <xref>, target-info)
 => (html :: <string>)
-   let title = html-content(xref.markup-text, target-info);
+   let title =
+         select (xref.target by instance?)
+            (<url>, <topic>, <section>) => xref.markup-text;
+            (<footnote>, <line-marker>) => xref.target.index;
+            <exhibit> => exhibit-display-title(xref.target);
+         end select;
+   let html-title = html-content(title, target-info);
+   let href =
+         select (xref.target by instance?)
+            <url> => xref.target.sanitized-url.sanitized-xml;
+            otherwise => target-info[xref.target].target-href;
+         end select;
    select (xref.target by instance?)
       <url> =>
-         let href = xref.target.sanitized-url.sanitized-xml;
-         format-to-string("<a href=\"%s\">%s</a>", href, title);
+         format-to-string("<a href=\"%s\">%s</a>", href, html-title);
       <topic> =>
-         let href = target-info[xref.target].target-href;
          let desc =
                if (xref.target.shortdesc)
                   xref.target.shortdesc.content.stringify-markup.sanitized-xml
                else
                   ""
                end if;
-         format-to-string("<a href=\"../%s\" title=\"%s\">%s</a>", href, desc, title);
+         format-to-string("<a href=\"../%s\" title=\"%s\">%s</a>",
+               href, desc, html-title);
       <section> =>
-         let href = target-info[xref.target].target-href;
-         format-to-string("<a href=\"../%s\">%s</a>", href, title);
+         format-to-string("<a href=\"../%s\">%s</a>", href, html-title);
       <footnote> =>
-         let title = html-content(xref.target.index, target-info);
-         let href = target-info[xref.target].target-href;
          format-to-string("<a class=\"footnote-ref\" href=\"../%s\"><sup>%s</sup></a>",
-               href, title);
+               href, html-title);
       <line-marker> =>
-         let title = html-content(xref.target.index, target-info);
-         let href = target-info[xref.target].target-href;
-         format-to-string("<a class=\"line-ref\" href=\"../%s\">%s</a>", href, title);
+         format-to-string("<a class=\"line-ref\" href=\"../%s\">%s</a>",
+               href, html-title);
       <exhibit> =>
-         let title = html-content(exhibit-display-title(xref.target), target-info);
-         let href = target-info[xref.target].target-href;
          format-to-string("<a class=\"exhibit-ref\" href=\"../%s\">%s</a>",
-               href, title);
+               href, html-title);
       otherwise =>
          next-method();
    end select
@@ -560,7 +564,8 @@ define method html-content (footnote :: <footnote>, target-info)
 => (html :: <string>)
    let title = html-content(footnote.index, target-info);
    let content = html-content(footnote.content, target-info);
-   format-to-string("<span class=\"footnote-label\">%s</span> %s", title, content)
+   format-to-string("<!-- %s --><span class=\"footnote-label\">%s</span> %s",
+         target-info[footnote].markup-id, title, content)
 end method;
 
 
