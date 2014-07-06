@@ -13,13 +13,21 @@ problem they skip ahead to the next place where parsing can continue.
 They detect problems by verifying that they have one of the expected followers,
 for example a comma or closing parenthesis. Higher parsers that have
 "checked-type" or "checked-expression" in their tree specify the expected
-followers using the "type-followers" or "expression-followers" attributes.
+followers using the '*type-followers*' or '*expression-followers*' attributes.
 
 If they don't have one of the expected followers, then the input stream is
-skipped using a skipping parser. Higher parsers (not necessarily the same ones)
-specify this as well, using the "type-skipper" or "expression-skipper"
-attributes.
+skipped using a skipping parser. Higher parsers specify the skipping parser 
+using the '*type-skipper*' or '*expression-skipper*' attributes. The former is
+used by the "checked-type" parser and the latter is used by the
+"checked-expression" parsers. Different parsers can specify '*type-followers*',
+'*type-skipper*', '*expression-followers*', and '*expression-skipper*'.
 **/
+
+
+define thread variable *type-followers* :: false-or(<sequence>) = #f;
+define thread variable *expression-followers* :: false-or(<sequence>) = #f;
+define thread variable *type-skipper* :: false-or(<function>) = #f;
+define thread variable *expression-skipper* :: false-or(<function>) = #f;
 
 
 define class <skipped-token> (<token>)
@@ -60,13 +68,13 @@ end method;
 define parser-method checked-type-followers (stream, context)
 => (result, succ? :: <boolean>, extent :: <parse-extent>)
    label "valid input";
-   checked-followers(attr(type-followers, default: #f), stream, context)
+   checked-followers(*type-followers*, stream, context)
 end;
 
 define parser-method checked-expression-followers (stream, context)
 => (result, succ? :: <boolean>, extent :: <parse-extent>)
    label "valid input";
-   checked-followers(attr(expression-followers, default: #f), stream, context)
+   checked-followers(*expression-followers*, stream, context)
 end;
 
 
@@ -104,13 +112,13 @@ end method;
 define parser-method checked-type-recovery (stream, context)
 => (result, succ? :: <boolean>, err :: false-or(<parse-failure>))
    label "unparsable input";
-   checked-recovery(attr(type-skipper, default: #f), stream, context)
+   checked-recovery(*type-skipper*, stream, context)
 end;
 
 define parser-method checked-expression-recovery (stream, context)
 => (result, succ? :: <boolean>, err :: false-or(<parse-failure>))
    label "unparsable input";
-   checked-recovery(attr(expression-skipper, default: #f), stream, context)
+   checked-recovery(*expression-skipper*, stream, context)
 end;
 
 

@@ -24,16 +24,17 @@ define caching parser definition :: <definition-token>
                    module-definer, library-definer, macro-definer, domain-definer))
    => tokens;
    yield tokens[1];
-attributes
+dynamic-bind
    // Default recovery methods.
-   type-skipper = parse-til-parsable,
-   expression-skipper = parse-til-parsable;
+   *type-skipper* = parse-til-parsable,
+   *expression-skipper* = parse-til-parsable;
 afterwards (context, tokens, value, start-pos, end-pos)
    // Sort in case order got screwy because of parser backtracking.
    value.scoped-docs := sort!(value.scoped-docs, test: markup-sort-test);
    // Lower productions (including variable-definer, etc.) will have removed
-   // their claims from this scope already. But this production needs to claim
-   // the DEFINE docs for itself from the file's scope.
+   // their claims from their scopes already. But this production needs to claim
+   // the DEFINE lexeme docs on behalf of its lower -definer productions because
+   // the lower productions do not have access to the DEFINE lexeme.
    value.scoped-docs := add-to-front(tokens[0].lexeme-doc, value.scoped-docs);
    claim-docs(value, tokens[0].lexeme-doc);
    note-combined-source-location(context, value, tokens);
@@ -53,16 +54,16 @@ define parser variable-definer (<definition-token>)
    // Multiple-variable form is unsupported. TODO: Add a warning if we see it.
    rule seq(opt-many(modifier), lex-VARIABLE, variable, lex-EQUAL, expression)
    => tokens;
-   inherited slot scoped-docs = attr(scoped-docs);
+   inherited slot scoped-docs = *scoped-docs*;
    inherited slot api-name = tokens[2].name;
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot api-type = tokens[2].type;
    slot api-value = tokens[4];
-attributes
-   scoped-docs = make(<stretchy-vector>),
+dynamic-bind
+   *scoped-docs* = make(<stretchy-vector>),
    // Variable types and init expression have these followers.
-   type-followers = vector(parse-lex-EQUAL),
-   expression-followers = vector(parse-lex-SEMICOLON, parse-lex-EOF);
+   *type-followers* = vector(parse-lex-EQUAL),
+   *expression-followers* = vector(parse-lex-SEMICOLON, parse-lex-EOF);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-combined-source-location(context, value, tokens);
 end;
@@ -71,16 +72,16 @@ define parser constant-definer (<definition-token>)
    // Multiple-constant form is unsupported. TODO: Add a warning if we see it.
    rule seq(opt-many(modifier), lex-CONSTANT, variable, lex-EQUAL, expression)
    => tokens;
-   inherited slot scoped-docs = attr(scoped-docs);
+   inherited slot scoped-docs = *scoped-docs*;
    inherited slot api-name = tokens[2].name;
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot api-type = tokens[2].type;
    slot api-value = tokens[4];
-attributes
-   scoped-docs = make(<stretchy-vector>),
+dynamic-bind
+   *scoped-docs* = make(<stretchy-vector>),
    // Variable types and init expression have these followers.
-   type-followers = vector(parse-lex-EQUAL),
-   expression-followers = vector(parse-lex-SEMICOLON, parse-lex-EOF);
+   *type-followers* = vector(parse-lex-EQUAL),
+   *expression-followers* = vector(parse-lex-SEMICOLON, parse-lex-EOF);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-combined-source-location(context, value, tokens);
 end;
@@ -93,7 +94,7 @@ define parser class-definer (<definition-token>)
    rule seq(opt-many(modifier), lex-CLASS, variable-name,
             lex-LF-PAREN, superclasses, lex-RT-PAREN, opt(class-clauses))
    => tokens;
-   inherited slot scoped-docs = attr(scoped-docs);
+   inherited slot scoped-docs = *scoped-docs*;
    inherited slot api-name = tokens[2].name;
    slot api-modifiers :: <sequence> = (tokens[0] & map(value, tokens[0])) | #[];
    slot class-supers :: <sequence> /* of <text-token> */ = tokens[4];
@@ -101,11 +102,11 @@ define parser class-definer (<definition-token>)
       choose(true?, map(slot-from-clause, tokens[6] | #[]));
    slot class-keywords =
       remove-duplicate-keywords(choose(true?, map(keyword-from-clause, tokens[6] | #[])));
-attributes
-   scoped-docs = make(<stretchy-vector>),
+dynamic-bind
+   *scoped-docs* = make(<stretchy-vector>),
    // Superclasses have these followers and recovery.
-   expression-followers = vector(parse-lex-RT-PAREN, parse-lex-COMMA),
-   expression-skipper = parse-til-rt-paren;
+   *expression-followers* = vector(parse-lex-RT-PAREN, parse-lex-COMMA),
+   *expression-skipper* = parse-til-rt-paren;
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[6]);
    note-combined-source-location(context, value, tokens);
@@ -123,12 +124,12 @@ define parser class-clauses :: <sequence>
             opt(lex-SEMICOLON))
    => tokens;
    yield list-from-tokens(tokens);
-attributes
+dynamic-bind
    // All clause options and slot definitions have these followers and recovery.
-   expression-followers = vector(parse-lex-COMMA, parse-lex-SEMICOLON, parse-lex-END),
-   expression-skipper = parse-til-class-clause,
-   type-followers = vector(parse-lex-EQUAL, parse-lex-COMMA, parse-lex-SEMICOLON, parse-lex-END),
-   type-skipper = parse-til-class-clause
+   *expression-followers* = vector(parse-lex-COMMA, parse-lex-SEMICOLON, parse-lex-END),
+   *expression-skipper* = parse-til-class-clause,
+   *type-followers* = vector(parse-lex-EQUAL, parse-lex-COMMA, parse-lex-SEMICOLON, parse-lex-END),
+   *type-skipper* = parse-til-class-clause
 end;
 
 define parser class-clause :: <token>
@@ -247,15 +248,15 @@ define parser generic-definer (<definition-token>)
    rule seq(opt-many(modifier), lex-GENERIC, variable-name, 
             generic-parameter-list, opt(generic-options))
    => tokens;
-   inherited slot scoped-docs = attr(scoped-docs);
+   inherited slot scoped-docs = *scoped-docs*;
    inherited slot claimed-docs = tokens[3].claimed-docs;
    inherited slot api-name = tokens[2].name;
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot func-params = tokens[3].parameter-list | #[];
    slot func-values = tokens[3].value-list | #[];
    slot func-options = tokens[4] | #[];
-attributes
-   scoped-docs = make(<stretchy-vector>);
+dynamic-bind
+   *scoped-docs* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[3]);
    note-combined-source-location(context, value, tokens)
@@ -264,13 +265,13 @@ end;
 define parser method-definer (<definition-token>)
    rule seq(opt-many(modifier), lex-METHOD, variable-name, parameter-list)
    => tokens;
-   inherited slot scoped-docs = attr(scoped-docs);
+   inherited slot scoped-docs = *scoped-docs*;
    inherited slot api-name = tokens[2].name;
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot func-params = tokens[3].parameter-list | #[];
    slot func-values = tokens[3].value-list | #[];
-attributes
-   scoped-docs = make(<stretchy-vector>);
+dynamic-bind
+   *scoped-docs* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[3]);
    note-combined-source-location(context, value, tokens);
@@ -279,13 +280,13 @@ end;
 define parser function-definer (<definition-token>)
    rule seq(opt-many(modifier), lex-FUNCTION, variable-name, parameter-list)
    => tokens;
-   inherited slot scoped-docs = attr(scoped-docs);
+   inherited slot scoped-docs = *scoped-docs*;
    inherited slot api-name = tokens[2].name;
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot func-params = tokens[3].parameter-list | #[];
    slot func-values = tokens[3].value-list | #[];
-attributes
-   scoped-docs = make(<stretchy-vector>);
+dynamic-bind
+   *scoped-docs* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[3]);
    note-combined-source-location(context, value, tokens);
@@ -297,12 +298,12 @@ define parser generic-parameter-list (<token>, <documentable-token-mixin>)
    => tokens;
    slot parameter-list = parameter-list-from-token(tokens[1]);
    slot value-list = (tokens[3] & tokens[3][1].value-list) | #[];
-attributes
+dynamic-bind
    // All generic-parameter-list parts have these followers and recovery.
-   type-followers = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
-   type-skipper = parse-til-rt-paren,
-   expression-followers = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
-   expression-skipper = parse-til-rt-paren;
+   *type-followers* = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
+   *type-skipper* = parse-til-rt-paren,
+   *expression-followers* = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
+   *expression-skipper* = parse-til-rt-paren;
 afterwards (context, tokens, value, start-pos, end-pos)
    claim-docs(value, vector(tokens[1], tokens[3] & tokens[3][1]));
 end;

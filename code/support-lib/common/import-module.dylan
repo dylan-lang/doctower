@@ -6,6 +6,7 @@ define module common-imports
    use common-extensions, export: all,
       exclude: { format-to-string };
    use simple-profiling, import: { profiling }, export: all;
+   use threads, import: { dynamic-bind }, export: all;
    // from collections
    use table-extensions,
       export: { <string-table>, <case-insensitive-string-table>, table };
