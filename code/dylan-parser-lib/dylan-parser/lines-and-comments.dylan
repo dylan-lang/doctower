@@ -57,7 +57,7 @@ define parser source-record (<source-location-token>)
    => tokens;
    slot definitions = source-record-definitions(tokens[0] | #[]);
    slot unscoped-docs = *scoped-docs*;
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector> /* of <markup-content-token> */);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.unscoped-docs := sort!(value.unscoped-docs, test: markup-sort-test);

@@ -239,7 +239,7 @@ define caching parser quoted-words (<token>)
    slot quoted-text :: false-or(<string>) = tokens[2] & tokens[2].text;
    slot close-quote :: <string> = tokens[3];
    slot postquoted-text :: false-or(<string>) = tokens[4] & tokens[4].text;
-dynamic-bind
+dynamically-bind
    *close-quote-chars* = #f;
 end;
 

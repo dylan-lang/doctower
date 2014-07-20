@@ -12,7 +12,7 @@ define caching parser bullet-list (<source-location-token>)
       => items;
    slot content :: <sequence> /* of <bullet-list-item-token> */ =
       collect-subelements(items, 0);
-dynamic-bind
+dynamically-bind
    *bullet-list-bullet-char* = ' ';
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
@@ -48,7 +48,7 @@ define caching parser numeric-list (<source-location-token>)
    slot list-start :: type-union(<integer>, <character>) = items[0].ordinal;
    slot content :: <sequence> /* of <numeric-list-item-token> */ =
       first-item-and-last-subelements(items);
-dynamic-bind
+dynamically-bind
    *ordinal-type* = #f,
    *ordinal-separator* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)

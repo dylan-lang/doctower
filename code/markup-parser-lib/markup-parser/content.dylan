@@ -102,7 +102,7 @@ define caching parser bracketed-raw-block (<source-location-token>)
    slot block-type :: <symbol> = tokens[0];
    slot content :: <raw-line-sequence> =
       as(<raw-line-sequence>, collect-subelements(tokens[1], 1) | #[]);
-dynamic-bind
+dynamically-bind
    *raw-leading-spaces* = 0,
    *bracketed-spec-text* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)

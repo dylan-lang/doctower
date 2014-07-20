@@ -9,7 +9,7 @@ define class <text-name-token> (<source-location-token>)
    slot api-name :: <string>;
 end class;
 
-define thread variable *text-names* :: <sequence> /* of <text-name-token> */ = #[]
+define thread variable *text-names* :: <sequence> /* of <text-name-token> */ = #[];
 
 //
 // Program Structure
@@ -81,7 +81,7 @@ define parser basic-fragment (<text-token>)
    rule choice(seq(statement, opt(non-statement-basic-fragment)),
                non-statement-basic-fragment)
    => token;
-dynamic-bind
+dynamically-bind
    *text-names* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-combined-source-location(context, value, tokens);
@@ -230,7 +230,7 @@ end;
 
 define parser type (<text-token>)
    rule operand => token;
-dynamic-bind
+dynamically-bind
    *text-names* = make(<stretchy-vector>);
 afterwards (context, token, value, start-pos, end-pos)
    note-combined-source-location(context, value, token);
@@ -248,7 +248,7 @@ end;
 
 define parser expression (<text-token>)
    rule inner-expression => token;
-dynamic-bind
+dynamically-bind
    *text-names* = make(<stretchy-vector>);
 afterwards (context, token, value, start-pos, end-pos)
    note-combined-source-location(context, value, token);
@@ -409,7 +409,7 @@ define parser parameter-list (<token>, <documentable-token-mixin>)
    => tokens;
    slot parameter-list :: <sequence> = parameter-list-from-token(tokens[1]);
    slot value-list :: <sequence> = value-list-from-token(tokens[3] & tokens[3][1]) | #[];
-dynamic-bind
+dynamically-bind
    // All parameter-list parts (except bare-values-list) have these followers and recovery.
    *type-followers* = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
    *type-skipper* = parse-til-rt-paren,
@@ -521,7 +521,7 @@ define parser keyword-parameter (<source-location-token>, <documentable-token-mi
    slot key-symbol :: false-or(<string>) = tokens[0] & tokens[0].value;
    slot key-var :: <variable-token> = tokens[1];
    slot key-default :: false-or(<text-token>) = tokens[2];
-dynamic-bind
+dynamically-bind
    *type-followers* = add(*type-followers*, parse-lex-EQUAL);
 afterwards (context, tokens, value, start-pos, end-pos)
    claim-docs(value, value.key-doc);
@@ -536,7 +536,7 @@ end;
 define parser bare-values-list :: <variable-token>
    rule variable => token;
    yield token;
-dynamic-bind
+dynamically-bind
    *type-followers* = vector(parse-lex-SEMICOLON, parse-lex-EOF),
    *type-skipper* = parse-til-parsable
 end;

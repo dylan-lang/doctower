@@ -76,7 +76,7 @@ define caching parser topic-or-section-title (<source-location-token>)
            under: token.title-underline?);
    slot title-content :: <title-word-sequence> = token.title-content;
    slot title-nickname :: false-or(<title-nickname-token>) = token.title-nickname;
-dynamic-bind
+dynamically-bind
    *title-line-char* = ' ';
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)

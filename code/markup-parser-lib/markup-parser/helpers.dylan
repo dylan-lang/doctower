@@ -44,7 +44,7 @@ define thread variable *bracketed-spec-text* :: false-or(<symbol>) = #f;
 
 /** Synopsis: Ensures "[end x]" text is correct. */
 define function check-end-spec-text (text :: false-or(<symbol>), fail)
-   let spec-text = *bracketed-spec-text*
+   let spec-text = *bracketed-spec-text*;
    unless (text = #f | text = spec-text)
       fail(make(<parse-failure>, expected:
                 format-to-string("\"[end %s]\"", spec-text)))

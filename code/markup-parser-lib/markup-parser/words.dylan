@@ -98,7 +98,7 @@ define caching parser link-word (<source-location-token>)
                seq(nil(#f), text-til-spc-ls))
       => token;
    slot text :: <string> = remove-multiple-spaces(token[1].text);
-dynamic-bind
+dynamically-bind
    *close-quote-chars* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
@@ -110,7 +110,7 @@ define caching parser link-line (<link-word-token>)
                seq(sol, nil(#f), text-til-ls, ls))
       => token;
    inherited slot text = remove-multiple-spaces(token[2].text);
-dynamic-bind
+dynamically-bind
    *close-quote-chars* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
@@ -122,7 +122,7 @@ define caching parser link-til-cls-brack (<link-word-token>)
                seq(nil(#f), text-til-cls-brack))
       => token;
    inherited slot text = remove-multiple-spaces(token[1].text);
-dynamic-bind
+dynamically-bind
    *close-quote-chars* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
@@ -135,7 +135,7 @@ end;
 define caching parser filename :: <string>
    rule seq(quote-start, text-til-end-quote, quote-end) => tokens;
    yield tokens[1].text;
-dynamic-bind
+dynamically-bind
    *close-quote-chars* = #f;
 end;
 
@@ -187,7 +187,7 @@ define caching parser bracketed-render-span (<source-location-token>)
       => tokens;
    slot block-type :: <symbol> = tokens[0];
    slot text :: <string> = as(<string>, collect-subelements(tokens[1], 1));
-dynamic-bind
+dynamically-bind
    *bracketed-spec-text* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)

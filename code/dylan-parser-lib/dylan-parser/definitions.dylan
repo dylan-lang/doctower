@@ -24,7 +24,7 @@ define caching parser definition :: <definition-token>
                    module-definer, library-definer, macro-definer, domain-definer))
    => tokens;
    yield tokens[1];
-dynamic-bind
+dynamically-bind
    // Default recovery methods.
    *type-skipper* = parse-til-parsable,
    *expression-skipper* = parse-til-parsable;
@@ -59,7 +59,7 @@ define parser variable-definer (<definition-token>)
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot api-type = tokens[2].type;
    slot api-value = tokens[4];
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector>),
    // Variable types and init expression have these followers.
    *type-followers* = vector(parse-lex-EQUAL),
@@ -77,7 +77,7 @@ define parser constant-definer (<definition-token>)
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot api-type = tokens[2].type;
    slot api-value = tokens[4];
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector>),
    // Variable types and init expression have these followers.
    *type-followers* = vector(parse-lex-EQUAL),
@@ -102,7 +102,7 @@ define parser class-definer (<definition-token>)
       choose(true?, map(slot-from-clause, tokens[6] | #[]));
    slot class-keywords =
       remove-duplicate-keywords(choose(true?, map(keyword-from-clause, tokens[6] | #[])));
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector>),
    // Superclasses have these followers and recovery.
    *expression-followers* = vector(parse-lex-RT-PAREN, parse-lex-COMMA),
@@ -124,7 +124,7 @@ define parser class-clauses :: <sequence>
             opt(lex-SEMICOLON))
    => tokens;
    yield list-from-tokens(tokens);
-dynamic-bind
+dynamically-bind
    // All clause options and slot definitions have these followers and recovery.
    *expression-followers* = vector(parse-lex-COMMA, parse-lex-SEMICOLON, parse-lex-END),
    *expression-skipper* = parse-til-class-clause,
@@ -255,7 +255,7 @@ define parser generic-definer (<definition-token>)
    slot func-params = tokens[3].parameter-list | #[];
    slot func-values = tokens[3].value-list | #[];
    slot func-options = tokens[4] | #[];
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[3]);
@@ -270,7 +270,7 @@ define parser method-definer (<definition-token>)
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot func-params = tokens[3].parameter-list | #[];
    slot func-values = tokens[3].value-list | #[];
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[3]);
@@ -285,7 +285,7 @@ define parser function-definer (<definition-token>)
    slot api-modifiers = (tokens[0] & map(value, tokens[0])) | #[];
    slot func-params = tokens[3].parameter-list | #[];
    slot func-values = tokens[3].value-list | #[];
-dynamic-bind
+dynamically-bind
    *scoped-docs* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    value.scoped-docs := remove-claimed-docs(value.scoped-docs, tokens[3]);
@@ -298,7 +298,7 @@ define parser generic-parameter-list (<token>, <documentable-token-mixin>)
    => tokens;
    slot parameter-list = parameter-list-from-token(tokens[1]);
    slot value-list = (tokens[3] & tokens[3][1].value-list) | #[];
-dynamic-bind
+dynamically-bind
    // All generic-parameter-list parts have these followers and recovery.
    *type-followers* = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
    *type-skipper* = parse-til-rt-paren,
