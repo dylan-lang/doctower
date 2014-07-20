@@ -249,16 +249,17 @@ define method process-tokens
    (topic :: <topic>, section-token :: <links-directive-token>)
 => ()
    let targets =
-         map(method (link-token :: <link-word-token>) => (link :: <topic-ref>)
-                let loc = link-token.token-src-loc;
-                // TODO: If link-target is an URL, make a new URL for it
-                // instead of a <target-placeholder>.
-                let target = make(<target-placeholder>,
-                                  link: link-token.token-text,
-                                  source-location: loc);
-                make(<topic-ref>, target: target, source-location: loc);
-             end method,
-             section-token.links);
+         map-as(<vector>,
+                method (link-token :: <link-word-token>) => (link :: <topic-ref>)
+                   let loc = link-token.token-src-loc;
+                   // TODO: If link-target is an URL, make a new URL for it
+                   // instead of a <target-placeholder>.
+                   let target = make(<target-placeholder>,
+                                     link: link-token.token-text,
+                                     source-location: loc);
+                   make(<topic-ref>, target: target, source-location: loc);
+                end method,
+                section-token.links);
    select (section-token.directive-type)
       #"relevant-to" =>
          topic.relevant-to := concatenate!(topic.relevant-to, targets);
