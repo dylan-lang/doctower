@@ -10,7 +10,6 @@ define library support-library
    use system;
    use io;
    use sequence-stream;
-   use dynamic-binding;
    use skip-list;
    use slot-visitor;
    // from Monday project

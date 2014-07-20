@@ -9,7 +9,7 @@ define inline method check-id (elem :: type-union(<topic>, <section>)) => ()
       unless (intersection(" /[]", id).empty?)
          illegal-character-in-id(location: elem.id-source-loc);
       end unless;
-      when (id.first = ':' & ~dynamic-binding(*internal-markup*, default: #f))
+      when (id.first = ':' & ~*internal-markup*)
          leading-colon-in-id(location: elem.id-source-loc);
       end when;
    end when;

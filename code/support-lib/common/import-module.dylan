@@ -30,8 +30,6 @@ define module common-imports
    use sequence-stream, export: all;
    // from source-location
    use source-location, export: all;
-   // from dynamic-binding
-   use dynamic-binding, export: all;
    // from skip-list
    use skip-list,
       import: { <skip-list>, element-sequence, element-sequence-setter },
