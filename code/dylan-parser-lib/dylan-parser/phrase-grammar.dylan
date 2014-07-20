@@ -439,7 +439,7 @@ afterwards (context, tokens, value, start-pos, end-pos)
 end;
 
 // #next parameters aren't documented.
-define parser next-rest-key-parameter-list :: <rest-key-parameter-list-token>
+define parser next-rest-key-parameter-list :: false-or(<rest-key-parameter-list-token>)
    rule choice(seq(lex-NEXT, variable-name,
                    opt-seq(lex-COMMA, rest-key-parameter-list)),
                seq(nil(#f), nil(#f),
