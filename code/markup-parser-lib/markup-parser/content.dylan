@@ -89,6 +89,10 @@ afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
 
+// Holds number of leading spaces to remove from each line of [HTML]/[DITA]
+// content when concatenating them.
+define thread variable *raw-leading-spaces* :: <integer> = 0;
+
 // exported
 define caching parser bracketed-raw-block (<source-location-token>)
    rule seq(bracketed-raw-block-start-line,
@@ -98,9 +102,9 @@ define caching parser bracketed-raw-block (<source-location-token>)
    slot block-type :: <symbol> = tokens[0];
    slot content :: <raw-line-sequence> =
       as(<raw-line-sequence>, collect-subelements(tokens[1], 1) | #[]);
-attributes
-   raw-leading-spaces :: <integer> = 0,
-   bracketed-spec-text :: false-or(<symbol>) = #f;
+dynamically-bind
+   *raw-leading-spaces* = 0,
+   *bracketed-spec-text* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -110,8 +114,8 @@ define caching parser bracketed-raw-block-start-line :: <symbol>
       => tokens;
    yield tokens[2];
 afterwards (context, tokens, value, start-pos, end-pos)
-   attr(raw-leading-spaces) := tokens[0].parse-end - tokens[0].parse-start;
-   attr(bracketed-spec-text) := tokens[2];
+   *raw-leading-spaces* := tokens[0].parse-end - tokens[0].parse-start;
+   *bracketed-spec-text* := tokens[2];
 end;
 
 define caching parser bracketed-raw-block-end-line

@@ -6,6 +6,7 @@ define module common-imports
    use common-extensions, export: all,
       exclude: { format-to-string };
    use simple-profiling, import: { profiling }, export: all;
+   use threads, import: { dynamic-bind }, export: all;
    // from collections
    use table-extensions,
       export: { <string-table>, <case-insensitive-string-table>, table };
@@ -29,8 +30,6 @@ define module common-imports
    use sequence-stream, export: all;
    // from source-location
    use source-location, export: all;
-   // from dynamic-binding
-   use dynamic-binding, export: all;
    // from skip-list
    use skip-list,
       import: { <skip-list>, element-sequence, element-sequence-setter },

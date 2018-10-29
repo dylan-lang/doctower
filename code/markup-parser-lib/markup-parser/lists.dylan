@@ -4,14 +4,16 @@ module: markup-parser
 // Bullet lists
 //
 
+define thread variable *bullet-list-bullet-char* :: <character> = ' ';
+
 // exported
 define caching parser bullet-list (<source-location-token>)
    rule many(seq(bullet-list-item, opt(blank-lines)))
       => items;
    slot content :: <sequence> /* of <bullet-list-item-token> */ =
       collect-subelements(items, 0);
-attributes
-   bullet-char :: <character> = ' ';
+dynamically-bind
+   *bullet-list-bullet-char* = ' ';
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -34,6 +36,9 @@ end;
 // Numeric list
 //
 
+define thread variable *ordinal-type* :: false-or(<class>) = #f;
+define thread variable *ordinal-separator* :: false-or(<symbol>) = #f;
+
 // exported
 define caching parser numeric-list (<source-location-token>)
    rule seq(numeric-list-first-item,
@@ -43,9 +48,9 @@ define caching parser numeric-list (<source-location-token>)
    slot list-start :: type-union(<integer>, <character>) = items[0].ordinal;
    slot content :: <sequence> /* of <numeric-list-item-token> */ =
       first-item-and-last-subelements(items);
-attributes
-   ordinal-type :: false-or(<class>) = #f,
-   ordinal-separator :: false-or(<symbol>) = #f;
+dynamically-bind
+   *ordinal-type* = #f,
+   *ordinal-separator* = #f;
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;
@@ -73,8 +78,8 @@ define caching parser numeric-list-first-marker :: type-union(<integer>, <charac
       => tokens;
    yield tokens[0];
 afterwards (context, tokens, value, start-pos, end-pos)
-   attr(ordinal-type) := tokens[0].object-class;
-   attr(ordinal-separator) := tokens[1];
+   *ordinal-type* := tokens[0].object-class;
+   *ordinal-separator* := tokens[1];
 end;
 
 define caching parser numeric-list-marker

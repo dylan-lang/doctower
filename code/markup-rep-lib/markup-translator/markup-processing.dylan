@@ -233,7 +233,7 @@ define method quote-specs (quote :: <quote-token>) => (specs :: <sequence>)
 
    // Titles cannot have links. This excludes qv, vi. Can have code if we don't
    // link to APIs. In DITA, they cannot have <cite>, but we can fake that.
-   if (dynamic-binding(*title-markup*, default: #f))
+   if (*title-markup*)
       when (member?(#"qv", specs) | member?(#"vi", specs))
          qv-or-vi-in-title(location: spec-loc);
          specs := remove!(specs, #"qv");

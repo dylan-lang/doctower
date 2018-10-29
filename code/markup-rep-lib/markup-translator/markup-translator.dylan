@@ -1,5 +1,10 @@
 module: markup-translator
 
+define thread variable *internal-markup* :: <boolean> = #f;
+define thread variable *title-markup* :: <boolean> = #f;
+define thread variable *catalog-topics* :: <boolean> = #f;
+define thread variable *topic-level-styles* :: <stretchy-vector> = make(<stretchy-vector>);
+define thread variable *topic-level-topics* :: <stretchy-vector> = make(<stretchy-vector>);
 
 /** Synopsis: Returns <topic>s from a markup block. **/
 define method topics-from-markup
@@ -10,7 +15,7 @@ define method topics-from-markup
    let header-styles = make(<stretchy-vector>);
    let header-topics = make(<stretchy-vector>);
    
-   with-dynamic-bindings (*internal-markup* = internal, *catalog-topics* = catalog,
+   dynamic-bind (*internal-markup* = internal, *catalog-topics* = catalog,
           *topic-level-styles* = header-styles, *topic-level-topics* = header-topics)
       unless (token.default-topic-content.empty?)
          if (context-topic)
@@ -38,7 +43,7 @@ define method topics-from-markup
       resolve-exhibits(topics);
       resolve-footnotes(topics);
       
-   end with-dynamic-bindings;
+   end dynamic-bind;
    
    topics
 end method;

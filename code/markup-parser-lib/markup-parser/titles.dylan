@@ -65,17 +65,19 @@ end;
 // Title styles
 //
 
+define thread variable *title-line-char* :: <character> = ' ';
+
 // exported
 define caching parser topic-or-section-title (<source-location-token>)
    rule choice(title-midline-style, title-bare-style) => token;
    slot title-style :: <topic-level-style> =
-      make(<topic-level-style>, char: attr(title-line-char),
+      make(<topic-level-style>, char: *title-line-char*,
            over: token.title-overline?, mid: token.title-midline?,
            under: token.title-underline?);
    slot title-content :: <title-word-sequence> = token.title-content;
    slot title-nickname :: false-or(<title-nickname-token>) = token.title-nickname;
-attributes
-   title-line-char :: <character> = ' ';
+dynamically-bind
+   *title-line-char* = ' ';
 afterwards (context, tokens, value, start-pos, end-pos)
    note-source-location(context, value)
 end;

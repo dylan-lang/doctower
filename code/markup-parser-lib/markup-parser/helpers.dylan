@@ -40,9 +40,11 @@ define function check-paired-indentation (ind, ded, fail)
 end function;
 
 
+define thread variable *bracketed-spec-text* :: false-or(<symbol>) = #f;
+
 /** Synopsis: Ensures "[end x]" text is correct. */
 define function check-end-spec-text (text :: false-or(<symbol>), fail)
-   let spec-text = attr(bracketed-spec-text, default: #f);
+   let spec-text = *bracketed-spec-text*;
    unless (text = #f | text = spec-text)
       fail(make(<parse-failure>, expected:
                 format-to-string("\"[end %s]\"", spec-text)))
@@ -52,10 +54,10 @@ end function;
 
 /** Synopsis: Ensures consistent bullet list items. */
 define function check-bullet-char (bullet :: <character>, fail)
-   let bullet-char = attr(bullet-char, default: ' ');
+   let bullet-char = *bullet-list-bullet-char*;
    case
       bullet-char = ' ' =>
-         attr(bullet-char) := bullet;
+         *bullet-list-bullet-char* := bullet;
       bullet-char ~= bullet =>
          fail(make(<parse-failure>, expected:
                    format-to-string("bullet \"%c\"", bullet-char)));
@@ -65,10 +67,8 @@ end function;
 
 /** Synopsis: Ensures consistent numeric list item style. */
 define function check-numeric-list-marker (tokens, fail)
-   let ordinal-separator :: false-or(<symbol>) =
-         attr(ordinal-separator, default: #f);
-   let ordinal-type :: false-or(<class>) =
-         attr(ordinal-type, default: #f);
+   let ordinal-separator :: false-or(<symbol>) = *ordinal-separator*;
+   let ordinal-type :: false-or(<class>) = *ordinal-type*;
    
    when (ordinal-separator & ordinal-type)
       let matching-ordinal? =
@@ -106,8 +106,8 @@ end function;
 
 /** Synopsis: Ensures ASCII lines in a title all use the same character. */
 define function check-title-line-char (char :: <character>, fail)
-   let title-char = attr(title-line-char, default: #f);
-   unless (~title-char | title-char = ' ')
+   let title-char = *title-line-char*;
+   unless (title-char = ' ')
       if (char ~= title-char)
          fail(make(<parse-failure>, expected: format-to-string("\"%c\"", title-char)))
       end if

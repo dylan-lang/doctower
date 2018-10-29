@@ -125,7 +125,7 @@ define method capture-text-and-names
 end method;
 
 define method note-text-name (token :: <text-name-token>) => ()
-   add-new!(attr(text-names, default: #[]), token, test: \=)
+   add-new!(*text-names*, token, test: \=)
 end method;
 
 

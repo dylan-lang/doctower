@@ -50,7 +50,7 @@ This will be rendered as two paragraphs:
 Quoted words
 ============
 
-Quoted words can be followed by bracket options, but does not have to be. The
+Quoted words can be followed by bracket options, but do not have to be. The
 quotes and default processing is:
 
   "..."   - Smart quotes. [qq]

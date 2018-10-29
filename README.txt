@@ -20,7 +20,8 @@ can include raw DITA or HTML markup within each topic.
 
 DOCTOWER IS STILL UNDER DEVELOPMENT. Only some of what I said above is true at
 the moment. If you want to help (and I can definitely use some), check out the
-TODO file and source-code comments, or ask me, |Agent, on IRC.
+TODO file and source-code comments, or ask me, |Agent, on IRC or e-mail to 
+d_j_v@me.com.
 
 - I use 3-space tab stops.
 

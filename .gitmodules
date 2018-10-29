@@ -4,9 +4,6 @@
 [submodule "code/ext/command-line-parser"]
 	path = code/ext/command-line-parser
 	url = https://BarAgent@github.com/dylan-lang/command-line-parser.git
-[submodule "code/ext/dynamic-binding"]
-	path = code/ext/dynamic-binding
-	url = https://BarAgent@github.com/dylan-lang/dynamic-binding.git
 [submodule "code/ext/peg-parser"]
 	path = code/ext/peg-parser
 	url = https://BarAgent@github.com/dylan-lang/peg-parser.git
@@ -33,4 +30,4 @@
 	url = https://BarAgent@github.com/dylan-lang/template-engine.git
 [submodule "code/ext/wrapper-streams"]
 	path = code/ext/wrapper-streams
-	url = https://BarAgent@github.com/dylan-lang/wrapper-streams.git
+url=https://BarAgent@github.com/BarAgent/wrapper-streams.git

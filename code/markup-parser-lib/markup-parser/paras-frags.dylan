@@ -83,7 +83,7 @@ define caching parser raw-line (<source-location-token>)
    slot text :: <string> =
       begin
          let first-part = collect-subelements(tokens[1], 1) | "";
-         let leading-spaces = attr(raw-leading-spaces, default: 0);
+         let leading-spaces = *raw-leading-spaces*;
          let first-part = copy-sequence(first-part, start: leading-spaces);
          concatenate(as(<string>, first-part), tokens[2].text)
       end;
@@ -118,21 +118,21 @@ define caching parser ascii-overline
    rule seq(sol, ascii-line, ls);
 afterwards (context, tokens, value, start-pos, end-pos, fail: fail)
    check-title-line-char(tokens[1].ascii-line-char, fail);
-   attr(title-line-char) := tokens[1].ascii-line-char;
+   *title-line-char* := tokens[1].ascii-line-char;
 end;
 
 define caching parser ascii-midline
    rule ascii-line;
 afterwards (context, token, value, start-pos, end-pos, fail: fail)
    check-title-line-char(token.ascii-line-char, fail);
-   attr(title-line-char) := token.ascii-line-char;
+   *title-line-char* := token.ascii-line-char;
 end;
 
 define caching parser ascii-underline
    rule seq(sol, ascii-line, ls);
 afterwards (context, tokens, value, start-pos, end-pos, fail: fail)
    check-title-line-char(tokens[1].ascii-line-char, fail);
-   attr(title-line-char) := tokens[1].ascii-line-char;
+   *title-line-char* := tokens[1].ascii-line-char;
 end;
 
 define caching parser ascii-line (<token>)
@@ -201,6 +201,8 @@ end;
 // Quotes
 //
 
+define thread variable *close-quote-chars* :: false-or(<string>) = #f;
+
 // exported
 define caching parser quote (<source-location-token>)
    rule seq(quoted-words, opt-seq(many-spc-ls, quote-spec)) => tokens;
@@ -237,8 +239,8 @@ define caching parser quoted-words (<token>)
    slot quoted-text :: false-or(<string>) = tokens[2] & tokens[2].text;
    slot close-quote :: <string> = tokens[3];
    slot postquoted-text :: false-or(<string>) = tokens[4] & tokens[4].text;
-attributes
-   close-quote-chars :: false-or(<string>) = #f;
+dynamically-bind
+   *close-quote-chars* = #f;
 end;
 
 define parser-method quote-start (stream, context :: <markup-precomputed-context>)
@@ -252,7 +254,7 @@ define parser-method quote-start (stream, context :: <markup-precomputed-context
                             if (res) quote-pair else #f end
                          end, context.sorted-quote-pairs);
    if (match-pair)
-      attr(close-quote-chars) := match-pair.second;
+      *close-quote-chars* := match-pair.second;
       match-pair.first
    else
       #f
@@ -264,7 +266,7 @@ define parser-method quote-end (stream, context)
     err :: false-or(<parse-failure>))
    label format-to-string("closing quote characters (%s)",
                           join(map(second, *quote-pairs*), ", "));
-   let close-quote-chars = attr(close-quote-chars);
+   let close-quote-chars = *close-quote-chars*;
    let result = read-expected(stream, close-quote-chars, failure: #f);
    if (result)
       values(close-quote-chars, #t, #f)

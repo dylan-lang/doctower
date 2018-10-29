@@ -306,7 +306,7 @@ define method output-from-template
 
    let output-locator = merge-locators(file-info.locator, *output-directory*);
    with-file-error-handlers (default-locator: output-locator)
-      ensure-directories-exist(output-locator);
+      ensure-directories-exist(output-locator.locator-directory);
       with-open-file (file = output-locator, direction: #"output")
          write(file, content);
       end with-open-file;

@@ -9,6 +9,8 @@ define class <text-name-token> (<source-location-token>)
    slot api-name :: <string>;
 end class;
 
+define thread variable *text-names* :: <sequence> /* of <text-name-token> */ = #[];
+
 //
 // Program Structure
 //
@@ -79,11 +81,11 @@ define parser basic-fragment (<text-token>)
    rule choice(seq(statement, opt(non-statement-basic-fragment)),
                non-statement-basic-fragment)
    => token;
-attributes
-   text-names :: <sequence> /* of <text-name-token> */ = make(<stretchy-vector>);
+dynamically-bind
+   *text-names* = make(<stretchy-vector>);
 afterwards (context, tokens, value, start-pos, end-pos)
    note-combined-source-location(context, value, tokens);
-   capture-text-and-names(context, value, attr(text-names));
+   capture-text-and-names(context, value, *text-names*);
 end;
 
 define parser non-statement-body-fragment (<token>)
@@ -228,11 +230,11 @@ end;
 
 define parser type (<text-token>)
    rule operand => token;
-attributes
-   text-names :: <sequence> /* of <text-name-token> */ = make(<stretchy-vector>);
+dynamically-bind
+   *text-names* = make(<stretchy-vector>);
 afterwards (context, token, value, start-pos, end-pos)
    note-combined-source-location(context, value, token);
-   capture-text-and-names(context, value, attr(text-names));
+   capture-text-and-names(context, value, *text-names*);
 end;
 
 //
@@ -246,11 +248,11 @@ end;
 
 define parser expression (<text-token>)
    rule inner-expression => token;
-attributes
-   text-names :: <sequence> /* of <text-name-token> */ = make(<stretchy-vector>);
+dynamically-bind
+   *text-names* = make(<stretchy-vector>);
 afterwards (context, token, value, start-pos, end-pos)
    note-combined-source-location(context, value, token);
-   capture-text-and-names(context, value, attr(text-names));
+   capture-text-and-names(context, value, *text-names*);
 end;
 
 define parser inner-expression (<token>)
@@ -407,12 +409,12 @@ define parser parameter-list (<token>, <documentable-token-mixin>)
    => tokens;
    slot parameter-list :: <sequence> = parameter-list-from-token(tokens[1]);
    slot value-list :: <sequence> = value-list-from-token(tokens[3] & tokens[3][1]) | #[];
-attributes
+dynamically-bind
    // All parameter-list parts (except bare-values-list) have these followers and recovery.
-   type-followers = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
-   type-skipper = parse-til-rt-paren,
-   expression-followers = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
-   expression-skipper = parse-til-rt-paren;
+   *type-followers* = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
+   *type-skipper* = parse-til-rt-paren,
+   *expression-followers* = vector(parse-lex-COMMA, parse-lex-RT-PAREN),
+   *expression-skipper* = parse-til-rt-paren;
 afterwards (context, tokens, value, start-pos, end-pos)
    claim-docs(value, vector(tokens[1], tokens[3] & tokens[3][1]))
 end;
@@ -437,7 +439,7 @@ afterwards (context, tokens, value, start-pos, end-pos)
 end;
 
 // #next parameters aren't documented.
-define parser next-rest-key-parameter-list :: <rest-key-parameter-list-token>
+define parser next-rest-key-parameter-list :: false-or(<rest-key-parameter-list-token>)
    rule choice(seq(lex-NEXT, variable-name,
                    opt-seq(lex-COMMA, rest-key-parameter-list)),
                seq(nil(#f), nil(#f),
@@ -519,8 +521,8 @@ define parser keyword-parameter (<source-location-token>, <documentable-token-mi
    slot key-symbol :: false-or(<string>) = tokens[0] & tokens[0].value;
    slot key-var :: <variable-token> = tokens[1];
    slot key-default :: false-or(<text-token>) = tokens[2];
-attributes
-   type-followers = add(attr(type-followers), parse-lex-EQUAL);
+dynamically-bind
+   *type-followers* = add(*type-followers*, parse-lex-EQUAL);
 afterwards (context, tokens, value, start-pos, end-pos)
    claim-docs(value, value.key-doc);
    note-combined-source-location(context, value, tokens);
@@ -534,9 +536,9 @@ end;
 define parser bare-values-list :: <variable-token>
    rule variable => token;
    yield token;
-attributes
-   type-followers = vector(parse-lex-SEMICOLON, parse-lex-EOF),
-   type-skipper = parse-til-parsable
+dynamically-bind
+   *type-followers* = vector(parse-lex-SEMICOLON, parse-lex-EOF),
+   *type-skipper* = parse-til-parsable
 end;
 
 define parser enclosed-values-list :: false-or(<values-list-token>)
@@ -577,6 +579,9 @@ define class <macro-definition-token> (<token>)
    slot main-rule-set :: <sequence>, init-keyword: #"main-rule-set";
 end class;
 
+define thread variable *full-macro-name* :: <string> = "";
+define thread variable *short-macro-name* :: <string> = "";
+
 // Note the macro name as soon as we have it, and use it in parse-modifiers to
 // know when modifiers end.
 define parser-method macro-definition (stream, context)
@@ -601,15 +606,15 @@ define parser-method macro-definition (stream, context)
                end if;
             end if;
       // Make available to lower productions.
-      with-attributes (full-macro-name :: <string> = full-name,
-                       short-macro-name :: <string> = short-name | full-name)
+      dynamic-bind (*full-macro-name* = full-name,
+                    *short-macro-name* = short-name | full-name)
          let (parsed-main-rule-set, rules-success?, rules-extent)
                = parse-macro-definition-after-name(stream, context);
          let token = rules-success? &
                make(<macro-definition-token>, start: start, end: stream.stream-position,
                     name: parsed-name.value, main-rule-set: parsed-main-rule-set);
          values(token, rules-success?, combine-extents(name-extent, rules-extent))
-      end with-attributes
+      end dynamic-bind
    else
       values(#f, #f, name-extent)
    end if
@@ -621,7 +626,7 @@ define parser-method full-macro-name (stream, context)
    label "macro name";
    let parsed-name :: false-or(<lex-MACRO-NAME-token>)
          = parse-lex-MACRO-NAME(stream, context);
-   let expected-name = attr(full-macro-name);
+   let expected-name = *full-macro-name*;
    if (parsed-name & string-equal-ic?(expected-name, parsed-name.value))
       parsed-name
    end if
@@ -633,7 +638,7 @@ define parser-method short-macro-name (stream, context)
    label "macro name";
    let parsed-name :: false-or(<lex-MACRO-NAME-token>)
          = parse-lex-MACRO-NAME(stream, context);
-   let expected-name = attr(short-macro-name);
+   let expected-name = *short-macro-name*;
    if (parsed-name & string-equal-ic?(expected-name, parsed-name.value))
       parsed-name
    end if

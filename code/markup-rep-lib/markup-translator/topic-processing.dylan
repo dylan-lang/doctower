@@ -18,7 +18,7 @@ define generic make-topic-from-token (token :: <topic-token>)
 define method make-topic-from-token (token :: <directive-topic-token>)
 => (topic :: <topic>)
    let topic-type = token.token-topic-type;
-   if (topic-type = #"topic" & dynamic-binding(*catalog-topics*))
+   if (topic-type = #"topic" & *catalog-topics*)
       topic-type := #"catalog"
    end if;
    let topic = make(<topic>, source-location: token.token-src-loc,
@@ -31,7 +31,7 @@ end method;
 define method make-topic-from-token (token :: <titled-topic-token>)
 => (topic :: <con-topic>)
    let topic-type =
-         if (dynamic-binding(*catalog-topics*)) #"catalog" else #"topic" end;
+         if (*catalog-topics*) #"catalog" else #"topic" end;
    let topic = make(<topic>, source-location: token.token-src-loc,
                     topic-type: topic-type);
    process-tokens(topic, token);
@@ -84,8 +84,8 @@ define method process-tokens
 => ()
    // Determine parent topic by title style.
 
-   let level-styles = dynamic-binding(*topic-level-styles*);
-   let level-topics = dynamic-binding(*topic-level-topics*);
+   let level-styles = *topic-level-styles*;
+   let level-topics = *topic-level-topics*;
    let (level, style) =
          if (instance?(token, <topic-or-section-title-token>))
             let style = token.title-style;
@@ -109,9 +109,9 @@ define method process-tokens
    // Process topic content.
 
    topic.title-source-loc := token.token-src-loc;
-   with-dynamic-bindings (*title-markup* = #t)
+   dynamic-bind (*title-markup* = #t)
       process-tokens(topic.title, token.title-content);
-   end with-dynamic-bindings;
+   end dynamic-bind;
    check-title(topic);
 end method;
 
@@ -249,16 +249,17 @@ define method process-tokens
    (topic :: <topic>, section-token :: <links-directive-token>)
 => ()
    let targets =
-         map(method (link-token :: <link-word-token>) => (link :: <topic-ref>)
-                let loc = link-token.token-src-loc;
-                // TODO: If link-target is an URL, make a new URL for it
-                // instead of a <target-placeholder>.
-                let target = make(<target-placeholder>,
-                                  link: link-token.token-text,
-                                  source-location: loc);
-                make(<topic-ref>, target: target, source-location: loc);
-             end method,
-             section-token.links);
+         map-as(<vector>,
+                method (link-token :: <link-word-token>) => (link :: <topic-ref>)
+                   let loc = link-token.token-src-loc;
+                   // TODO: If link-target is an URL, make a new URL for it
+                   // instead of a <target-placeholder>.
+                   let target = make(<target-placeholder>,
+                                     link: link-token.token-text,
+                                     source-location: loc);
+                   make(<topic-ref>, target: target, source-location: loc);
+                end method,
+                section-token.links);
    select (section-token.directive-type)
       #"relevant-to" =>
          topic.relevant-to := concatenate!(topic.relevant-to, targets);
